@@ -1,0 +1,87 @@
+{
+  "name": "texas-wells-map",
+  "productName": "Texas Wells Map",
+  "version": "1.0.0",
+  "description": "Offline map of every Texas oil & gas well (RRC snapshot)",
+  "author": "Ocean",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "data": "node --max-old-space-size=8192 ../scripts/build_data.mjs",
+    "check-data": "node ../scripts/build_check_data.mjs",
+    "bundle": "esbuild src/renderer.js --bundle --minify --format=iife --target=chrome130 --outfile=renderer/renderer.bundle.js",
+    "start": "npm run bundle && electron .",
+    "dist:mac": "npm run check-data && npm run bundle && electron-builder --mac dmg --arm64 --x64 --publish never",
+    "dist:win": "npm run check-data && npm run bundle && electron-builder --win nsis portable --x64 --publish never",
+    "dist:win-from-mac": "npm run check-data && npm run bundle && electron-builder --win nsis portable --x64 --publish never -c.win.signAndEditExecutable=false"
+  },
+  "devDependencies": {
+    "csv-parse": "^7.0.3",
+    "electron": "^38.8.6",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "@deck.gl/core": "^9.4.0",
+    "@deck.gl/extensions": "^9.4.0",
+    "@deck.gl/layers": "^9.4.0"
+  },
+  "allowScripts": {
+    "electron@38.8.6": true,
+    "esbuild@0.28.2": true
+  },
+  "build": {
+    "appId": "com.oceanlove.texaswellsmap",
+    "productName": "Texas Wells Map",
+    "artifactName": "TexasWellsMap-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "renderer/**/*",
+      "!renderer/**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/data",
+        "to": "data",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "asar": true,
+    "publish": null,
+    "electronLanguages": [
+      "en-US"
+    ],
+    "mac": {
+      "category": "public.app-category.reference",
+      "target": [
+        "dmg"
+      ],
+      "identity": "-",
+      "hardenedRuntime": false
+    },
+    "dmg": {
+      "title": "Texas Wells Map ${version}"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "TexasWellsMap-${version}-win-${arch}-setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "TexasWellsMap-${version}-win-${arch}-portable.${ext}"
+    }
+  }
+}
