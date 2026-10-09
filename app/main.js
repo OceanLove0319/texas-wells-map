@@ -6,8 +6,11 @@
  *   - UI and data are served from a private "app://" scheme backed by local files.
  *   - Every request that is not app://, devtools://, data: or blob: is cancelled (see blockNetwork).
  *   - No auto-updater, no telemetry, no crash reporter upload.
+ *   - The one exception is user-initiated: clicking a document link (e.g. OCC well records) asks the
+ *     main process to open that http(s) URL in the user's default browser via shell.openExternal.
+ *     The app itself never fetches it.
  */
-const { app, BrowserWindow, protocol, session } = require('electron');
+const { app, BrowserWindow, protocol, session, ipcMain, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const zlib = require('node:zlib');
@@ -76,7 +79,7 @@ function createWindow() {
     height: 900,
     minWidth: 900,
     minHeight: 600,
-    title: 'Texas Wells Map',
+    title: 'Texas & Oklahoma Wells Map',
     backgroundColor: '#f4f5f7',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -103,6 +106,15 @@ function createWindow() {
   if (pick) q.set('pick', pick);
   win.loadURL(`${SCHEME}://local/index.html${q.toString() ? `?${q}` : ''}`);
 }
+
+/** Open a user-clicked http(s) link in the default browser. Nothing else is accepted. */
+ipcMain.handle('open-external', async (_e, url) => {
+  let u;
+  try { u = new URL(String(url)); } catch { return false; }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+  await shell.openExternal(u.toString());
+  return true;
+});
 
 app.whenReady().then(() => {
   blockNetwork(session.defaultSession);

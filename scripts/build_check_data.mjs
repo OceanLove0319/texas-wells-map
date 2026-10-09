@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * build_check_data.mjs - sanity-check the built app assets in app/assets/data before packaging.
- * Used locally and in CI (CI never pulls from RRC; it packages the committed assets).
- * Exits non-zero if anything is missing or inconsistent.
+ * Used locally and in CI (CI never downloads from the RRC or OCC; it packages the committed assets).
+ * Exits non-zero if anything is missing, inconsistent, or too large for GitHub (50 MB per file).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,26 +10,51 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIR = path.join(ROOT, 'app', 'assets', 'data');
+const MAX_FILE = 50 * 1024 * 1024;
 const fail = (m) => { console.error(`[check_data] FAIL: ${m}`); process.exit(1); };
 
 if (!fs.existsSync(path.join(DIR, 'meta.json'))) fail(`no meta.json in ${DIR} - run "npm run data" first`);
 const meta = JSON.parse(fs.readFileSync(path.join(DIR, 'meta.json'), 'utf8'));
 const N = meta.wellCount;
-const expect = { 'points.bin': N * 8, 'types.bin': N, 'apis.bin': N * 4 };
+const expect = { 'points.bin': N * 8, 'types.bin': N, 'status.bin': N, 'apis.bin': N * 4 };
 for (const [f, bytes] of Object.entries(expect)) {
   const p = path.join(DIR, f);
   if (!fs.existsSync(p)) fail(`missing ${f}`);
   if (fs.statSync(p).size !== bytes) fail(`${f} is ${fs.statSync(p).size} bytes, expected ${bytes}`);
 }
 if (!fs.existsSync(path.join(DIR, 'counties.json'))) fail('missing counties.json');
-const typeSum = meta.types.reduce((a, t) => a + t.count, 0);
-if (typeSum !== N) fail(`type counts sum ${typeSum} != wellCount ${N}`);
-if (meta.sourceRowCount !== N) fail(`sourceRowCount ${meta.sourceRowCount} != wellCount ${N}`);
+
+let start = 0;
+for (const s of meta.states) {
+  if (s.start !== start) fail(`${s.id} starts at ${s.start}, expected ${start}`);
+  if (s.sourceRowCount !== s.wellCount) fail(`${s.id} sourceRowCount ${s.sourceRowCount} != wellCount ${s.wellCount}`);
+  const types = meta.types.slice(...s.typeRange);
+  const mapped = types.reduce((a, t) => a + t.count, 0);
+  const total = types.reduce((a, t) => a + t.total, 0);
+  if (mapped !== s.mapped) fail(`${s.id} legend type counts ${mapped} != mapped ${s.mapped}`);
+  if (total !== s.wellCount || s.mapped + s.unplottable !== s.wellCount) fail(`${s.id} counts do not add up`);
+  if (s.statusRange[1] > s.statusRange[0]) {
+    const sm = meta.statuses.slice(...s.statusRange).reduce((a, t) => a + t.count, 0);
+    if (sm !== s.mapped) fail(`${s.id} status counts ${sm} != mapped ${s.mapped}`);
+  }
+  start += s.wellCount;
+}
+if (start !== N) fail(`states cover ${start} wells, expected ${N}`);
+
 let covered = 0;
-for (const s of meta.shards) {
-  if (s.start !== covered) fail(`shard ${s.key} starts at ${s.start}, expected ${covered}`);
-  if (!fs.existsSync(path.join(DIR, s.file))) fail(`missing ${s.file}`);
-  covered += s.count;
+for (const sh of meta.shards) {
+  if (sh.start !== covered) fail(`shard ${sh.key} starts at ${sh.start}, expected ${covered}`);
+  if (!fs.existsSync(path.join(DIR, sh.file))) fail(`missing ${sh.file}`);
+  covered += sh.count;
 }
 if (covered !== N) fail(`shards cover ${covered} wells, expected ${N}`);
-console.log(`[check_data] OK: ${N.toLocaleString()} wells, ${meta.types.length} types, ${meta.layers.length} joined layers, ${meta.shards.length} shards, ${meta.countyCount} counties, snapshot ${meta.snapshot}`);
+
+const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+let bytes = 0;
+for (const f of walk(DIR)) {
+  const sz = fs.statSync(f).size;
+  bytes += sz;
+  if (sz > MAX_FILE) fail(`${path.relative(DIR, f)} is ${(sz / 1e6).toFixed(1)} MB (GitHub limit 50 MB) - shard it`);
+}
+const per = meta.states.map((s) => `${s.id} ${s.wellCount.toLocaleString()} wells (${s.mapped.toLocaleString()} mapped, ${s.unplottable.toLocaleString()} no location, snapshot ${s.snapshot})`).join('; ');
+console.log(`[check_data] OK: ${per}; ${meta.types.length} types, ${meta.shards.length} shards, ${meta.countyCount} counties, ${(bytes / 1e6).toFixed(1)} MB`);

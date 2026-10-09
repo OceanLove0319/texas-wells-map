@@ -1,8 +1,8 @@
 {
   "name": "texas-wells-map",
-  "productName": "Texas Wells Map",
-  "version": "1.0.0",
-  "description": "Offline map of every Texas oil & gas well (RRC snapshot)",
+  "productName": "Texas and Oklahoma Wells Map",
+  "version": "1.1.0",
+  "description": "Offline map of every Texas and Oklahoma oil & gas well (RRC + OCC snapshots)",
   "author": "Ocean",
   "license": "UNLICENSED",
   "private": true,
@@ -31,7 +31,7 @@
   },
   "build": {
     "appId": "com.oceanlove.texaswellsmap",
-    "productName": "Texas Wells Map",
+    "productName": "Texas and Oklahoma Wells Map",
     "artifactName": "TexasWellsMap-${version}-${os}-${arch}.${ext}",
     "directories": {
       "output": "dist"
@@ -66,7 +66,7 @@
       "hardenedRuntime": false
     },
     "dmg": {
-      "title": "Texas Wells Map ${version}"
+      "title": "TX-OK Wells Map ${version}"
     },
     "win": {
       "target": [
