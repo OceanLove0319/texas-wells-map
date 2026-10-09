@@ -1,0 +1,2442 @@
+{
+ "app": "Texas Wells Map",
+ "snapshot": "2026-10-09",
+ "snapshotSource": "data/snapshot_report.md",
+ "builtAt": "2026-10-09T16:31:13.540Z",
+ "wellCount": 1397386,
+ "sourceRowCount": 1397386,
+ "unplottable": 0,
+ "bbox": [
+  -106.61454772486502,
+  25.85653014574505,
+  -93.52908945387375,
+  36.49896310637976
+ ],
+ "base": {
+  "key": "wells",
+  "file": "wells.csv",
+  "name": "Well Locations",
+  "fields": [
+   {
+    "name": "UNIQID",
+    "label": "Unique ID"
+   },
+   {
+    "name": "API",
+    "label": "API"
+   },
+   {
+    "name": "GIS_API5",
+    "label": "API (5-digit)"
+   },
+   {
+    "name": "GIS_WELL_NUMBER",
+    "label": "Well Number"
+   },
+   {
+    "name": "SYMNUM",
+    "label": "Symbol Number"
+   },
+   {
+    "name": "GIS_SYMBOL_DESCRIPTION",
+    "label": "Symbol Description"
+   },
+   {
+    "name": "RELIAB",
+    "label": "Location Reliability"
+   },
+   {
+    "name": "GIS_LOCATION_SOURCE",
+    "label": "Location Source"
+   },
+   {
+    "name": "GIS_LAT27",
+    "label": "Latitude (NAD27)"
+   },
+   {
+    "name": "GIS_LONG27",
+    "label": "Longitude (NAD27)"
+   },
+   {
+    "name": "GIS_LAT83",
+    "label": "Latitude (NAD83)"
+   },
+   {
+    "name": "GIS_LONG83",
+    "label": "Longitude (NAD83)"
+   },
+   {
+    "name": "OBJECTID",
+    "label": "Object ID"
+   },
+   {
+    "name": "lon_4326",
+    "label": "Longitude (WGS84)"
+   },
+   {
+    "name": "lat_4326",
+    "label": "Latitude (WGS84)"
+   }
+  ]
+ },
+ "types": [
+  {
+   "name": "Plugged Oil Well",
+   "count": 333006,
+   "color": [
+    31,
+    119,
+    180
+   ]
+  },
+  {
+   "name": "Oil Well",
+   "count": 315774,
+   "color": [
+    214,
+    39,
+    40
+   ]
+  },
+  {
+   "name": "Dry Hole",
+   "count": 295093,
+   "color": [
+    44,
+    160,
+    44
+   ]
+  },
+  {
+   "name": "Gas Well",
+   "count": 126333,
+   "color": [
+    255,
+    127,
+    14
+   ]
+  },
+  {
+   "name": "Permitted Location",
+   "count": 114062,
+   "color": [
+    148,
+    103,
+    189
+   ]
+  },
+  {
+   "name": "Plugged Gas Well",
+   "count": 68419,
+   "color": [
+    140,
+    86,
+    75
+   ]
+  },
+  {
+   "name": "Canceled / Abandoned Location",
+   "count": 44587,
+   "color": [
+    227,
+    119,
+    194
+   ]
+  },
+  {
+   "name": "Injection / Disposal from Oil",
+   "count": 24941,
+   "color": [
+    23,
+    190,
+    207
+   ]
+  },
+  {
+   "name": "Plugged Oil / Gas",
+   "count": 23492,
+   "color": [
+    188,
+    189,
+    34
+   ]
+  },
+  {
+   "name": "Oil/Gas Well",
+   "count": 23241,
+   "color": [
+    127,
+    127,
+    127
+   ]
+  },
+  {
+   "name": "Injection / Disposal",
+   "count": 15619,
+   "color": [
+    174,
+    199,
+    232
+   ]
+  },
+  {
+   "name": "Shut-In Oil",
+   "count": 5831,
+   "color": [
+    255,
+    152,
+    150
+   ]
+  },
+  {
+   "name": "Shut-In Gas",
+   "count": 2096,
+   "color": [
+    152,
+    223,
+    138
+   ]
+  },
+  {
+   "name": "Water Supply Well",
+   "count": 809,
+   "color": [
+    255,
+    187,
+    120
+   ]
+  },
+  {
+   "name": "Core Test",
+   "count": 763,
+   "color": [
+    197,
+    176,
+    213
+   ]
+  },
+  {
+   "name": "Injection / Disposal from Gas",
+   "count": 697,
+   "color": [
+    196,
+    156,
+    148
+   ]
+  },
+  {
+   "name": "Storage Well",
+   "count": 648,
+   "color": [
+    247,
+    182,
+    210
+   ]
+  },
+  {
+   "name": "Injection / Disposal from Oil/Gas",
+   "count": 613,
+   "color": [
+    158,
+    218,
+    229
+   ]
+  },
+  {
+   "name": "Water Supply from Oil",
+   "count": 385,
+   "color": [
+    219,
+    219,
+    141
+   ]
+  },
+  {
+   "name": "Observation from Oil",
+   "count": 197,
+   "color": [
+    57,
+    59,
+    121
+   ]
+  },
+  {
+   "name": "Observation Well",
+   "count": 150,
+   "color": [
+    99,
+    121,
+    57
+   ]
+  },
+  {
+   "name": "Observation from Oil / Gas",
+   "count": 114,
+   "color": [
+    140,
+    109,
+    49
+   ]
+  },
+  {
+   "name": "Storage from Gas",
+   "count": 105,
+   "color": [
+    132,
+    60,
+    57
+   ]
+  },
+  {
+   "name": "Brine Mining",
+   "count": 101,
+   "color": [
+    123,
+    65,
+    115
+   ]
+  },
+  {
+   "name": "Storage from Oil",
+   "count": 39,
+   "color": [
+    197,
+    198,
+    57
+   ]
+  },
+  {
+   "name": "Plugged Storage",
+   "count": 37,
+   "color": [
+    57,
+    156,
+    198
+   ]
+  },
+  {
+   "name": "Storage from Oil/Gas",
+   "count": 33,
+   "color": [
+    198,
+    57,
+    115
+   ]
+  },
+  {
+   "name": "Water Supply from Gas",
+   "count": 28,
+   "color": [
+    74,
+    198,
+    57
+   ]
+  },
+  {
+   "name": "Service",
+   "count": 27,
+   "color": [
+    81,
+    57,
+    198
+   ]
+  },
+  {
+   "name": "Water Supply from Oil/Gas",
+   "count": 26,
+   "color": [
+    198,
+    122,
+    57
+   ]
+  },
+  {
+   "name": "Plugged Brine Mining",
+   "count": 24,
+   "color": [
+    57,
+    198,
+    163
+   ]
+  },
+  {
+   "name": "Observation from Gas",
+   "count": 21,
+   "color": [
+    198,
+    57,
+    191
+   ]
+  },
+  {
+   "name": "Plugged Storage/Brine Mining",
+   "count": 15,
+   "color": [
+    150,
+    198,
+    57
+   ]
+  },
+  {
+   "name": "Injection/Disposal from Storage",
+   "count": 14,
+   "color": [
+    57,
+    109,
+    198
+   ]
+  },
+  {
+   "name": "Sulfur Core Test",
+   "count": 8,
+   "color": [
+    198,
+    57,
+    68
+   ]
+  },
+  {
+   "name": "Horizontal Drainhole",
+   "count": 4,
+   "color": [
+    57,
+    198,
+    87
+   ]
+  },
+  {
+   "name": "Injection/Disposal from Brine Mining",
+   "count": 4,
+   "color": [
+    128,
+    57,
+    198
+   ]
+  },
+  {
+   "name": "Injection/Disposal from Storage/Oil",
+   "count": 4,
+   "color": [
+    198,
+    169,
+    57
+   ]
+  },
+  {
+   "name": "Geothermal Well",
+   "count": 3,
+   "color": [
+    57,
+    185,
+    198
+   ]
+  },
+  {
+   "name": "Injection/Disposal from Storage/Gas",
+   "count": 3,
+   "color": [
+    198,
+    57,
+    144
+   ]
+  },
+  {
+   "name": "Storage/Brine Mining",
+   "count": 3,
+   "color": [
+    103,
+    198,
+    57
+   ]
+  },
+  {
+   "name": "Injection/Disposal from Storage/Brine Mining",
+   "count": 2,
+   "color": [
+    57,
+    62,
+    198
+   ]
+  },
+  {
+   "name": "Service from Oil",
+   "count": 2,
+   "color": [
+    198,
+    93,
+    57
+   ]
+  },
+  {
+   "name": "Observation from Storage",
+   "count": 2,
+   "color": [
+    57,
+    198,
+    134
+   ]
+  },
+  {
+   "name": "Observation from Storage/Gas",
+   "count": 2,
+   "color": [
+    175,
+    57,
+    198
+   ]
+  },
+  {
+   "name": "Plugged Storage/Gas",
+   "count": 2,
+   "color": [
+    179,
+    198,
+    57
+   ]
+  },
+  {
+   "name": "Observation from Storage/Brine Mining",
+   "count": 1,
+   "color": [
+    57,
+    138,
+    198
+   ]
+  },
+  {
+   "name": "Service from Oil / Gas",
+   "count": 1,
+   "color": [
+    198,
+    57,
+    97
+   ]
+  },
+  {
+   "name": "Service from Gas",
+   "count": 1,
+   "color": [
+    57,
+    198,
+    58
+   ]
+  },
+  {
+   "name": "Injection/Disposal from Brine Mining / Gas",
+   "count": 1,
+   "color": [
+    99,
+    57,
+    198
+   ]
+  },
+  {
+   "name": "Plugged Storage/Oil",
+   "count": 1,
+   "color": [
+    198,
+    140,
+    57
+   ]
+  },
+  {
+   "name": "Service from Storage/Gas",
+   "count": 1,
+   "color": [
+    57,
+    198,
+    181
+   ]
+  },
+  {
+   "name": "Plugged Storage/Brine Mining / Oil",
+   "count": 1,
+   "color": [
+    198,
+    57,
+    173
+   ]
+  }
+ ],
+ "layers": [
+  {
+   "key": "commercial_disposal",
+   "file": "commercial_disposal.csv",
+   "name": "Commercial Disposal",
+   "joinOn": "OBJECTID",
+   "fields": [
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 1908,
+   "matchedRows": 1908,
+   "unmatchedRows": 0,
+   "countyOnlyApiRows": 0,
+   "wellsWithRecords": 1908
+  },
+  {
+   "key": "eor_h13_oil_wells",
+   "file": "eor_h13_oil_wells.csv",
+   "name": "EOR H13 Oil Wells",
+   "joinOn": "OBJECTID",
+   "fields": [
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 22656,
+   "matchedRows": 22656,
+   "unmatchedRows": 0,
+   "countyOnlyApiRows": 0,
+   "wellsWithRecords": 22656
+  },
+  {
+   "key": "hcts_deeper_15000ft",
+   "file": "hcts_deeper_15000ft.csv",
+   "name": "HCTS Deeper than 15,000 ft.",
+   "joinOn": "OBJECTID",
+   "fields": [
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 943,
+   "matchedRows": 943,
+   "unmatchedRows": 0,
+   "countyOnlyApiRows": 0,
+   "wellsWithRecords": 943
+  },
+  {
+   "key": "high_cost_tight_sands",
+   "file": "high_cost_tight_sands.csv",
+   "name": "High Cost Tight Sands",
+   "joinOn": "OBJECTID",
+   "fields": [
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 98645,
+   "matchedRows": 98645,
+   "unmatchedRows": 0,
+   "countyOnlyApiRows": 0,
+   "wellsWithRecords": 98645
+  },
+  {
+   "key": "horiz_dir_surface_locations",
+   "file": "horiz_dir_surface_locations.csv",
+   "name": "Horiz/Dir Surface Locations",
+   "joinOn": "API (8-digit)",
+   "fields": [
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "GIS_SYMBOL_DESCRIPTION",
+     "label": "Symbol Description"
+    },
+    {
+     "name": "GIS_LOCATION_SOURCE",
+     "label": "Location Source"
+    },
+    {
+     "name": "GIS_LAT27",
+     "label": "Latitude (NAD27)"
+    },
+    {
+     "name": "GIS_LONG27",
+     "label": "Longitude (NAD27)"
+    },
+    {
+     "name": "GIS_LAT83",
+     "label": "Latitude (NAD83)"
+    },
+    {
+     "name": "GIS_LONG83",
+     "label": "Longitude (NAD83)"
+    },
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 171799,
+   "matchedRows": 171035,
+   "unmatchedRows": 764,
+   "countyOnlyApiRows": 743,
+   "wellsWithRecords": 187775
+  },
+  {
+   "key": "injection_disposal",
+   "file": "injection_disposal.csv",
+   "name": "Injection/Disposal",
+   "joinOn": "OBJECTID",
+   "fields": [
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 46828,
+   "matchedRows": 46828,
+   "unmatchedRows": 0,
+   "countyOnlyApiRows": 0,
+   "wellsWithRecords": 46828
+  },
+  {
+   "key": "orphan_wells",
+   "file": "orphan_wells.csv",
+   "name": "Orphan Wells",
+   "joinOn": "OBJECTID",
+   "fields": [
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 12239,
+   "matchedRows": 12239,
+   "unmatchedRows": 0,
+   "countyOnlyApiRows": 0,
+   "wellsWithRecords": 12239
+  },
+  {
+   "key": "well_logs",
+   "file": "well_logs.csv",
+   "name": "Well Logs",
+   "joinOn": "API (8-digit)",
+   "fields": [
+    {
+     "name": "API",
+     "label": "API"
+    },
+    {
+     "name": "OBJECTID",
+     "label": "Object ID"
+    },
+    {
+     "name": "lon_4326",
+     "label": "Longitude (WGS84)"
+    },
+    {
+     "name": "lat_4326",
+     "label": "Latitude (WGS84)"
+    }
+   ],
+   "rows": 237913,
+   "matchedRows": 237913,
+   "unmatchedRows": 0,
+   "countyOnlyApiRows": 0,
+   "wellsWithRecords": 167128
+  }
+ ],
+ "shards": [
+  {
+   "key": "001",
+   "start": 0,
+   "count": 5445,
+   "file": "shards/001.json.br"
+  },
+  {
+   "key": "003",
+   "start": 5445,
+   "count": 27996,
+   "file": "shards/003.json.br"
+  },
+  {
+   "key": "005",
+   "start": 33441,
+   "count": 676,
+   "file": "shards/005.json.br"
+  },
+  {
+   "key": "007",
+   "start": 34117,
+   "count": 1511,
+   "file": "shards/007.json.br"
+  },
+  {
+   "key": "009",
+   "start": 35628,
+   "count": 40128,
+   "file": "shards/009.json.br"
+  },
+  {
+   "key": "011",
+   "start": 75756,
+   "count": 44,
+   "file": "shards/011.json.br"
+  },
+  {
+   "key": "013",
+   "start": 75800,
+   "count": 9023,
+   "file": "shards/013.json.br"
+  },
+  {
+   "key": "015",
+   "start": 84823,
+   "count": 1869,
+   "file": "shards/015.json.br"
+  },
+  {
+   "key": "017",
+   "start": 86692,
+   "count": 47,
+   "file": "shards/017.json.br"
+  },
+  {
+   "key": "019",
+   "start": 86739,
+   "count": 56,
+   "file": "shards/019.json.br"
+  },
+  {
+   "key": "021",
+   "start": 86795,
+   "count": 2535,
+   "file": "shards/021.json.br"
+  },
+  {
+   "key": "023",
+   "start": 89330,
+   "count": 5096,
+   "file": "shards/023.json.br"
+  },
+  {
+   "key": "025",
+   "start": 94426,
+   "count": 6159,
+   "file": "shards/025.json.br"
+  },
+  {
+   "key": "027",
+   "start": 100585,
+   "count": 90,
+   "file": "shards/027.json.br"
+  },
+  {
+   "key": "029",
+   "start": 100675,
+   "count": 12249,
+   "file": "shards/029.json.br"
+  },
+  {
+   "key": "031",
+   "start": 112924,
+   "count": 17,
+   "file": "shards/031.json.br"
+  },
+  {
+   "key": "033",
+   "start": 112941,
+   "count": 4086,
+   "file": "shards/033.json.br"
+  },
+  {
+   "key": "035",
+   "start": 117027,
+   "count": 97,
+   "file": "shards/035.json.br"
+  },
+  {
+   "key": "037",
+   "start": 117124,
+   "count": 438,
+   "file": "shards/037.json.br"
+  },
+  {
+   "key": "039",
+   "start": 117562,
+   "count": 8047,
+   "file": "shards/039.json.br"
+  },
+  {
+   "key": "041",
+   "start": 125609,
+   "count": 3224,
+   "file": "shards/041.json.br"
+  },
+  {
+   "key": "043",
+   "start": 128833,
+   "count": 104,
+   "file": "shards/043.json.br"
+  },
+  {
+   "key": "044",
+   "start": 128937,
+   "count": 1,
+   "file": "shards/044.json.br"
+  },
+  {
+   "key": "045",
+   "start": 128938,
+   "count": 303,
+   "file": "shards/045.json.br"
+  },
+  {
+   "key": "047",
+   "start": 129241,
+   "count": 3798,
+   "file": "shards/047.json.br"
+  },
+  {
+   "key": "049",
+   "start": 133039,
+   "count": 12936,
+   "file": "shards/049.json.br"
+  },
+  {
+   "key": "051",
+   "start": 145975,
+   "count": 5210,
+   "file": "shards/051.json.br"
+  },
+  {
+   "key": "053",
+   "start": 151185,
+   "count": 19,
+   "file": "shards/053.json.br"
+  },
+  {
+   "key": "055",
+   "start": 151204,
+   "count": 10655,
+   "file": "shards/055.json.br"
+  },
+  {
+   "key": "057",
+   "start": 161859,
+   "count": 2697,
+   "file": "shards/057.json.br"
+  },
+  {
+   "key": "059",
+   "start": 164556,
+   "count": 17561,
+   "file": "shards/059.json.br"
+  },
+  {
+   "key": "061",
+   "start": 182117,
+   "count": 460,
+   "file": "shards/061.json.br"
+  },
+  {
+   "key": "063",
+   "start": 182577,
+   "count": 410,
+   "file": "shards/063.json.br"
+  },
+  {
+   "key": "065",
+   "start": 182987,
+   "count": 5252,
+   "file": "shards/065.json.br"
+  },
+  {
+   "key": "067",
+   "start": 188239,
+   "count": 1909,
+   "file": "shards/067.json.br"
+  },
+  {
+   "key": "069",
+   "start": 190148,
+   "count": 31,
+   "file": "shards/069.json.br"
+  },
+  {
+   "key": "071",
+   "start": 190179,
+   "count": 5974,
+   "file": "shards/071.json.br"
+  },
+  {
+   "key": "073",
+   "start": 196153,
+   "count": 2626,
+   "file": "shards/073.json.br"
+  },
+  {
+   "key": "075",
+   "start": 198779,
+   "count": 181,
+   "file": "shards/075.json.br"
+  },
+  {
+   "key": "077",
+   "start": 198960,
+   "count": 12652,
+   "file": "shards/077.json.br"
+  },
+  {
+   "key": "079",
+   "start": 211612,
+   "count": 6162,
+   "file": "shards/079.json.br"
+  },
+  {
+   "key": "081",
+   "start": 217774,
+   "count": 3614,
+   "file": "shards/081.json.br"
+  },
+  {
+   "key": "083",
+   "start": 221388,
+   "count": 12910,
+   "file": "shards/083.json.br"
+  },
+  {
+   "key": "085",
+   "start": 234298,
+   "count": 66,
+   "file": "shards/085.json.br"
+  },
+  {
+   "key": "087",
+   "start": 234364,
+   "count": 858,
+   "file": "shards/087.json.br"
+  },
+  {
+   "key": "089",
+   "start": 235222,
+   "count": 3496,
+   "file": "shards/089.json.br"
+  },
+  {
+   "key": "091",
+   "start": 238718,
+   "count": 8,
+   "file": "shards/091.json.br"
+  },
+  {
+   "key": "093",
+   "start": 238726,
+   "count": 2730,
+   "file": "shards/093.json.br"
+  },
+  {
+   "key": "095",
+   "start": 241456,
+   "count": 2706,
+   "file": "shards/095.json.br"
+  },
+  {
+   "key": "097",
+   "start": 244162,
+   "count": 13003,
+   "file": "shards/097.json.br"
+  },
+  {
+   "key": "099",
+   "start": 257165,
+   "count": 72,
+   "file": "shards/099.json.br"
+  },
+  {
+   "key": "101",
+   "start": 257237,
+   "count": 787,
+   "file": "shards/101.json.br"
+  },
+  {
+   "key": "103",
+   "start": 258024,
+   "count": 14711,
+   "file": "shards/103.json.br"
+  },
+  {
+   "key": "105",
+   "start": 272735,
+   "count": 16488,
+   "file": "shards/105.json.br"
+  },
+  {
+   "key": "107",
+   "start": 289223,
+   "count": 2048,
+   "file": "shards/107.json.br"
+  },
+  {
+   "key": "109",
+   "start": 291271,
+   "count": 3439,
+   "file": "shards/109.json.br"
+  },
+  {
+   "key": "111",
+   "start": 294710,
+   "count": 122,
+   "file": "shards/111.json.br"
+  },
+  {
+   "key": "113",
+   "start": 294832,
+   "count": 226,
+   "file": "shards/113.json.br"
+  },
+  {
+   "key": "115",
+   "start": 295058,
+   "count": 5172,
+   "file": "shards/115.json.br"
+  },
+  {
+   "key": "117",
+   "start": 300230,
+   "count": 39,
+   "file": "shards/117.json.br"
+  },
+  {
+   "key": "119",
+   "start": 300269,
+   "count": 80,
+   "file": "shards/119.json.br"
+  },
+  {
+   "key": "121",
+   "start": 300349,
+   "count": 5201,
+   "file": "shards/121.json.br"
+  },
+  {
+   "key": "123",
+   "start": 305550,
+   "count": 6354,
+   "file": "shards/123.json.br"
+  },
+  {
+   "key": "125",
+   "start": 311904,
+   "count": 1401,
+   "file": "shards/125.json.br"
+  },
+  {
+   "key": "127",
+   "start": 313305,
+   "count": 9845,
+   "file": "shards/127.json.br"
+  },
+  {
+   "key": "129",
+   "start": 323150,
+   "count": 88,
+   "file": "shards/129.json.br"
+  },
+  {
+   "key": "131",
+   "start": 323238,
+   "count": 17186,
+   "file": "shards/131.json.br"
+  },
+  {
+   "key": "133",
+   "start": 340424,
+   "count": 13743,
+   "file": "shards/133.json.br"
+  },
+  {
+   "key": "135",
+   "start": 354167,
+   "count": 24288,
+   "file": "shards/135.json.br"
+  },
+  {
+   "key": "137",
+   "start": 378455,
+   "count": 2287,
+   "file": "shards/137.json.br"
+  },
+  {
+   "key": "139",
+   "start": 380742,
+   "count": 961,
+   "file": "shards/139.json.br"
+  },
+  {
+   "key": "141",
+   "start": 381703,
+   "count": 24,
+   "file": "shards/141.json.br"
+  },
+  {
+   "key": "143",
+   "start": 381727,
+   "count": 1683,
+   "file": "shards/143.json.br"
+  },
+  {
+   "key": "145",
+   "start": 383410,
+   "count": 1235,
+   "file": "shards/145.json.br"
+  },
+  {
+   "key": "147",
+   "start": 384645,
+   "count": 100,
+   "file": "shards/147.json.br"
+  },
+  {
+   "key": "149",
+   "start": 384745,
+   "count": 4568,
+   "file": "shards/149.json.br"
+  },
+  {
+   "key": "151",
+   "start": 389313,
+   "count": 5423,
+   "file": "shards/151.json.br"
+  },
+  {
+   "key": "153",
+   "start": 394736,
+   "count": 107,
+   "file": "shards/153.json.br"
+  },
+  {
+   "key": "155",
+   "start": 394843,
+   "count": 1220,
+   "file": "shards/155.json.br"
+  },
+  {
+   "key": "157",
+   "start": 396063,
+   "count": 5843,
+   "file": "shards/157.json.br"
+  },
+  {
+   "key": "159",
+   "start": 401906,
+   "count": 1206,
+   "file": "shards/159.json.br"
+  },
+  {
+   "key": "161",
+   "start": 403112,
+   "count": 5486,
+   "file": "shards/161.json.br"
+  },
+  {
+   "key": "163",
+   "start": 408598,
+   "count": 5934,
+   "file": "shards/163.json.br"
+  },
+  {
+   "key": "165",
+   "start": 414532,
+   "count": 12708,
+   "file": "shards/165.json.br"
+  },
+  {
+   "key": "167",
+   "start": 427240,
+   "count": 3415,
+   "file": "shards/167.json.br"
+  },
+  {
+   "key": "169",
+   "start": 430655,
+   "count": 6438,
+   "file": "shards/169.json.br"
+  },
+  {
+   "key": "171",
+   "start": 437093,
+   "count": 12,
+   "file": "shards/171.json.br"
+  },
+  {
+   "key": "173",
+   "start": 437105,
+   "count": 10542,
+   "file": "shards/173.json.br"
+  },
+  {
+   "key": "175",
+   "start": 447647,
+   "count": 5866,
+   "file": "shards/175.json.br"
+  },
+  {
+   "key": "177",
+   "start": 453513,
+   "count": 5176,
+   "file": "shards/177.json.br"
+  },
+  {
+   "key": "179",
+   "start": 458689,
+   "count": 9180,
+   "file": "shards/179.json.br"
+  },
+  {
+   "key": "181",
+   "start": 467869,
+   "count": 3423,
+   "file": "shards/181.json.br"
+  },
+  {
+   "key": "183",
+   "start": 471292,
+   "count": 16929,
+   "file": "shards/183.json.br"
+  },
+  {
+   "key": "185",
+   "start": 488221,
+   "count": 1138,
+   "file": "shards/185.json.br"
+  },
+  {
+   "key": "187",
+   "start": 489359,
+   "count": 7365,
+   "file": "shards/187.json.br"
+  },
+  {
+   "key": "189",
+   "start": 496724,
+   "count": 631,
+   "file": "shards/189.json.br"
+  },
+  {
+   "key": "191",
+   "start": 497355,
+   "count": 76,
+   "file": "shards/191.json.br"
+  },
+  {
+   "key": "193",
+   "start": 497431,
+   "count": 242,
+   "file": "shards/193.json.br"
+  },
+  {
+   "key": "195",
+   "start": 497673,
+   "count": 2835,
+   "file": "shards/195.json.br"
+  },
+  {
+   "key": "197",
+   "start": 500508,
+   "count": 2024,
+   "file": "shards/197.json.br"
+  },
+  {
+   "key": "199",
+   "start": 502532,
+   "count": 8957,
+   "file": "shards/199.json.br"
+  },
+  {
+   "key": "201",
+   "start": 511489,
+   "count": 12858,
+   "file": "shards/201.json.br"
+  },
+  {
+   "key": "203",
+   "start": 524347,
+   "count": 7833,
+   "file": "shards/203.json.br"
+  },
+  {
+   "key": "205",
+   "start": 532180,
+   "count": 561,
+   "file": "shards/205.json.br"
+  },
+  {
+   "key": "207",
+   "start": 532741,
+   "count": 5162,
+   "file": "shards/207.json.br"
+  },
+  {
+   "key": "209",
+   "start": 537903,
+   "count": 24,
+   "file": "shards/209.json.br"
+  },
+  {
+   "key": "211",
+   "start": 537927,
+   "count": 5700,
+   "file": "shards/211.json.br"
+  },
+  {
+   "key": "213",
+   "start": 543627,
+   "count": 1859,
+   "file": "shards/213.json.br"
+  },
+  {
+   "key": "215",
+   "start": 545486,
+   "count": 5883,
+   "file": "shards/215.json.br"
+  },
+  {
+   "key": "217",
+   "start": 551369,
+   "count": 673,
+   "file": "shards/217.json.br"
+  },
+  {
+   "key": "219",
+   "start": 552042,
+   "count": 11237,
+   "file": "shards/219.json.br"
+  },
+  {
+   "key": "221",
+   "start": 563279,
+   "count": 1851,
+   "file": "shards/221.json.br"
+  },
+  {
+   "key": "223",
+   "start": 565130,
+   "count": 926,
+   "file": "shards/223.json.br"
+  },
+  {
+   "key": "225",
+   "start": 566056,
+   "count": 2012,
+   "file": "shards/225.json.br"
+  },
+  {
+   "key": "227",
+   "start": 568068,
+   "count": 17665,
+   "file": "shards/227.json.br"
+  },
+  {
+   "key": "229",
+   "start": 585733,
+   "count": 149,
+   "file": "shards/229.json.br"
+  },
+  {
+   "key": "231",
+   "start": 585882,
+   "count": 361,
+   "file": "shards/231.json.br"
+  },
+  {
+   "key": "233",
+   "start": 586243,
+   "count": 12989,
+   "file": "shards/233.json.br"
+  },
+  {
+   "key": "235",
+   "start": 599232,
+   "count": 7176,
+   "file": "shards/235.json.br"
+  },
+  {
+   "key": "237",
+   "start": 606408,
+   "count": 18412,
+   "file": "shards/237.json.br"
+  },
+  {
+   "key": "239",
+   "start": 624820,
+   "count": 7547,
+   "file": "shards/239.json.br"
+  },
+  {
+   "key": "241",
+   "start": 632367,
+   "count": 1299,
+   "file": "shards/241.json.br"
+  },
+  {
+   "key": "243",
+   "start": 633666,
+   "count": 48,
+   "file": "shards/243.json.br"
+  },
+  {
+   "key": "245",
+   "start": 633714,
+   "count": 5575,
+   "file": "shards/245.json.br"
+  },
+  {
+   "key": "247",
+   "start": 639289,
+   "count": 4287,
+   "file": "shards/247.json.br"
+  },
+  {
+   "key": "249",
+   "start": 643576,
+   "count": 6235,
+   "file": "shards/249.json.br"
+  },
+  {
+   "key": "251",
+   "start": 649811,
+   "count": 4509,
+   "file": "shards/251.json.br"
+  },
+  {
+   "key": "253",
+   "start": 654320,
+   "count": 12744,
+   "file": "shards/253.json.br"
+  },
+  {
+   "key": "255",
+   "start": 667064,
+   "count": 9193,
+   "file": "shards/255.json.br"
+  },
+  {
+   "key": "257",
+   "start": 676257,
+   "count": 758,
+   "file": "shards/257.json.br"
+  },
+  {
+   "key": "259",
+   "start": 677015,
+   "count": 40,
+   "file": "shards/259.json.br"
+  },
+  {
+   "key": "261",
+   "start": 677055,
+   "count": 1955,
+   "file": "shards/261.json.br"
+  },
+  {
+   "key": "263",
+   "start": 679010,
+   "count": 2995,
+   "file": "shards/263.json.br"
+  },
+  {
+   "key": "265",
+   "start": 682005,
+   "count": 100,
+   "file": "shards/265.json.br"
+  },
+  {
+   "key": "267",
+   "start": 682105,
+   "count": 463,
+   "file": "shards/267.json.br"
+  },
+  {
+   "key": "269",
+   "start": 682568,
+   "count": 3184,
+   "file": "shards/269.json.br"
+  },
+  {
+   "key": "271",
+   "start": 685752,
+   "count": 150,
+   "file": "shards/271.json.br"
+  },
+  {
+   "key": "273",
+   "start": 685902,
+   "count": 4181,
+   "file": "shards/273.json.br"
+  },
+  {
+   "key": "275",
+   "start": 690083,
+   "count": 4770,
+   "file": "shards/275.json.br"
+  },
+  {
+   "key": "277",
+   "start": 694853,
+   "count": 109,
+   "file": "shards/277.json.br"
+  },
+  {
+   "key": "279",
+   "start": 694962,
+   "count": 613,
+   "file": "shards/279.json.br"
+  },
+  {
+   "key": "281",
+   "start": 695575,
+   "count": 95,
+   "file": "shards/281.json.br"
+  },
+  {
+   "key": "283",
+   "start": 695670,
+   "count": 8376,
+   "file": "shards/283.json.br"
+  },
+  {
+   "key": "285",
+   "start": 704046,
+   "count": 4386,
+   "file": "shards/285.json.br"
+  },
+  {
+   "key": "287",
+   "start": 708432,
+   "count": 3459,
+   "file": "shards/287.json.br"
+  },
+  {
+   "key": "289",
+   "start": 711891,
+   "count": 2622,
+   "file": "shards/289.json.br"
+  },
+  {
+   "key": "291",
+   "start": 714513,
+   "count": 8703,
+   "file": "shards/291.json.br"
+  },
+  {
+   "key": "293",
+   "start": 723216,
+   "count": 3607,
+   "file": "shards/293.json.br"
+  },
+  {
+   "key": "295",
+   "start": 726823,
+   "count": 5110,
+   "file": "shards/295.json.br"
+  },
+  {
+   "key": "297",
+   "start": 731933,
+   "count": 7375,
+   "file": "shards/297.json.br"
+  },
+  {
+   "key": "299",
+   "start": 739308,
+   "count": 1,
+   "file": "shards/299.json.br"
+  },
+  {
+   "key": "301",
+   "start": 739309,
+   "count": 9178,
+   "file": "shards/301.json.br"
+  },
+  {
+   "key": "303",
+   "start": 748487,
+   "count": 1662,
+   "file": "shards/303.json.br"
+  },
+  {
+   "key": "305",
+   "start": 750149,
+   "count": 738,
+   "file": "shards/305.json.br"
+  },
+  {
+   "key": "307",
+   "start": 750887,
+   "count": 1309,
+   "file": "shards/307.json.br"
+  },
+  {
+   "key": "309",
+   "start": 752196,
+   "count": 458,
+   "file": "shards/309.json.br"
+  },
+  {
+   "key": "311",
+   "start": 752654,
+   "count": 9083,
+   "file": "shards/311.json.br"
+  },
+  {
+   "key": "313",
+   "start": 761737,
+   "count": 1601,
+   "file": "shards/313.json.br"
+  },
+  {
+   "key": "315",
+   "start": 763338,
+   "count": 2139,
+   "file": "shards/315.json.br"
+  },
+  {
+   "key": "317",
+   "start": 765477,
+   "count": 17591,
+   "file": "shards/317.json.br"
+  },
+  {
+   "key": "319",
+   "start": 783068,
+   "count": 4,
+   "file": "shards/319.json.br"
+  },
+  {
+   "key": "321",
+   "start": 783072,
+   "count": 4994,
+   "file": "shards/321.json.br"
+  },
+  {
+   "key": "323",
+   "start": 788066,
+   "count": 4724,
+   "file": "shards/323.json.br"
+  },
+  {
+   "key": "325",
+   "start": 792790,
+   "count": 5832,
+   "file": "shards/325.json.br"
+  },
+  {
+   "key": "327",
+   "start": 798622,
+   "count": 1411,
+   "file": "shards/327.json.br"
+  },
+  {
+   "key": "329",
+   "start": 800033,
+   "count": 20711,
+   "file": "shards/329.json.br"
+  },
+  {
+   "key": "331",
+   "start": 820744,
+   "count": 6502,
+   "file": "shards/331.json.br"
+  },
+  {
+   "key": "333",
+   "start": 827246,
+   "count": 97,
+   "file": "shards/333.json.br"
+  },
+  {
+   "key": "335",
+   "start": 827343,
+   "count": 7994,
+   "file": "shards/335.json.br"
+  },
+  {
+   "key": "337",
+   "start": 835337,
+   "count": 11384,
+   "file": "shards/337.json.br"
+  },
+  {
+   "key": "339",
+   "start": 846721,
+   "count": 2873,
+   "file": "shards/339.json.br"
+  },
+  {
+   "key": "341",
+   "start": 849594,
+   "count": 5309,
+   "file": "shards/341.json.br"
+  },
+  {
+   "key": "343",
+   "start": 854903,
+   "count": 115,
+   "file": "shards/343.json.br"
+  },
+  {
+   "key": "345",
+   "start": 855018,
+   "count": 311,
+   "file": "shards/345.json.br"
+  },
+  {
+   "key": "347",
+   "start": 855329,
+   "count": 3668,
+   "file": "shards/347.json.br"
+  },
+  {
+   "key": "349",
+   "start": 858997,
+   "count": 11688,
+   "file": "shards/349.json.br"
+  },
+  {
+   "key": "351",
+   "start": 870685,
+   "count": 1456,
+   "file": "shards/351.json.br"
+  },
+  {
+   "key": "353",
+   "start": 872141,
+   "count": 5358,
+   "file": "shards/353.json.br"
+  },
+  {
+   "key": "355",
+   "start": 877499,
+   "count": 10406,
+   "file": "shards/355.json.br"
+  },
+  {
+   "key": "357",
+   "start": 887905,
+   "count": 5031,
+   "file": "shards/357.json.br"
+  },
+  {
+   "key": "359",
+   "start": 892936,
+   "count": 434,
+   "file": "shards/359.json.br"
+  },
+  {
+   "key": "361",
+   "start": 893370,
+   "count": 2447,
+   "file": "shards/361.json.br"
+  },
+  {
+   "key": "363",
+   "start": 895817,
+   "count": 8485,
+   "file": "shards/363.json.br"
+  },
+  {
+   "key": "365",
+   "start": 904302,
+   "count": 10703,
+   "file": "shards/365.json.br"
+  },
+  {
+   "key": "367",
+   "start": 915005,
+   "count": 5761,
+   "file": "shards/367.json.br"
+  },
+  {
+   "key": "369",
+   "start": 920766,
+   "count": 20,
+   "file": "shards/369.json.br"
+  },
+  {
+   "key": "371",
+   "start": 920786,
+   "count": 19950,
+   "file": "shards/371.json.br"
+  },
+  {
+   "key": "373",
+   "start": 940736,
+   "count": 2002,
+   "file": "shards/373.json.br"
+  },
+  {
+   "key": "375",
+   "start": 942738,
+   "count": 2539,
+   "file": "shards/375.json.br"
+  },
+  {
+   "key": "377",
+   "start": 945277,
+   "count": 450,
+   "file": "shards/377.json.br"
+  },
+  {
+   "key": "379",
+   "start": 945727,
+   "count": 158,
+   "file": "shards/379.json.br"
+  },
+  {
+   "key": "381",
+   "start": 945885,
+   "count": 78,
+   "file": "shards/381.json.br"
+  },
+  {
+   "key": "383",
+   "start": 945963,
+   "count": 15198,
+   "file": "shards/383.json.br"
+  },
+  {
+   "key": "385",
+   "start": 961161,
+   "count": 78,
+   "file": "shards/385.json.br"
+  },
+  {
+   "key": "387",
+   "start": 961239,
+   "count": 788,
+   "file": "shards/387.json.br"
+  },
+  {
+   "key": "389",
+   "start": 962027,
+   "count": 13462,
+   "file": "shards/389.json.br"
+  },
+  {
+   "key": "391",
+   "start": 975489,
+   "count": 6845,
+   "file": "shards/391.json.br"
+  },
+  {
+   "key": "393",
+   "start": 982334,
+   "count": 3045,
+   "file": "shards/393.json.br"
+  },
+  {
+   "key": "395",
+   "start": 985379,
+   "count": 2576,
+   "file": "shards/395.json.br"
+  },
+  {
+   "key": "397",
+   "start": 987955,
+   "count": 15,
+   "file": "shards/397.json.br"
+  },
+  {
+   "key": "399",
+   "start": 987970,
+   "count": 9948,
+   "file": "shards/399.json.br"
+  },
+  {
+   "key": "401",
+   "start": 997918,
+   "count": 17738,
+   "file": "shards/401.json.br"
+  },
+  {
+   "key": "403",
+   "start": 1015656,
+   "count": 401,
+   "file": "shards/403.json.br"
+  },
+  {
+   "key": "405",
+   "start": 1016057,
+   "count": 966,
+   "file": "shards/405.json.br"
+  },
+  {
+   "key": "407",
+   "start": 1017023,
+   "count": 768,
+   "file": "shards/407.json.br"
+  },
+  {
+   "key": "409",
+   "start": 1017791,
+   "count": 6965,
+   "file": "shards/409.json.br"
+  },
+  {
+   "key": "411",
+   "start": 1024756,
+   "count": 85,
+   "file": "shards/411.json.br"
+  },
+  {
+   "key": "413",
+   "start": 1024841,
+   "count": 4045,
+   "file": "shards/413.json.br"
+  },
+  {
+   "key": "415",
+   "start": 1028886,
+   "count": 10771,
+   "file": "shards/415.json.br"
+  },
+  {
+   "key": "417",
+   "start": 1039657,
+   "count": 22964,
+   "file": "shards/417.json.br"
+  },
+  {
+   "key": "419",
+   "start": 1062621,
+   "count": 2439,
+   "file": "shards/419.json.br"
+  },
+  {
+   "key": "421",
+   "start": 1065060,
+   "count": 2026,
+   "file": "shards/421.json.br"
+  },
+  {
+   "key": "423",
+   "start": 1067086,
+   "count": 5115,
+   "file": "shards/423.json.br"
+  },
+  {
+   "key": "425",
+   "start": 1072201,
+   "count": 223,
+   "file": "shards/425.json.br"
+  },
+  {
+   "key": "427",
+   "start": 1072424,
+   "count": 9242,
+   "file": "shards/427.json.br"
+  },
+  {
+   "key": "429",
+   "start": 1081666,
+   "count": 14446,
+   "file": "shards/429.json.br"
+  },
+  {
+   "key": "431",
+   "start": 1096112,
+   "count": 4122,
+   "file": "shards/431.json.br"
+  },
+  {
+   "key": "433",
+   "start": 1100234,
+   "count": 6263,
+   "file": "shards/433.json.br"
+  },
+  {
+   "key": "435",
+   "start": 1106497,
+   "count": 9182,
+   "file": "shards/435.json.br"
+  },
+  {
+   "key": "437",
+   "start": 1115679,
+   "count": 59,
+   "file": "shards/437.json.br"
+  },
+  {
+   "key": "439",
+   "start": 1115738,
+   "count": 7190,
+   "file": "shards/439.json.br"
+  },
+  {
+   "key": "441",
+   "start": 1122928,
+   "count": 9216,
+   "file": "shards/441.json.br"
+  },
+  {
+   "key": "443",
+   "start": 1132144,
+   "count": 1423,
+   "file": "shards/443.json.br"
+  },
+  {
+   "key": "445",
+   "start": 1133567,
+   "count": 3206,
+   "file": "shards/445.json.br"
+  },
+  {
+   "key": "447",
+   "start": 1136773,
+   "count": 12372,
+   "file": "shards/447.json.br"
+  },
+  {
+   "key": "449",
+   "start": 1149145,
+   "count": 1659,
+   "file": "shards/449.json.br"
+  },
+  {
+   "key": "451",
+   "start": 1150804,
+   "count": 4343,
+   "file": "shards/451.json.br"
+  },
+  {
+   "key": "453",
+   "start": 1155147,
+   "count": 799,
+   "file": "shards/453.json.br"
+  },
+  {
+   "key": "455",
+   "start": 1155946,
+   "count": 359,
+   "file": "shards/455.json.br"
+  },
+  {
+   "key": "457",
+   "start": 1156305,
+   "count": 1536,
+   "file": "shards/457.json.br"
+  },
+  {
+   "key": "459",
+   "start": 1157841,
+   "count": 4101,
+   "file": "shards/459.json.br"
+  },
+  {
+   "key": "461",
+   "start": 1161942,
+   "count": 18326,
+   "file": "shards/461.json.br"
+  },
+  {
+   "key": "463",
+   "start": 1180268,
+   "count": 149,
+   "file": "shards/463.json.br"
+  },
+  {
+   "key": "465",
+   "start": 1180417,
+   "count": 874,
+   "file": "shards/465.json.br"
+  },
+  {
+   "key": "467",
+   "start": 1181291,
+   "count": 2200,
+   "file": "shards/467.json.br"
+  },
+  {
+   "key": "469",
+   "start": 1183491,
+   "count": 7206,
+   "file": "shards/469.json.br"
+  },
+  {
+   "key": "471",
+   "start": 1190697,
+   "count": 477,
+   "file": "shards/471.json.br"
+  },
+  {
+   "key": "473",
+   "start": 1191174,
+   "count": 1393,
+   "file": "shards/473.json.br"
+  },
+  {
+   "key": "475",
+   "start": 1192567,
+   "count": 14922,
+   "file": "shards/475.json.br"
+  },
+  {
+   "key": "477",
+   "start": 1207489,
+   "count": 1947,
+   "file": "shards/477.json.br"
+  },
+  {
+   "key": "479",
+   "start": 1209436,
+   "count": 20416,
+   "file": "shards/479.json.br"
+  },
+  {
+   "key": "481",
+   "start": 1229852,
+   "count": 9248,
+   "file": "shards/481.json.br"
+  },
+  {
+   "key": "483",
+   "start": 1239100,
+   "count": 5928,
+   "file": "shards/483.json.br"
+  },
+  {
+   "key": "485",
+   "start": 1245028,
+   "count": 47135,
+   "file": "shards/485.json.br"
+  },
+  {
+   "key": "487",
+   "start": 1292163,
+   "count": 12946,
+   "file": "shards/487.json.br"
+  },
+  {
+   "key": "489",
+   "start": 1305109,
+   "count": 1512,
+   "file": "shards/489.json.br"
+  },
+  {
+   "key": "491",
+   "start": 1306621,
+   "count": 1165,
+   "file": "shards/491.json.br"
+  },
+  {
+   "key": "493",
+   "start": 1307786,
+   "count": 4781,
+   "file": "shards/493.json.br"
+  },
+  {
+   "key": "495",
+   "start": 1312567,
+   "count": 12206,
+   "file": "shards/495.json.br"
+  },
+  {
+   "key": "497",
+   "start": 1324773,
+   "count": 10314,
+   "file": "shards/497.json.br"
+  },
+  {
+   "key": "499",
+   "start": 1335087,
+   "count": 4745,
+   "file": "shards/499.json.br"
+  },
+  {
+   "key": "501",
+   "start": 1339832,
+   "count": 11136,
+   "file": "shards/501.json.br"
+  },
+  {
+   "key": "503",
+   "start": 1350968,
+   "count": 30247,
+   "file": "shards/503.json.br"
+  },
+  {
+   "key": "505",
+   "start": 1381215,
+   "count": 9716,
+   "file": "shards/505.json.br"
+  },
+  {
+   "key": "507",
+   "start": 1390931,
+   "count": 4088,
+   "file": "shards/507.json.br"
+  },
+  {
+   "key": "600",
+   "start": 1395019,
+   "count": 16,
+   "file": "shards/600.json.br"
+  },
+  {
+   "key": "601",
+   "start": 1395035,
+   "count": 7,
+   "file": "shards/601.json.br"
+  },
+  {
+   "key": "602",
+   "start": 1395042,
+   "count": 167,
+   "file": "shards/602.json.br"
+  },
+  {
+   "key": "603",
+   "start": 1395209,
+   "count": 167,
+   "file": "shards/603.json.br"
+  },
+  {
+   "key": "604",
+   "start": 1395376,
+   "count": 111,
+   "file": "shards/604.json.br"
+  },
+  {
+   "key": "605",
+   "start": 1395487,
+   "count": 122,
+   "file": "shards/605.json.br"
+  },
+  {
+   "key": "606",
+   "start": 1395609,
+   "count": 119,
+   "file": "shards/606.json.br"
+  },
+  {
+   "key": "700",
+   "start": 1395728,
+   "count": 67,
+   "file": "shards/700.json.br"
+  },
+  {
+   "key": "701",
+   "start": 1395795,
+   "count": 33,
+   "file": "shards/701.json.br"
+  },
+  {
+   "key": "702",
+   "start": 1395828,
+   "count": 185,
+   "file": "shards/702.json.br"
+  },
+  {
+   "key": "703",
+   "start": 1396013,
+   "count": 424,
+   "file": "shards/703.json.br"
+  },
+  {
+   "key": "704",
+   "start": 1396437,
+   "count": 345,
+   "file": "shards/704.json.br"
+  },
+  {
+   "key": "706",
+   "start": 1396782,
+   "count": 286,
+   "file": "shards/706.json.br"
+  },
+  {
+   "key": "708",
+   "start": 1397068,
+   "count": 290,
+   "file": "shards/708.json.br"
+  },
+  {
+   "key": "715",
+   "start": 1397358,
+   "count": 28,
+   "file": "shards/715.json.br"
+  }
+ ],
+ "countyCount": 255
+}

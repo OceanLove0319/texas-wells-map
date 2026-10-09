@@ -5,7 +5,7 @@ Click a well, or search by API number, to see every field we have for it, groupe
 (Well Locations, Orphan Wells, Injection/Disposal, Well Logs, and so on).
 
 - **Data:** Railroad Commission of Texas (RRC) public GIS, RRC Public Viewer MapServer.
-  Snapshot date: **__SNAPSHOT__** (shown in the app header). __WELLS__ well location records.
+  Snapshot date: **2026-10-09** (shown in the app header). 1,397,386 well location records.
 - **Offline:** the app makes **no network connections**. No telemetry, no auto-update, no map tiles,
   no login. All data ships inside the installer.
 
@@ -91,7 +91,15 @@ assets in `app/assets/data/` **are** committed, so CI and anyone rebuilding from
 to contact the RRC:
 
 - `points.bin` (Float32 lon/lat per well), `types.bin` (Uint8 type index), `apis.bin` (Uint32 API)
-- `shards/<county code>.json.gz` (every field per well plus joined layer records, one file per county)
+- `shards/<county code>.json.br` (brotli JSON, one file per county: every field per well plus the
+  joined layer records)
+
+Join rules (decided from the data by `build_data.mjs`): a layer joins on `OBJECTID` when every one
+of its rows has a Well Locations `OBJECTID` with the same API (orphan wells, commercial disposal,
+injection/disposal, HCTS deeper than 15,000 ft, high cost tight sands, EOR H13). Other layers (well
+logs, horizontal/directional surface locations) join on the full 8-digit API; wells with a
+county-only 3-digit API (about 26%) never get API-joined records. Not included: RRC layer 10
+(horizontal/directional lines, no API field) and layer 0 (duplicate of layer 1).
 - `meta.json` (types, counts, layer and field definitions, snapshot date), `counties.json` (outlines)
 
 ## Build from source

@@ -77,7 +77,9 @@ function rebuildFilter() {
 const fmtInt = (n) => n.toLocaleString('en-US');
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 function fmtApi(api) {
-  return /^\d{8}$/.test(api) ? `42-${api.slice(0, 3)}-${api.slice(3)}` : (api || '(no API)');
+  if (/^\d{8}$/.test(api)) return `42-${api.slice(0, 3)}-${api.slice(3)}`;
+  if (/^\d{3}$/.test(api)) return `42-${api} (county code only)`;
+  return api || '(no API)';
 }
 const api8Of = (i) => (state.apis[i] ? String(state.apis[i]).padStart(8, '0') : '');
 function countyOf(api) {
@@ -265,9 +267,20 @@ async function loadShardFor(i) {
     if (shards[mid].start <= i) lo = mid; else hi = mid - 1;
   }
   const sh = shards[lo];
-  if (!state.shardCache.has(sh.key)) state.shardCache.set(sh.key, fetchJson(sh.file));
+  if (!state.shardCache.has(sh.key)) state.shardCache.set(sh.key, fetchJson(sh.file).then(indexShard));
   return state.shardCache.get(sh.key);
 }
+
+/** Shards are columnar; build local-well -> record-row lookups once per shard. */
+function indexShard(shard) {
+  for (const block of Object.values(shard.layers)) {
+    const byWell = new Map();
+    block.well.forEach((li, r) => { const l = byWell.get(li); if (l) l.push(r); else byWell.set(li, [r]); });
+    block.byWell = byWell;
+  }
+  return shard;
+}
+const rowOf = (cols, r) => cols.map((c) => c[r]);
 
 function fieldsTable(fields, row) {
   const rows = fields.map((f, k) => {
@@ -291,9 +304,11 @@ async function selectWell(i, fly) {
 
   const shard = await loadShardFor(i);
   if (state.selected !== i) return; // a newer selection won
-  const row = shard.wells[i - shard.start];
+  const li = i - shard.start;
+  const row = rowOf(shard.wells, li);
   const apiIdx = meta.base.fields.findIndex((f) => f.name === 'API');
   const api = String(row[apiIdx] ?? '').trim();
+  const apiCol = shard.wells[apiIdx];
   const county = countyOf(api);
 
   $('panel-title').textContent = `API ${fmtApi(api)}`;
@@ -304,7 +319,7 @@ async function selectWell(i, fly) {
   const same = [];
   if (/^\d{8}$/.test(api)) {
     for (let j = 0; j < shard.count; j++) {
-      if (shard.start + j !== i && String(shard.wells[j][apiIdx]).trim() === api) same.push(shard.start + j);
+      if (j !== li && String(apiCol[j]).trim() === api) same.push(shard.start + j);
     }
   }
   if (same.length) {
@@ -315,17 +330,22 @@ async function selectWell(i, fly) {
   html += `<div class="layer"><h3><span>${esc(meta.base.name)}</span><span class="lcount">1 record</span></h3>${fieldsTable(meta.base.fields, row)}</div>`;
 
   for (const L of meta.layers) {
-    const recs = (shard.layers[L.key] && shard.layers[L.key][api]) || [];
+    const block = shard.layers[L.key];
+    const recs = block ? (block.byWell.get(li) || []).map((r) => rowOf(block.cols, r)) : [];
     if (!recs.length) {
       html += `<div class="layer empty"><h3><span>${esc(L.name)}</span><span class="lcount">No record</span></h3></div>`;
       continue;
     }
     html += `<div class="layer"><h3><span>${esc(L.name)}</span><span class="lcount">${recs.length} record${recs.length > 1 ? 's' : ''}</span></h3>`;
+    html += `<div class="joinnote">Matched on ${esc(L.joinOn)}</div>`;
     recs.forEach((r, k) => {
       if (recs.length > 1) html += `<div class="record-sep">Record ${k + 1} of ${recs.length}</div>`;
       html += fieldsTable(L.fields, r);
     });
     html += '</div>';
+  }
+  if (!/^\d{8}$/.test(api)) {
+    html += `<p class="note">This well has no full 8-digit API, so layers matched on API cannot be linked to it.</p>`;
   }
   html += `<p class="note">Source: Railroad Commission of Texas public GIS, snapshot ${esc(meta.snapshot)}.</p>`;
   $('panel-body').innerHTML = html;
@@ -353,7 +373,16 @@ function search(q) {
   const hits = [];
   for (let i = 0; i < apis.length; i++) if (apis[i] === target) hits.push(i);
   if (!hits.length) { msg.textContent = `No well found with API ${fmtApi(api)}.`; msg.className = 'err'; return; }
-  const idx = hits[0];
+  if (hits.length === 1) {
+    msg.textContent = `Found ${fmtApi(api)}`;
+    pickHit(hits[0]);
+    return;
+  }
+  msg.textContent = `${hits.length} wells share API ${fmtApi(api)} - pick one`;
+  showHitList(api, hits);
+}
+
+function pickHit(idx) {
   const type = state.types[idx];
   if (!state.visibleTypes[type]) {
     state.visibleTypes[type] = true;
@@ -361,9 +390,24 @@ function search(q) {
     if (cb) cb.checked = true;
     onFilterChange();
   }
-  const placed = Number.isFinite(state.points[idx * 2]);
-  msg.textContent = `Found ${fmtApi(api)}${hits.length > 1 ? ` (${hits.length} location rows)` : ''}${placed ? '' : ' - no coordinates'}`;
   selectWell(idx, true);
+}
+
+function showHitList(api, hits) {
+  state.selected = -1;
+  render();
+  $('panel').hidden = false;
+  $('panel-title').textContent = `API ${fmtApi(api)}`;
+  $('panel-sub').textContent = `${hits.length} well location rows share this API`;
+  const county = countyOf(api);
+  const items = hits.map((i, k) => {
+    const lon = state.points[i * 2], lat = state.points[i * 2 + 1];
+    const where = Number.isFinite(lon) ? `${lat.toFixed(5)}, ${lon.toFixed(5)}` : 'no coordinates';
+    return `<li><a data-idx="${i}">${k + 1}. ${esc(state.meta.types[state.types[i]].name)}</a> <span class="muted">${esc(where)}</span></li>`;
+  });
+  $('panel-body').innerHTML = `<p class="note">Choose a well${county ? ` in ${esc(county)} County` : ''}:</p><ul class="others hits">${items.join('')}</ul>`;
+  $('panel-body').querySelectorAll('a[data-idx]').forEach((a) => { a.onclick = () => pickHit(Number(a.dataset.idx)); });
+  console.log(`TWM_HITLIST api=${api} hits=${hits.length}`);
 }
 
 // ---------- boot ----------
@@ -387,7 +431,15 @@ async function boot() {
   console.log(`TWM_READY wells=${state.types.length} legendTotal=${total} metaWellCount=${state.meta.wellCount} sourceRows=${state.meta.sourceRowCount} types=${state.meta.types.length} snapshot=${state.meta.snapshot}`);
 
   const pre = new URLSearchParams(location.search).get('select');
-  if (pre) { $('search-input').value = pre; setTimeout(() => search(pre), 300); }
+  const pick = Number(new URLSearchParams(location.search).get('pick'));
+  if (pre) {
+    $('search-input').value = pre;
+    setTimeout(() => {
+      search(pre);
+      const links = $('panel-body').querySelectorAll('.hits a[data-idx]');
+      if (pick && links[pick - 1]) setTimeout(() => links[pick - 1].click(), 1500);
+    }, 300);
+  }
 }
 
 boot();

@@ -24,6 +24,7 @@ const DATA_DIR = app.isPackaged
 
 // Optional startup arguments (used for deep links and automated verification):
 //   --select-api=<API>    search for and select a well after load
+//   --pick=<n>            when that API matches several wells, open the n-th (1-based)
 //   --log-renderer        mirror renderer console output to stdout
 const argOf = (name) => {
   const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
@@ -49,9 +50,9 @@ function registerAppProtocol() {
     else file = safeJoin(UI_DIR, url.pathname === '/' ? 'index.html' : url.pathname.slice(1));
     if (!file || !fs.existsSync(file)) return new Response('Not found', { status: 404 });
 
-    // Detail shards are stored gzipped; inflate here so the renderer just gets JSON.
-    if (file.endsWith('.json.gz')) {
-      const body = zlib.gunzipSync(await fs.promises.readFile(file));
+    // Detail shards are stored brotli-compressed; inflate here so the renderer just gets JSON.
+    if (file.endsWith('.json.br')) {
+      const body = zlib.brotliDecompressSync(await fs.promises.readFile(file));
       return new Response(body, { headers: { 'content-type': 'application/json' } });
     }
     const type = MIME[path.extname(file).toLowerCase()] || 'application/octet-stream';
@@ -98,6 +99,8 @@ function createWindow() {
   const q = new URLSearchParams();
   const sel = argOf('select-api');
   if (sel) q.set('select', sel);
+  const pick = argOf('pick');
+  if (pick) q.set('pick', pick);
   win.loadURL(`${SCHEME}://local/index.html${q.toString() ? `?${q}` : ''}`);
 }
 

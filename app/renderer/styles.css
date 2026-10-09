@@ -101,3 +101,6 @@ table.fields td.v { font-variant-numeric: tabular-nums; }
 .others { margin: 8px 0 0; padding: 0; list-style: none; }
 .others li { margin: 3px 0; }
 .others a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+.joinnote { color: var(--muted); font-size: 11px; margin: -2px 0 4px; }
+.muted { color: var(--muted); font-size: 12px; }
+.hits li { margin: 6px 0; }

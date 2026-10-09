@@ -4,8 +4,9 @@
  *
  * Fully data-driven:
  *   - wells.csv is the base layer (one map point per row). All of its columns are kept.
- *   - Every other data/raw/*.csv that has an API column is treated as a per-well layer and
- *     joined to wells by the 8-digit API. All of its columns are kept.
+ *   - Every other data/raw/*.csv that has an API column is treated as a per-well layer. It joins on
+ *     OBJECTID when the data shows it is a subset of wells (same OBJECTID and API on every row),
+ *     otherwise on the full 8-digit API (county-only APIs never join). All of its columns are kept.
  *   - Layer display names come from data/layers_summary.md ("-> data/raw/<file>.csv" rows);
  *     falls back to a humanized file name.
  *   - Snapshot date comes from data/snapshot_report.md (first YYYY-MM-DD found), else pull_log.jsonl.
@@ -14,9 +15,11 @@
  *   meta.json            - counts, types+colors, layer/field definitions, shard ranges, snapshot date
  *   points.bin           - Float32 [lon, lat] * N (NaN when the well has no coordinates)
  *   types.bin            - Uint8 type index * N
- *   apis.bin             - Uint32 numeric 8-digit API * N (0 if the API is not 8 digits)
+ *   apis.bin             - Uint32 of the 8-digit API * N, for search only (0 if not 8 digits). Lossless:
+ *                          the app re-pads to 8 chars; displayed APIs always come from the raw string.
  *   counties.json        - county outlines (copied from counties.geojson)
- *   shards/<key>.json.gz - per-county detail: well rows (in point order) + joined layer records
+ *   shards/<key>.json.br - per-county detail (brotli JSON, columnar): well fields in point order +
+ *                          joined layer records with the local well index they belong to
  *
  * Usage: node --max-old-space-size=8192 scripts/build_data.mjs [--raw <dir>] [--out <dir>]
  */
@@ -193,33 +196,58 @@ async function main() {
   const typeList = order.map((old, neu) => ({ name: typeNames[old], count: typeCounts[old], color: colorFor(neu) }));
 
   // 2) Other per-well layers (any CSV with an API column).
-  const apiSet = new Set(wells.filter((w) => isApi8(w.a)).map((w) => w.a));
+  //    Join key is chosen per layer from the data:
+  //      - OBJECTID join when every layer row's OBJECTID is a wells OBJECTID carrying the same API
+  //        (those layers are subsets of the wells layer);
+  //      - otherwise API join, only for full 8-digit APIs (county-only 3-digit APIs never join).
+  const iOid = col('OBJECTID');
+  const oidToIdx = new Map();
+  const apiToIdx = new Map(); // api8 -> [point indices]
+  wells.forEach((w, i) => {
+    if (iOid >= 0) oidToIdx.set(String(w.r[iOid]).trim(), i);
+    if (isApi8(w.a)) { const l = apiToIdx.get(w.a); if (l) l.push(i); else apiToIdx.set(w.a, [i]); }
+  });
   const layerFiles = fs.readdirSync(RAW).filter((f) => f.toLowerCase().endsWith('.csv') && f !== BASE_FILE).sort();
   const layers = [];
-  const layerRecords = {}; // layerKey -> Map(api -> rows[])
+  const assign = {}; // layerKey -> array of [wellIndex, record]
   for (const f of layerFiles) {
-    const h = readHeader(path.join(RAW, f));
+    const file = path.join(RAW, f);
+    const h = readHeader(file);
     const ai = h.indexOf('API');
     if (ai < 0) { log(`skip ${f}: no API column`); continue; }
     const key = f.replace(/\.csv$/i, '');
-    const byApi = new Map();
-    let matchedRows = 0, unmatchedRows = 0;
-    const { rows } = await readCsv(path.join(RAW, f), (rec) => {
-      const api = normApi(rec[ai]);
-      if (apiSet.has(api)) {
-        matchedRows++;
-        let arr = byApi.get(api);
-        if (!arr) { arr = []; byApi.set(api, arr); }
-        arr.push(rec);
-      } else unmatchedRows++;
-    });
-    layerRecords[key] = byApi;
+    const recs = [];
+    await readCsv(file, (rec) => recs.push(rec));
+    const oi = h.indexOf('OBJECTID');
+    let oidOk = oi >= 0 && iOid >= 0 && recs.length > 0;
+    if (oidOk) {
+      for (const rec of recs) {
+        const wi = oidToIdx.get(String(rec[oi]).trim());
+        if (wi === undefined || wells[wi].a !== normApi(rec[ai])) { oidOk = false; break; }
+      }
+    }
+    const pairs = [];
+    let matchedRows = 0, unmatchedRows = 0, countyOnlyApiRows = 0;
+    const matchedWells = new Set();
+    for (const rec of recs) {
+      let targets;
+      if (oidOk) targets = [oidToIdx.get(String(rec[oi]).trim())];
+      else {
+        const api = normApi(rec[ai]);
+        if (!isApi8(api)) countyOnlyApiRows++;
+        targets = isApi8(api) ? apiToIdx.get(api) || [] : [];
+      }
+      if (targets.length) matchedRows++; else unmatchedRows++;
+      for (const t of targets) { pairs.push([t, rec]); matchedWells.add(t); }
+    }
+    assign[key] = pairs;
+    const joinOn = oidOk ? 'OBJECTID' : 'API (8-digit)';
     layers.push({
-      key, file: f, name: layerNames[f] || labelFor(key),
+      key, file: f, name: layerNames[f] || labelFor(key), joinOn,
       fields: h.map((n) => ({ name: n, label: labelFor(n) })),
-      rows, matchedRows, unmatchedRows, matchedApis: byApi.size,
+      rows: recs.length, matchedRows, unmatchedRows, countyOnlyApiRows, wellsWithRecords: matchedWells.size,
     });
-    log(`layer ${f}: rows=${rows} matched=${matchedRows} unmatched=${unmatchedRows} (distinct APIs matched ${byApi.size})`);
+    log(`layer ${f}: rows=${recs.length} join=${joinOn} matchedRows=${matchedRows} unmatchedRows=${unmatchedRows} (county-only API rows ${countyOnlyApiRows}) wellsWithRecords=${matchedWells.size}`);
   }
 
   // 3) Write outputs.
@@ -230,29 +258,41 @@ async function main() {
   writeBin('types.bin', types);
   writeBin('apis.bin', apis);
 
-  const shards = [];
-  let s = 0;
-  while (s < N) {
-    const key = wells[s].k;
+  // Bucket layer records by shard.
+  const shardOf = new Uint16Array(N);
+  const shardRanges = [];
+  for (let s = 0; s < N;) {
     let e = s;
-    while (e < N && wells[e].k === key) e++;
-    const shardLayers = {};
-    const seen = new Set();
-    for (let i = s; i < e; i++) {
-      const a = wells[i].a;
-      if (!isApi8(a) || seen.has(a)) continue;
-      seen.add(a);
-      for (const L of layers) {
-        const recs = layerRecords[L.key].get(a);
-        if (recs) (shardLayers[L.key] ||= {})[a] = recs;
-      }
-    }
-    const body = { key, start: s, count: e - s, wells: wells.slice(s, e).map((w) => w.r), layers: shardLayers };
-    const file = `shards/${key}.json.gz`;
-    fs.writeFileSync(path.join(OUT, file), zlib.gzipSync(JSON.stringify(body), { level: 9 }));
-    shards.push({ key, start: s, count: e - s, file });
+    while (e < N && wells[e].k === wells[s].k) e++;
+    for (let i = s; i < e; i++) shardOf[i] = shardRanges.length;
+    shardRanges.push([wells[s].k, s, e]);
     s = e;
   }
+  const perShard = shardRanges.map(() => ({}));
+  for (const L of layers) {
+    for (const [wi, rec] of assign[L.key]) ((perShard[shardOf[wi]][L.key] ||= []).push([wi, rec]));
+    delete assign[L.key];
+  }
+  // Columnar JSON (one array per field) compresses far better than row arrays; values stay raw strings.
+  const columns = (rows, width) => Array.from({ length: width }, (_, c) => rows.map((r) => (r[c] ?? '')));
+  const shards = [];
+  shardRanges.forEach(([key, s, e], si) => {
+    const layerBlocks = {};
+    for (const L of layers) {
+      const list = perShard[si][L.key];
+      if (!list) continue;
+      list.sort((a, b) => a[0] - b[0]);
+      layerBlocks[L.key] = { well: list.map(([wi]) => wi - s), cols: columns(list.map(([, r]) => r), L.fields.length) };
+    }
+    const body = { key, start: s, count: e - s, wells: columns(wells.slice(s, e).map((w) => w.r), header.length), layers: layerBlocks };
+    const file = `shards/${key}.json.br`;
+    const json = Buffer.from(JSON.stringify(body));
+    fs.writeFileSync(path.join(OUT, file), zlib.brotliCompressSync(json, {
+      params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11, [zlib.constants.BROTLI_PARAM_LGWIN]: 24, [zlib.constants.BROTLI_PARAM_SIZE_HINT]: json.length },
+    }));
+    shards.push({ key, start: s, count: e - s, file });
+    perShard[si] = null;
+  });
 
   // County outlines
   let countyCount = 0;
