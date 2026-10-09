@@ -5,14 +5,14 @@
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Texas &amp; Oklahoma Wells Map</title>
+  <title>Wells Map</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header id="topbar">
-    <div class="brand">Texas &amp; Oklahoma Wells Map</div>
+    <div class="brand" id="brand">Wells Map</div>
     <form id="search" autocomplete="off">
-      <input id="search-input" type="search" placeholder="Search API: TX 38934010 / 42-389-34010, OK 35-017-24508" aria-label="Search API number">
+      <input id="search-input" type="search" placeholder="Search API number" aria-label="Search API number">
       <button type="submit">Find</button>
       <span id="search-msg" role="status"></span>
     </form>

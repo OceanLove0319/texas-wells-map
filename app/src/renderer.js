@@ -1,5 +1,5 @@
 /**
- * Texas & Oklahoma Wells Map - renderer.
+ * Wells Map - renderer (Texas, Oklahoma, Kansas, ... - the states come from meta.json).
  * Loads compact binary point data and renders it with deck.gl; well details are loaded on demand
  * from per-county shards. All requests go to the local app:// scheme. The only way anything leaves
  * the machine is the user clicking a document link, which the main process opens in the default browser.
@@ -7,6 +7,7 @@
 import { Deck, MapView, WebMercatorViewport } from '@deck.gl/core';
 import { ScatterplotLayer, GeoJsonLayer, TextLayer } from '@deck.gl/layers';
 import { DataFilterExtension } from '@deck.gl/extensions';
+import { canonicalApi, countyCodeOf, apiOfKey, fmtApi as fmtApiFor, parseQuery } from './api.mjs';
 
 const DATA = 'app://local/data/';
 const $ = (id) => document.getElementById(id);
@@ -16,7 +17,9 @@ const state = {
   points: null, // Float32Array [lon, lat] * N
   types: null, // Uint8Array global type index * N
   status: null, // Uint8Array global status index * N (255 = none)
-  apis: null, // Uint32Array state-aware search key * N
+  apis: null, // Uint32Array search key * N (8 digits after the state code; compared within one state only)
+  locs: null, // Uint8Array location kind * N: 0 exact, 1 repaired, 2 approximate (PLSS), 255 not drawn
+  showApprox: true,
   colors: null,
   filter: null,
   visibleStates: {},
@@ -45,16 +48,17 @@ async function fetchBin(p, Type) {
 }
 
 async function loadAll() {
-  const [meta, points, types, status, apis, counties, states] = await Promise.all([
+  const [meta, points, types, status, apis, locs, counties, states] = await Promise.all([
     fetchJson('meta.json'),
     fetchBin('points.bin', Float32Array),
     fetchBin('types.bin', Uint8Array),
     fetchBin('status.bin', Uint8Array),
     fetchBin('apis.bin', Uint32Array),
+    fetchBin('loc.bin', Uint8Array),
     fetchJson('counties.json'),
     fetchJson('states.json').catch(() => ({ type: 'FeatureCollection', features: [] })),
   ]);
-  Object.assign(state, { meta, points, types, status, apis, counties, states });
+  Object.assign(state, { meta, points, types, status, apis, locs, counties, states });
   state.visibleTypes = meta.types.map(() => true);
   state.visibleStatuses = meta.statuses.map(() => true);
   for (const s of meta.states) { state.visibleStates[s.id] = true; state.colorBy[s.id] = 'type'; }
@@ -81,12 +85,14 @@ function rebuildColors() {
   state.colors = colors;
 }
 
+/** Filter value per well: 0 hidden, 1 drawn as an exact point, 2 drawn as an approximate (hollow) point. */
 function rebuildFilter() {
-  const { types, status, meta, visibleTypes, visibleStatuses, visibleStates } = state;
+  const { types, status, locs, meta, visibleTypes, visibleStatuses, visibleStates, showApprox } = state;
   const f = new Float32Array(types.length);
   for (let i = 0; i < types.length; i++) {
     const t = types[i];
-    f[i] = visibleStates[meta.types[t].state] && visibleTypes[t] && (status[i] === 255 || visibleStatuses[status[i]]) ? 1 : 0;
+    const on = visibleStates[meta.types[t].state] && visibleTypes[t] && (status[i] === 255 || visibleStatuses[status[i]]);
+    f[i] = !on || locs[i] === 255 ? 0 : locs[i] === 2 ? (showApprox ? 2 : 0) : 1;
   }
   state.filter = f;
 }
@@ -94,39 +100,20 @@ function rebuildFilter() {
 // ---------- formatting ----------
 const fmtInt = (n) => n.toLocaleString('en-US');
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-function fmtApi(stateId, api) {
-  if (stateId === 'OK') return /^35\d{8}$/.test(api) ? `35-${api.slice(2, 5)}-${api.slice(5)}` : (api || '(no API)');
-  if (/^\d{8}$/.test(api)) return `42-${api.slice(0, 3)}-${api.slice(3)}`;
-  if (/^\d{3}$/.test(api)) return `42-${api} (county code only)`;
-  return api || '(no API)';
-}
-/** Inverse of the build's search key, for tooltips (TX keys < 10^8, OK keys are 35xxxxxxxx). */
-function apiFromKey(i) {
-  const k = state.apis[i];
-  if (!k) return '';
-  return stateIdOf(i) === 'OK' ? String(k) : String(k).padStart(8, '0');
-}
+/** Display an API (raw regulator value or canonical 10 digits) as 42-389-34010. */
+const fmtApi = (stateId, api) => fmtApiFor(stateMeta(stateId), api);
+/** Canonical API of well i from its search key, for tooltips. */
+const apiFromKey = (i) => apiOfKey(stateMeta(stateIdOf(i)), state.apis[i]);
 function countyOf(stateId, api) {
-  const code = stateId === 'OK' ? (/^35\d{3}/.test(api) ? api.slice(2, 5) : null) : (/^\d{3}/.test(api) ? api.slice(0, 3) : null);
+  const code = countyCodeOf(stateMeta(stateId), api);
   return code ? state.countyNames.get(`${stateId}-${code}`) || '' : '';
 }
 function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-/**
- * State-aware API search key (must match scripts/build_data.mjs):
- *   TX: 8-digit RRC API, or 10/12/14 digits starting 42 -> the 8 digits after "42"   (key < 10^8)
- *   OK: 10/12/14 digits starting 35 -> the first 10 digits                            (key 35xxxxxxxx)
- * Punctuation is ignored. An 8-digit number is always Texas.
- */
-function searchKey(q) {
-  const d = String(q).replace(/\D/g, '');
-  if (d.length === 8) return { state: 'TX', key: Number(d), api: d };
-  if ([10, 12, 14].includes(d.length) && d.startsWith('42')) return { state: 'TX', key: Number(d.slice(2, 10)), api: d.slice(2, 10) };
-  if ([10, 12, 14].includes(d.length) && d.startsWith('35')) return { state: 'OK', key: Number(d.slice(0, 10)), api: d.slice(0, 10) };
-  return null;
-}
+/** Search query -> { state, key, api } (rules in app/src/api.mjs, shared with the data build). */
+const searchKey = (q) => parseQuery(state.meta.states, q);
 
 // ---------- map ----------
 function radiusScaleFor(zoom) {
@@ -152,26 +139,31 @@ function buildLayers() {
       getLineWidth: 0.7,
       pickable: false,
     }),
-    new ScatterplotLayer({
-      id: 'wells',
+    ...['wells', 'wells-approx'].map((id) => new ScatterplotLayer({
+      id,
       data: {
         length: n,
         attributes: {
           getPosition: { value: points, size: 2 },
           getFillColor: { value: colors, size: 4, normalized: true },
+          getLineColor: { value: colors, size: 4, normalized: true },
           getFilterValue: { value: filter, size: 1 },
         },
       },
       radiusUnits: 'pixels',
-      getRadius: 1,
+      getRadius: id === 'wells' ? 1 : 1.6,
       radiusScale: radiusScaleFor(state.zoom),
-      radiusMinPixels: 1,
-      stroked: false,
+      radiusMinPixels: id === 'wells' ? 1 : 2.5,
+      // Approximate (PLSS) locations are hollow rings in the type color; exact locations are filled dots.
+      stroked: id !== 'wells',
+      filled: id === 'wells',
+      lineWidthUnits: 'pixels',
+      getLineWidth: 1.2,
       pickable: true,
       extensions: [new DataFilterExtension({ filterSize: 1 })],
-      filterRange: [0.5, 1.5],
-      updateTriggers: { getFilterValue: filter, getFillColor: colors },
-    }),
+      filterRange: id === 'wells' ? [0.5, 1.5] : [1.5, 2.5],
+      updateTriggers: { getFilterValue: filter, getFillColor: colors, getLineColor: colors },
+    })),
   ];
   // State boundaries on top of counties and wells: thicker and darker than county lines.
   layers.push(new GeoJsonLayer({
@@ -254,18 +246,18 @@ function initDeck() {
     },
     onHover: (info) => {
       const tip = $('tooltip');
-      if (info.layer && info.layer.id === 'wells' && info.index >= 0) {
+      if (info.layer && info.layer.id.startsWith('wells') && info.index >= 0) {
         const i = info.index;
         const st = stateIdOf(i);
         const api = apiFromKey(i);
-        tip.textContent = `${st} ${api ? fmtApi(st, api) : 'no full API'} - ${state.meta.types[state.types[i]].name}`;
+        tip.textContent = `${st} ${api ? fmtApi(st, api) : 'no full API'} - ${state.meta.types[state.types[i]].name}${state.locs[i] === 2 ? ' (approximate location)' : ''}`;
         tip.style.left = `${info.x + 12}px`;
         tip.style.top = `${info.y + 12}px`;
         tip.hidden = false;
       } else tip.hidden = true;
     },
     onClick: (info) => {
-      if (info.layer && info.layer.id === 'wells' && info.index >= 0) selectWell(info.index, false);
+      if (info.layer && info.layer.id.startsWith('wells') && info.index >= 0) selectWell(info.index, false);
     },
   });
 }
@@ -283,9 +275,21 @@ function flyTo(i) {
 
 // ---------- legend ----------
 function catItems(list, range, kind) {
+  const cats = Object.fromEntries((state.meta.categories || []).map((c) => [c.id, c]));
+  let prev = null;
   return list.slice(...range).map((t, k) => {
     const idx = range[0] + k;
-    return `<li><label title="${esc(t.name)}${t.total !== t.count ? ` - ${fmtInt(t.total - t.count)} more without location` : ''}">
+    let head = '';
+    if (kind === 'type' && t.category && t.category !== prev) {
+      prev = t.category;
+      const c = cats[t.category];
+      const n = list.slice(...range).filter((u) => u.category === t.category).reduce((a, u) => a + u.count, 0);
+      head = `<li class="cat-group"><span class="swatch" style="background: rgb(${c.color.join(',')})"></span><span>${esc(c.name)}</span><span class="tcount">${fmtInt(n)}</span></li>`;
+    }
+    const tip = [t.name, t.variants && t.variants.length > 1 ? `raw values: ${t.variants.join(', ')}` : '',
+      t.approx ? `${fmtInt(t.approx)} at approximate (PLSS) locations` : '',
+      t.total !== t.count ? `${fmtInt(t.total - t.count)} more not on the map` : ''].filter(Boolean).join(' - ');
+    return `${head}<li><label title="${esc(tip)}">
       <input type="checkbox" checked data-kind="${kind}" data-idx="${idx}">
       <span class="swatch" style="background: rgb(${t.color.join(',')})"></span>
       <span class="tname">${esc(t.name)}</span>
@@ -310,7 +314,9 @@ function buildLegend() {
       <ul class="cat-list">${catItems(meta.statuses, s.statusRange, 'status')}</ul>` : ''}
       <div class="state-foot" id="state-foot-${s.id}"></div>
     </section>`;
-  }).join('');
+  }).join('')
+    + (state.meta.states.some((s) => s.approximate) ? `<label class="approx-toggle" title="Wells with no coordinates in the regulator file, placed at the center of their PLSS section (or quarter call). Drawn as hollow rings.">
+      <input type="checkbox" checked data-kind="approx"> <span class="ring"></span> Show approximate locations</label>` : '');
 
   box.addEventListener('change', (e) => {
     const el = e.target;
@@ -322,6 +328,7 @@ function buildLegend() {
     }
     const kind = el.dataset.kind;
     if (kind === 'state') state.visibleStates[el.dataset.state] = el.checked;
+    else if (kind === 'approx') state.showApprox = el.checked;
     else if (kind === 'type') state.visibleTypes[Number(el.dataset.idx)] = el.checked;
     else if (kind === 'status') state.visibleStatuses[Number(el.dataset.idx)] = el.checked;
     else return;
@@ -348,27 +355,30 @@ function setEverything(v) {
   state.visibleTypes = state.visibleTypes.map(() => v);
   state.visibleStatuses = state.visibleStatuses.map(() => v);
   for (const k of Object.keys(state.visibleStates)) state.visibleStates[k] = v;
-  $('type-list').querySelectorAll('input[type=checkbox]').forEach((c) => { c.checked = v; });
+  $('type-list').querySelectorAll('input[type=checkbox]:not([data-kind=approx])').forEach((c) => { c.checked = v; });
   onFilterChange();
 }
 
 /** Shown count per state = mapped wells passing the state, type and status filters. */
 function updateLegendTotal() {
-  const { meta, filter, points } = state;
+  const { meta, filter } = state;
   const shownBy = {};
   for (const s of meta.states) {
     let n = 0;
-    for (let i = s.start; i < s.start + s.wellCount; i++) if (filter[i] && Number.isFinite(points[i * 2])) n++;
+    for (let i = s.start; i < s.start + s.wellCount; i++) if (filter[i]) n++;
     shownBy[s.id] = n;
     $(`state-count-${s.id}`).textContent = fmtInt(s.mapped);
-    $(`state-foot-${s.id}`).innerHTML = `Mapped: <b>${fmtInt(s.mapped)}</b> &middot; Shown: <b>${fmtInt(n)}</b>`
-      + (s.noLocation ? `<br>No location (not on map): <b>${fmtInt(s.noLocation)}</b>` : '')
-      + (s.invalidLocation ? `<br>Invalid coordinates (not on map): <b>${fmtInt(s.invalidLocation)}</b>` : '');
+    $(`state-foot-${s.id}`).innerHTML = `Source rows: <b>${fmtInt(s.wellCount)}</b> &middot; Shown: <b>${fmtInt(n)}</b>`
+      + `<br>Mapped: <b>${fmtInt(s.mapped)}</b> = exact <b>${fmtInt(s.exact + s.repaired)}</b>`
+      + (s.approximate ? ` + approximate <b>${fmtInt(s.approximate)}</b>` : '')
+      + (s.repaired ? `<br>Exact includes <b>${fmtInt(s.repaired)}</b> with repaired coordinates` : '')
+      + `<br>Unmapped (no usable location): <b>${fmtInt(s.unplottable)}</b>`;
   }
   const mapped = meta.states.reduce((a, s) => a + s.mapped, 0);
   const shown = Object.values(shownBy).reduce((a, b) => a + b, 0);
-  $('legend-total').innerHTML = meta.states.map((s) => `<div>${esc(s.name)} wells mapped: <b id="mapped-${s.id}">${fmtInt(s.mapped)}</b></div>`).join('')
-    + `<div>Total mapped: <b>${fmtInt(mapped)}</b> &middot; Shown: <b>${fmtInt(shown)}</b></div>`;
+  const unmapped = meta.states.reduce((a, s) => a + s.unplottable, 0);
+  $('legend-total').innerHTML = meta.states.map((s) => `<div>${esc(s.name)}: mapped <b id="mapped-${s.id}">${fmtInt(s.mapped)}</b> &middot; unmapped <b>${fmtInt(s.unplottable)}</b></div>`).join('')
+    + `<div>Total mapped: <b>${fmtInt(mapped)}</b> &middot; Unmapped: <b>${fmtInt(unmapped)}</b> &middot; Shown: <b>${fmtInt(shown)}</b></div>`;
   return { mapped, shown, shownBy };
 }
 
@@ -434,21 +444,22 @@ async function selectWell(i, fly) {
   const row = rowOf(shard.wells, li);
   const apiIdx = sm.base.fields.findIndex((f) => /^api(_number|_no|num)?$/i.test(f.name));
   const api = String(row[apiIdx] ?? '').trim().replace(/\.0+$/, '');
-  const apiCol = shard.wells[apiIdx];
+  const canon = canonicalApi(sm, api);
   const county = countyOf(sm.id, api);
+  const note = (shard.notes || {})[li];
+  const locKind = ['exact', 'repaired', 'approximate'][state.locs[i]] || 'none';
   const statusName = state.status[i] !== 255 ? meta.statuses[state.status[i]].name : '';
 
   $('panel-title').textContent = `${sm.id} API ${fmtApi(sm.id, api)}`;
   $('panel-sub').textContent = [typeName, statusName, county && `${county} County`, sm.name].filter(Boolean).join(' - ');
 
   let html = '';
-  if (!placed) html += '<p class="note">This well has no usable location on file (null, 0, or invalid coordinates), so it is not drawn on the map.</p>';
-  const full = sm.id === 'OK' ? /^35\d{8}$/ : /^\d{8}$/;
+  if (state.locs[i] === 2) html += `<p class="note approx-note"><b>${esc(note || 'Location: APPROXIMATE')}</b></p>`;
+  else if (note) html += `<p class="note">${esc(note)}</p>`;
+  if (!placed && state.locs[i] === 255) html += '<p class="note">This well has no usable location on file (null, 0, or invalid coordinates, and no usable township/range/section), so it is not drawn on the map.</p>';
   const same = [];
-  if (full.test(api)) {
-    for (let j = 0; j < shard.count; j++) {
-      if (j !== li && String(apiCol[j]).trim().replace(/\.0+$/, '') === api) same.push(shard.start + j);
-    }
+  if (state.apis[i]) {
+    for (let j = shard.start; j < shard.start + shard.count; j++) if (j !== i && state.apis[j] === state.apis[i]) same.push(j);
   }
   if (same.length) {
     html += `<div class="note">${same.length + 1} rows in ${esc(sm.base.name)} share this API. Showing the one you selected.
@@ -471,7 +482,7 @@ async function selectWell(i, fly) {
     });
     html += '</div>';
   }
-  if (!full.test(api)) html += '<p class="note">This well has no full API, so layers matched on API cannot be linked to it.</p>';
+  if (!canon && sm.layers.length) html += '<p class="note">This well has no full API, so layers matched on API cannot be linked to it.</p>';
   html += `<p class="note">Source: ${esc(sm.agency)}, snapshot ${esc(sm.snapshot)}. Document links open in your web browser only when you click them.</p>`;
   $('panel-body').innerHTML = html;
   $('panel-body').querySelectorAll('a[data-idx]').forEach((a) => { a.onclick = () => selectWell(Number(a.dataset.idx), true); });
@@ -479,7 +490,7 @@ async function selectWell(i, fly) {
     a.onclick = (e) => { e.preventDefault(); window.twm.openExternal(a.dataset.url); };
   });
   const nFields = $('panel-body').querySelectorAll('table.fields tr').length;
-  console.log(`TWM_SELECTED state=${sm.id} api=${api} index=${i} type="${typeName}" status="${statusName}" county="${county}" fieldRows=${nFields} links=${$('panel-body').querySelectorAll('a.ext').length} layersWithRecords=${$('panel-body').querySelectorAll('.layer:not(.empty)').length} sharedApiRows=${same.length + 1}`);
+  console.log(`TWM_SELECTED state=${sm.id} api=${api} index=${i} type="${typeName}" status="${statusName}" county="${county}" loc=${locKind} fieldRows=${nFields} links=${$('panel-body').querySelectorAll('a.ext').length} layersWithRecords=${$('panel-body').querySelectorAll('.layer:not(.empty)').length} sharedApiRows=${same.length + 1}`);
 }
 
 function closePanel() {
@@ -493,15 +504,19 @@ function search(q) {
   const msg = $('search-msg');
   msg.className = '';
   const sk = searchKey(q);
-  if (!sk) { msg.textContent = 'Enter a TX API (8 digits, or 10 starting 42) or an OK API (10 digits starting 35).'; msg.className = 'err'; return; }
+  if (!sk) {
+    msg.textContent = `Enter a 10-digit API starting with the state code (${state.meta.states.map((s) => `${s.id} ${s.apiPrefix}`).join(', ')})${state.meta.states.some((s) => s.apiForm === 'county8') ? ', or an 8-digit TX RRC API' : ''}.`;
+    msg.className = 'err';
+    return;
+  }
   const { apis } = state;
   const s = stateMeta(sk.state);
   const hits = [];
   for (let i = s.start; i < s.start + s.wellCount; i++) if (apis[i] === sk.key) hits.push(i);
   if (!hits.length) { msg.textContent = `No ${s.name} well found with API ${fmtApi(sk.state, sk.api)}.`; msg.className = 'err'; return; }
   if (hits.length === 1) {
-    const placed = Number.isFinite(state.points[hits[0] * 2]);
-    msg.textContent = `Found ${sk.state} ${fmtApi(sk.state, sk.api)}${placed ? '' : ' (no location on file)'}`;
+    const lk = state.locs[hits[0]];
+    msg.textContent = `Found ${sk.state} ${fmtApi(sk.state, sk.api)}${lk === 255 ? ' (no location on file)' : lk === 2 ? ' (approximate location)' : ''}`;
     pickHit(hits[0]);
     return;
   }
@@ -537,7 +552,7 @@ function showHitList(sk, hits) {
   const county = countyOf(sk.state, sk.api);
   const items = hits.map((i, k) => {
     const lon = state.points[i * 2], lat = state.points[i * 2 + 1];
-    const where = Number.isFinite(lon) ? `${lat.toFixed(5)}, ${lon.toFixed(5)}` : 'no location';
+    const where = Number.isFinite(lon) ? `${lat.toFixed(5)}, ${lon.toFixed(5)}${state.locs[i] === 2 ? ' (approximate)' : ''}` : 'no location';
     return `<li><a data-idx="${i}">${k + 1}. ${esc(state.meta.types[state.types[i]].name)}</a> <span class="muted">${esc(where)}</span></li>`;
   });
   $('panel-body').innerHTML = `<p class="note">Choose a well${county ? ` in ${esc(county)} County` : ''}:</p><ul class="others hits">${items.join('')}</ul>`;
@@ -555,7 +570,10 @@ async function boot() {
     return;
   }
   $('snapshot').innerHTML = state.meta.states
-    .map((s) => `${esc(s.id)} ${esc(s.agency.match(/\((\w+)\)/)?.[1] || '')} snapshot: <b>${esc(s.snapshot)}</b>`).join(' &middot; ');
+    .map((s) => `<span title="${esc(s.agency)} - ${esc(s.snapshotSource || '')}">${esc(s.id)} ${esc(s.short || '')}: <b>${esc(s.snapshot)}</b></span>`).join(' &middot; ');
+  $('brand').textContent = state.meta.app;
+  document.title = state.meta.app;
+  $('search-input').placeholder = `Search API: ${state.meta.states.map((s) => `${s.id} ${s.apiPrefix}-xxx-xxxxx`).join(', ')}`;
   buildLegend();
   initDeck();
   $('loading').hidden = true;
@@ -566,7 +584,7 @@ async function boot() {
   const { mapped } = updateLegendTotal();
   const per = state.meta.states.map((s) => {
     const legend = state.meta.types.slice(...s.typeRange).reduce((a, t) => a + t.count, 0);
-    return `${s.id}:rows=${s.wellCount},mapped=${s.mapped},legendSum=${legend},noLocation=${s.noLocation},invalidCoords=${s.invalidLocation},snapshot=${s.snapshot}`;
+    return `${s.id}:rows=${s.wellCount},mapped=${s.mapped},legendSum=${legend},exact=${s.exact},repaired=${s.repaired},approx=${s.approximate},unmapped=${s.unplottable},snapshot=${s.snapshot}`;
   }).join(' ');
   console.log(`TWM_READY points=${state.types.length} legendMappedTotal=${mapped} ${per}`);
 

@@ -2,31 +2,33 @@
 /**
  * build_data.mjs - convert the raw state snapshots into compact, offline app assets.
  *
- * States (see STATES below; each entry only says where a state's files are and which columns
- * play which role - field lists are never hardcoded):
- *   TX  Railroad Commission of Texas      data/raw/wells.csv     + every other data/raw/*.csv
- *   OK  Oklahoma Corporation Commission   data/raw/ok/rbdms-wells.csv + every other data/raw/ok/*.csv
+ * States are described in scripts/states.config.mjs (one entry per state; field lists are never
+ * hardcoded). See docs/ADDING_A_STATE.md.
  *
  * Data-driven rules:
  *   - The base file is one map point per row; all of its columns are kept.
  *   - Every other CSV in the state's folder that has an API column (API / api / api_number) is a
  *     per-well layer. It joins on OBJECTID when the data shows it is a subset of the base layer
- *     (every row's OBJECTID exists in the base with the same API); otherwise on the full API
- *     (TX: 8 digits, OK: 10 digits starting 35). Partial / county-only APIs never join.
- *   - Wells without usable coordinates (null, 0, or outside the valid lat/lon range) stay searchable but are not drawn, and are not
- *     counted in the legend's per-type counts (they are reported separately).
+ *     (every row's OBJECTID exists in the base with the same API); otherwise on the canonical
+ *     10-digit API (app/src/api.js). Partial / county-only APIs never join.
+ *   - Legend types are merged case-insensitively (OK "Gas"/"GAS" -> one entry; the raw value is still
+ *     shown in the details panel) and each maps to a shared category (CATEGORIES) for its color.
+ *   - Location of each well (loc.bin):
+ *       0 exact      the regulator's coordinates
+ *       1 repaired   out-of-range coordinates with an unambiguous lost decimal point (lib/coords.mjs)
+ *       2 approx     no usable coordinates, placed from meridian/township/range/section (lib/plss.mjs)
+ *       255 none     not drawn (still searchable); not counted in the legend
  *
  * Outputs (app/assets/data/):
- *   meta.json            - states, types (+colors), OK statuses, layers/fields, shard ranges, snapshot dates
- *   points.bin           - Float32 [lon, lat] * N (NaN when the well has no coordinates)
+ *   meta.json            - states, types (+colors, category), statuses, layers/fields, shard ranges, snapshot dates, location counts
+ *   points.bin           - Float32 [lon, lat] * N (NaN when the well is not drawn)
  *   types.bin            - Uint8 global type index * N (each type belongs to one state)
  *   status.bin           - Uint8 global status index * N (255 = state has no status grouping)
- *   apis.bin             - Uint32 state-aware search key * N (0 = no full API):
- *                            TX: the 8-digit API (always < 10^8)   OK: the 10-digit API (35xxxxxxxx)
- *                          so the two states can never collide. Displayed APIs always come from the raw string.
+ *   apis.bin             - Uint32 search key * N: the 8 digits after the state code (0 = no full API)
+ *   loc.bin              - Uint8 location kind * N (see above)
  *   counties.json        - county outlines for all states, properties normalized to {state, code, name}
- *   shards/<ST>-<ccc>.json.br - per-county detail (brotli JSON, columnar): well fields in point order +
- *                          joined layer records with the local well index they belong to
+ *   shards/<ST>-<ccc>.json.br - per-county detail (brotli JSON, columnar): well fields in point order,
+ *                          joined layer records, and location notes (approximate / repaired)
  *
  * Usage: node --max-old-space-size=8192 scripts/build_data.mjs [--out <dir>]
  */
@@ -34,9 +36,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { STATES, CATEGORIES, CATEGORY_RULES, ROOT, snapshotFromPullLog } from './states.config.mjs';
+import { canonicalApi, countyCodeOf, keyOf } from '../app/src/api.mjs';
+import { stateOutlines } from './lib/geo.mjs';
+import { loadSections, locate } from './lib/plss.mjs';
+import { repair } from './lib/coords.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(path.join(ROOT, 'app', 'package.json'));
 const { parse } = require('csv-parse');
 
@@ -46,32 +51,7 @@ const argVal = (name, dflt) => {
   return i >= 0 ? path.resolve(args[i + 1]) : dflt;
 };
 const OUT = argVal('--out', path.join(ROOT, 'app', 'assets', 'data'));
-const DATA_DIR = path.join(ROOT, 'data');
-
-// ---------- state descriptors ----------
-const STATES = [
-  {
-    id: 'TX', name: 'Texas', agency: 'Railroad Commission of Texas (RRC)',
-    raw: path.join(DATA_DIR, 'raw'), base: 'wells.csv',
-    typeField: 'GIS_SYMBOL_DESCRIPTION', statusField: null,
-    lon: ['lon_4326', 'GIS_LONG83', 'GIS_LONG27'], lat: ['lat_4326', 'GIS_LAT83', 'GIS_LAT27'],
-    fullApi: /^\d{8}$/, searchKey: (a) => Number(a), countyOfApi: (a) => (/^\d{3}/.test(a) ? a.slice(0, 3) : null),
-    counties: { file: 'counties.geojson', code: 'FIPS', name: 'COUNTY_NAME' },
-    layerNames: () => layerNamesFromSummary(path.join(DATA_DIR, 'layers_summary.md')),
-    snapshot: () => snapshotFromReport(path.join(DATA_DIR, 'snapshot_report.md'), path.join(DATA_DIR, 'raw', 'pull_log.jsonl')),
-  },
-  {
-    id: 'OK', name: 'Oklahoma', agency: 'Oklahoma Corporation Commission (OCC)',
-    raw: path.join(DATA_DIR, 'raw', 'ok'), base: 'rbdms-wells.csv',
-    typeField: 'WELLTYPE', statusField: 'WELLSTATUS', codes: path.join(DATA_DIR, 'ok_codes.json'),
-    lon: ['SH_LON'], lat: ['SH_LAT'],
-    fullApi: /^35\d{8}$/, searchKey: (a) => Number(a), countyOfApi: (a) => (/^35\d{3}/.test(a) ? a.slice(2, 5) : null),
-    counties: { file: 'ok_counties.geojson', code: 'COUNTY', name: 'NAME' },
-    layerNames: () => ({ 'orphan_funds_wells.csv': 'Orphan Fund', 'comp_wells.csv': 'Completion Report' }),
-    baseName: 'Well',
-    snapshot: () => snapshotFromPullLog(path.join(DATA_DIR, 'raw', 'ok', 'pull_log.jsonl'), 'rbdms-wells.csv', 'data/raw/ok/pull_log.jsonl (rbdms-wells.csv download)'),
-  },
-];
+const LOC = { EXACT: 0, REPAIRED: 1, APPROX: 2, NONE: 255 };
 
 // ---------- helpers ----------
 const log = (...m) => console.log('[build_data]', ...m);
@@ -97,7 +77,6 @@ function readHeader(file) {
   return line.split(',').map((s) => s.replace(/^"|"$/g, '').trim());
 }
 
-const normApi = (v) => (v == null ? '' : String(v).trim().replace(/\.0+$/, ''));
 const findApiCol = (h) => h.findIndex((n) => /^api(_number|_no|num)?$/i.test(n));
 
 /** Readable label from a raw field name. Token dictionary only expands abbreviations; it does not list fields. */
@@ -127,33 +106,6 @@ function labelFor(field) {
   return s;
 }
 
-function layerNamesFromSummary(p) {
-  const names = {};
-  if (!fs.existsSync(p)) return names;
-  for (const line of fs.readFileSync(p, 'utf8').split('\n')) {
-    const m = line.match(/^\|\s*(\d+)\s*\|\s*([^|]+?)\s*\|.*data\/raw\/([\w.-]+\.csv)/);
-    if (m) names[m[3]] = m[2];
-  }
-  return names;
-}
-
-function snapshotFromReport(rep, pullLog) {
-  if (fs.existsSync(rep)) {
-    const txt = fs.readFileSync(rep, 'utf8');
-    const m = txt.match(/Pull finish times[^\n]*?(\d{4}-\d{2}-\d{2})/) || txt.match(/(\d{4}-\d{2}-\d{2})/);
-    if (m) return { date: m[1], source: path.relative(ROOT, rep) };
-  }
-  return snapshotFromPullLog(pullLog, null, path.relative(ROOT, pullLog));
-}
-
-function snapshotFromPullLog(p, name, source) {
-  if (!fs.existsSync(p)) return { date: 'unknown', source: 'none' };
-  const rows = fs.readFileSync(p, 'utf8').split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } })
-    .filter((r) => r && r.finished_utc && (!name || r.name === name));
-  const dates = rows.map((r) => r.finished_utc).sort();
-  return dates.length ? { date: dates[dates.length - 1].slice(0, 10), source } : { date: 'unknown', source: 'none' };
-}
-
 /** "Plugged and Abandoned--wells which ..." -> "Plugged and Abandoned" */
 function codeLabel(code, dict) {
   const raw = dict ? (dict[code] ?? dict[code.toUpperCase()] ?? Object.entries(dict).find(([k]) => k.toUpperCase() === code.toUpperCase())?.[1]) : null;
@@ -162,7 +114,7 @@ function codeLabel(code, dict) {
   return short ? `${short} (${code})` : `${code} (code not in data dictionary)`;
 }
 
-// Distinct, readable colors (most common categories get the first entries).
+// Status colors (statuses are not categorized): distinct, readable colors, most common first.
 const PALETTE = [
   [31, 119, 180], [214, 39, 40], [44, 160, 44], [255, 127, 14], [148, 103, 189], [140, 86, 75],
   [227, 119, 194], [23, 190, 207], [188, 189, 34], [127, 127, 127], [174, 199, 232], [255, 152, 150],
@@ -176,12 +128,49 @@ function colorFor(i) {
   return [f(0), f(8), f(4)].map((x) => Math.round(x * 255));
 }
 
-/** Category list sorted by mapped count (desc); returns { list, remap(oldIdx)->newIdx }. */
-function rankCategories(names, mappedCounts, totalCounts) {
-  const order = names.map((_, i) => i).sort((a, b) => mappedCounts[b] - mappedCounts[a] || totalCounts[b] - totalCounts[a]);
-  const remap = new Array(order.length);
-  order.forEach((old, neu) => { remap[old] = neu; });
-  return { order, remap };
+/** Category id for a type value: state override, else the first matching shared rule, else "other". */
+function categoryOf(S, code, label) {
+  const o = S.categoryOverrides && S.categoryOverrides[code.toUpperCase()];
+  if (o) return o;
+  const text = `${code} ${label}`;
+  for (const [id, re] of CATEGORY_RULES) if (re.test(text)) return id;
+  return 'other';
+}
+/** k-th type within a category: the base color, then alternating lighter / darker shades. */
+const SHADES = [0, 0.35, -0.3, 0.6, -0.5, 0.18, -0.15, 0.48, -0.4, 0.7];
+function shade(base, k) {
+  const t = SHADES[k % SHADES.length];
+  return base.map((c) => Math.round(t >= 0 ? c + (255 - c) * t : c * (1 + t)));
+}
+
+/** Case/spelling-insensitive key for a legend category ("Gas" and "GAS" -> one entry). */
+const mergeKey = (v) => String(v ?? '').trim().toUpperCase();
+
+/** Collects distinct values of a column (merged by mergeKey), keeping every raw spelling and its count. */
+function categorizer() {
+  const idx = new Map(), list = [];
+  return {
+    list,
+    add(raw) {
+      const v = String(raw ?? '').trim();
+      const k = mergeKey(v);
+      let i = idx.get(k);
+      if (i === undefined) { i = list.length; idx.set(k, i); list.push({ key: k, variants: new Map() }); }
+      const vm = list[i].variants;
+      vm.set(v, (vm.get(v) || 0) + 1);
+      return i;
+    },
+  };
+}
+/** Most common raw spelling first. */
+const variantsOf = (c) => [...c.variants.entries()].sort((x, y) => y[1] - x[1]).map(([v]) => v);
+
+function displayName(field, c, codes) {
+  const vs = variantsOf(c);
+  const dict = codes[field];
+  if (!dict) return vs[0] || '(blank)';
+  const base = codeLabel(vs[0], dict); // "Description (CODE)"
+  return vs.length > 1 ? base.replace(/\(([^()]*)\)$/, `(${vs.join(' / ')})`) : base;
 }
 
 // ---------- per-state load ----------
@@ -190,61 +179,112 @@ async function loadState(S) {
   if (!fs.existsSync(basePath)) throw new Error(`${S.id}: base file not found: ${basePath}`);
   const header = readHeader(basePath);
   const col = (n) => header.indexOf(n);
-  const iApi = findApiCol(header);
+  const iApi = S.apiField ? col(S.apiField) : findApiCol(header);
   const iType = col(S.typeField);
   const iStatus = S.statusField ? col(S.statusField) : -1;
   const lonC = S.lon.map(col).filter((i) => i >= 0);
   const latC = S.lat.map(col).filter((i) => i >= 0);
   if (iApi < 0 || iType < 0 || !lonC.length || !latC.length) throw new Error(`${S.id}: base file missing API/type/coordinate columns`);
   const codes = S.codes && fs.existsSync(S.codes) ? JSON.parse(fs.readFileSync(S.codes, 'utf8')).fields : {};
+  const outline = stateOutlines(ROOT)[S.id];
+  if (!outline) log(`WARNING: ${S.id} has no outline in data/raw/us_states.geojson - coordinate repair disabled`);
+  const plss = S.plss ? loadSections(ROOT, S.id) : null;
+  if (plss) log(`${S.id} PLSS grid ${plss.file}: sections=${plss.rows} keys=${plss.boxes.size} skipped=${plss.skipped} ambiguous=${plss.ambiguous}`);
 
-  const typeIdx = new Map(), typeNames = [];
-  const statusIdx = new Map(), statusNames = [];
-  const cat = (map, names, v) => { let i = map.get(v); if (i === undefined) { i = names.length; map.set(v, i); names.push(v); } return i; };
+  const typeCat = categorizer(), statusCat = categorizer();
   const wells = [];
-  // First non-null, non-zero candidate; values outside the valid WGS84 range (e.g. a lost decimal
-  // point) are marked invalid so they are neither drawn nor allowed to stretch the map extent.
+  // First non-null, non-zero candidate. Returns { v, bad } where bad = outside the valid WGS84 range.
   const pick = (rec, cands, limit) => {
     for (const i of cands) {
       const v = parseFloat(rec[i]);
-      if (Number.isFinite(v) && v !== 0) return Math.abs(v) <= limit ? v : Infinity;
+      if (Number.isFinite(v) && v !== 0) return { v, bad: Math.abs(v) > limit };
     }
-    return NaN;
+    return { v: NaN, bad: false };
   };
+  const stats = { exact: 0, repaired: 0, approx: 0, none: 0, invalidCoords: 0, nullCoords: 0, repairFailed: {}, approxFailed: {}, approxInferred: 0, approxQuarter: 0 };
+  const bump = (o, k) => { o[k] = (o[k] || 0) + 1; };
   const { rows } = await readCsv(basePath, (rec) => {
-    const api = normApi(rec[iApi]);
-    const c = S.countyOfApi(api);
-    let x = pick(rec, lonC, 180), y = pick(rec, latC, 90);
-    const bad = x === Infinity || y === Infinity;
-    if (bad) { x = NaN; y = NaN; }
-    wells.push({ bad,
-      k: `${S.id}-${c || 'none'}`, a: api, x, y, r: rec,
-      t: cat(typeIdx, typeNames, String(rec[iType] ?? '').trim()),
-      s: iStatus >= 0 ? cat(statusIdx, statusNames, String(rec[iStatus] ?? '').trim()) : -1,
+    const rawApi = rec[iApi];
+    const canon = canonicalApi(S, rawApi);
+    const c = countyCodeOf(S, rawApi);
+    const lo = pick(rec, lonC, 180), la = pick(rec, latC, 90);
+    const g = (f) => { const i = col(f); return i >= 0 ? rec[i] : undefined; };
+    let x = lo.v, y = la.v, loc = LOC.EXACT, note = null;
+    const bad = lo.bad || la.bad;
+    if (bad || !Number.isFinite(x) || !Number.isFinite(y)) {
+      x = NaN; y = NaN; loc = LOC.NONE;
+      const pl = S.plss ? locate(S.plss, plss, g) : { reason: 'state has no PLSS' };
+      if (bad) {
+        stats.invalidCoords++;
+        const fix = S.repairCoords && outline ? repair(outline, lo.v, la.v, pl.sectionBox) : { reason: 'repair disabled' };
+        if (fix.note) { x = fix.x; y = fix.y; loc = LOC.REPAIRED; note = fix.note; } else bump(stats.repairFailed, fix.reason);
+      } else stats.nullCoords++;
+      if (loc === LOC.NONE) {
+        if (pl.point) {
+          [x, y] = pl.point; loc = LOC.APPROX;
+          note = `Location: APPROXIMATE (${pl.text}). The regulator file has no ${bad ? 'valid ' : ''}coordinates for this well.`;
+          if (pl.inferred) stats.approxInferred++;
+          if (pl.quarters) stats.approxQuarter++;
+        } else bump(stats.approxFailed, pl.reason);
+      }
+    }
+    stats[loc === LOC.EXACT ? 'exact' : loc === LOC.REPAIRED ? 'repaired' : loc === LOC.APPROX ? 'approx' : 'none']++;
+    wells.push({
+      k: `${S.id}-${c || 'none'}`, a: canon, x, y, loc, note, r: rec,
+      t: typeCat.add(rec[iType]),
+      s: iStatus >= 0 ? statusCat.add(rec[iStatus]) : -1,
     });
   });
   wells.sort((p, q) => (p.k < q.k ? -1 : p.k > q.k ? 1 : p.a < q.a ? -1 : p.a > q.a ? 1 : 0));
-  log(`${S.id} ${S.base}: rows=${rows}`);
+  log(`${S.id} ${S.base}: rows=${rows} exact=${stats.exact} repaired=${stats.repaired} approx=${stats.approx} unmapped=${stats.none}`);
 
-  const label = (field, v) => (codes[field] ? codeLabel(v, codes[field]) : (v || '(blank)'));
+  const drawn = (w) => w.loc !== LOC.NONE;
   const tally = (n, getter) => {
-    const mapped = new Array(n).fill(0), total = new Array(n).fill(0);
-    for (const w of wells) { const i = getter(w); total[i]++; if (Number.isFinite(w.x) && Number.isFinite(w.y)) mapped[i]++; }
-    return { mapped, total };
+    const mapped = new Array(n).fill(0), total = new Array(n).fill(0), approx = new Array(n).fill(0);
+    for (const w of wells) { const i = getter(w); total[i]++; if (drawn(w)) mapped[i]++; if (w.loc === LOC.APPROX) approx[i]++; }
+    return { mapped, total, approx };
   };
-  const tt = tally(typeNames.length, (w) => w.t);
-  const types = rankCategories(typeNames, tt.mapped, tt.total);
-  const st = iStatus >= 0 ? tally(statusNames.length, (w) => w.s) : null;
-  const statuses = st ? rankCategories(statusNames, st.mapped, st.total) : null;
+
+  // Types: category, then mapped count. Colors: category base color, shaded per type within the category.
+  const tt = tally(typeCat.list.length, (w) => w.t);
+  const catOrder = Object.fromEntries(CATEGORIES.map((c, i) => [c.id, i]));
+  const typeInfo = typeCat.list.map((c, i) => {
+    const name = displayName(S.typeField, c, codes);
+    return { i, name, code: variantsOf(c)[0], variants: variantsOf(c), category: categoryOf(S, c.key, name) };
+  });
+  const tOrder = typeInfo.map((t) => t.i).sort((a, b) => catOrder[typeInfo[a].category] - catOrder[typeInfo[b].category]
+    || tt.mapped[b] - tt.mapped[a] || tt.total[b] - tt.total[a]);
+  const typeRemap = new Array(tOrder.length);
+  tOrder.forEach((old, neu) => { typeRemap[old] = neu; });
+  const perCat = {};
+  const typeList = tOrder.map((old) => {
+    const t = typeInfo[old];
+    const k = (perCat[t.category] = (perCat[t.category] ?? -1) + 1);
+    return { name: t.name, code: t.code, variants: t.variants, category: t.category,
+      color: shade(CATEGORIES[catOrder[t.category]].color, k), count: tt.mapped[old], approx: tt.approx[old], total: tt.total[old] };
+  });
+
+  let statusList = [], statusRemap = null;
+  if (iStatus >= 0) {
+    const st = tally(statusCat.list.length, (w) => w.s);
+    const sOrder = statusCat.list.map((_, i) => i).sort((a, b) => st.mapped[b] - st.mapped[a] || st.total[b] - st.total[a]);
+    statusRemap = new Array(sOrder.length);
+    sOrder.forEach((old, neu) => { statusRemap[old] = neu; });
+    statusList = sOrder.map((old, k) => {
+      const c = statusCat.list[old];
+      return { name: displayName(S.statusField, c, codes), code: variantsOf(c)[0], variants: variantsOf(c), color: colorFor(k),
+        count: st.mapped[old], approx: st.approx[old], total: st.total[old] };
+    });
+  }
 
   // Layers
   const iOid = col('OBJECTID');
   const oidToLocal = new Map(), apiToLocal = new Map();
   wells.forEach((w, i) => {
     if (iOid >= 0) oidToLocal.set(String(w.r[iOid]).trim(), i);
-    if (S.fullApi.test(w.a)) { const l = apiToLocal.get(w.a); if (l) l.push(i); else apiToLocal.set(w.a, [i]); }
+    if (w.a) { const l = apiToLocal.get(w.a); if (l) l.push(i); else apiToLocal.set(w.a, [i]); }
   });
-  const names = S.layerNames();
+  const names = S.layerNames ? S.layerNames() : {};
   const layers = [];
   const pairsByLayer = {};
   const files = fs.readdirSync(S.raw).filter((f) => f.toLowerCase().endsWith('.csv') && f !== S.base).sort();
@@ -260,7 +300,7 @@ async function loadState(S) {
     if (oidOk) {
       for (const rec of recs) {
         const wi = oidToLocal.get(String(rec[oi]).trim());
-        if (wi === undefined || wells[wi].a !== normApi(rec[ai])) { oidOk = false; break; }
+        if (wi === undefined || wells[wi].a !== canonicalApi(S, rec[ai])) { oidOk = false; break; }
       }
     }
     const pairs = [];
@@ -270,9 +310,9 @@ async function loadState(S) {
       let targets;
       if (oidOk) targets = [oidToLocal.get(String(rec[oi]).trim())];
       else {
-        const api = normApi(rec[ai]);
-        if (!S.fullApi.test(api)) partialApiRows++;
-        targets = S.fullApi.test(api) ? apiToLocal.get(api) || [] : [];
+        const api = canonicalApi(S, rec[ai]);
+        if (!api) partialApiRows++;
+        targets = api ? apiToLocal.get(api) || [] : [];
       }
       if (targets.length) matchedRows++; else unmatchedRows++;
       for (const t of targets) { pairs.push([t, rec]); matchedWells.add(t); }
@@ -288,13 +328,9 @@ async function loadState(S) {
     log(`${S.id} layer ${f}: rows=${recs.length} join=${joinOn} matched=${matchedRows} unmatched=${unmatchedRows} partialApi=${partialApiRows} wells=${matchedWells.size}`);
   }
 
-  const snap = S.snapshot();
   return {
-    S, header, wells, rows, layers, pairsByLayer, snap,
-    typeList: types.order.map((old) => ({ name: label(S.typeField, typeNames[old]), code: typeNames[old], count: tt.mapped[old], total: tt.total[old] })),
-    typeRemap: types.remap,
-    statusList: statuses ? statuses.order.map((old) => ({ name: label(S.statusField, statusNames[old]), code: statusNames[old], count: st.mapped[old], total: st.total[old] })) : [],
-    statusRemap: statuses ? statuses.remap : null,
+    S, header, wells, rows, layers, pairsByLayer, snap: snapshotFromPullLog(S), stats, plss,
+    typeList, typeRemap, statusList, statusRemap,
     decode: Object.fromEntries([S.typeField, S.statusField].filter((f) => f && codes[f]).map((f) => [f, codes[f]])),
   };
 }
@@ -310,6 +346,7 @@ async function main() {
   const types = new Uint8Array(N);
   const status = new Uint8Array(N).fill(255);
   const apis = new Uint32Array(N);
+  const locs = new Uint8Array(N);
   const bbox = [Infinity, Infinity, -Infinity, -Infinity];
   const metaTypes = [], metaStatuses = [], metaStates = [], shards = [];
 
@@ -319,23 +356,21 @@ async function main() {
 
   let offset = 0;
   for (const L of loaded) {
-    const { S, wells } = L;
+    const { S, wells, stats } = L;
     const typeBase = metaTypes.length;
     const statusBase = metaStatuses.length;
-    L.typeList.forEach((t, i) => metaTypes.push({ ...t, state: S.id, color: colorFor(i) }));
-    L.statusList.forEach((t, i) => metaStatuses.push({ ...t, state: S.id, color: colorFor(i) }));
+    L.typeList.forEach((t) => metaTypes.push({ ...t, state: S.id }));
+    L.statusList.forEach((t) => metaStatuses.push({ ...t, state: S.id }));
     if (metaTypes.length > 255 || metaStatuses.length > 254) throw new Error('too many categories for Uint8 encoding');
 
-    let unplottable = 0, invalidLocation = 0;
     wells.forEach((w, li) => {
       const i = offset + li;
       points[i * 2] = w.x; points[i * 2 + 1] = w.y;
-      if (w.bad) invalidLocation++;
-      if (!Number.isFinite(w.x) || !Number.isFinite(w.y)) unplottable++;
-      else { bbox[0] = Math.min(bbox[0], w.x); bbox[1] = Math.min(bbox[1], w.y); bbox[2] = Math.max(bbox[2], w.x); bbox[3] = Math.max(bbox[3], w.y); }
+      locs[i] = w.loc;
+      if (w.loc !== LOC.NONE) { bbox[0] = Math.min(bbox[0], w.x); bbox[1] = Math.min(bbox[1], w.y); bbox[2] = Math.max(bbox[2], w.x); bbox[3] = Math.max(bbox[3], w.y); }
       types[i] = typeBase + L.typeRemap[w.t];
       if (w.s >= 0) status[i] = statusBase + L.statusRemap[w.s];
-      apis[i] = S.fullApi.test(w.a) ? S.searchKey(w.a) : 0;
+      apis[i] = keyOf(w.a);
     });
 
     // Shards: contiguous ranges of the same county key; layer records bucketed by shard.
@@ -361,7 +396,9 @@ async function main() {
         list.sort((a, b) => a[0] - b[0]);
         blocks[layer.key] = { well: list.map(([wi]) => wi - s), cols: columns(list.map(([, r]) => r), layer.fields.length) };
       }
-      const body = { key, state: S.id, start: offset + s, count: e - s, wells: columns(wells.slice(s, e).map((w) => w.r), L.header.length), layers: blocks };
+      const notes = {};
+      for (let i = s; i < e; i++) if (wells[i].note) notes[i - s] = wells[i].note;
+      const body = { key, state: S.id, start: offset + s, count: e - s, wells: columns(wells.slice(s, e).map((w) => w.r), L.header.length), layers: blocks, notes };
       const file = `shards/${key}.json.br`;
       const json = Buffer.from(JSON.stringify(body));
       fs.writeFileSync(path.join(OUT, file), zlib.brotliCompressSync(json, {
@@ -371,16 +408,23 @@ async function main() {
       perShard[ri] = null;
     });
 
+    const mapped = stats.exact + stats.repaired + stats.approx;
     metaStates.push({
-      id: S.id, name: S.name, agency: S.agency, snapshot: L.snap.date, snapshotSource: L.snap.source,
-      start: offset, wellCount: wells.length, sourceRowCount: L.rows, mapped: wells.length - unplottable, unplottable,
-      noLocation: unplottable - invalidLocation, invalidLocation,
+      id: S.id, name: S.name, agency: S.agency, short: S.short, apiPrefix: S.apiPrefix, apiForm: S.apiForm, datum: S.datum,
+      snapshot: L.snap.date, snapshotSource: L.snap.source,
+      start: offset, wellCount: wells.length, sourceRowCount: L.rows,
+      mapped, exact: stats.exact, repaired: stats.repaired, approximate: stats.approx, unplottable: stats.none,
+      nullCoords: stats.nullCoords, invalidCoords: stats.invalidCoords,
+      repairFailed: stats.repairFailed, approxFailed: stats.approxFailed, approxMeridianInferred: stats.approxInferred, approxWithQuarterCalls: stats.approxQuarter,
+      plss: L.plss ? { file: L.plss.file, sections: L.plss.rows, keys: L.plss.boxes.size, ambiguous: L.plss.ambiguous } : null,
       typeRange: [typeBase, metaTypes.length], statusRange: [statusBase, metaStatuses.length],
       typeField: S.typeField, statusField: S.statusField, decode: L.decode,
-      base: { key: `${S.id}_base`, file: S.base, name: S.baseName || S.layerNames()[S.base] || 'Well Locations', fields: L.header.map((n) => ({ name: n, label: labelFor(n) })) },
+      base: { key: `${S.id}_base`, file: S.base, name: S.baseName || 'Well Locations', fields: L.header.map((n) => ({ name: n, label: labelFor(n) })) },
       layers: L.layers,
     });
-    log(`${S.id}: wells=${wells.length} mapped=${wells.length - unplottable} unplottable=${unplottable} types=${L.typeList.length} statuses=${L.statusList.length} layers=${L.layers.length} shards=${ranges.length} snapshot=${L.snap.date}`);
+    log(`${S.id}: wells=${wells.length} mapped=${mapped} (exact=${stats.exact} repaired=${stats.repaired} approx=${stats.approx}) unmapped=${stats.none} `
+      + `null=${stats.nullCoords} invalid=${stats.invalidCoords} repairFailed=${JSON.stringify(stats.repairFailed)} approxFailed=${JSON.stringify(stats.approxFailed)} `
+      + `types=${L.typeList.length} statuses=${L.statusList.length} layers=${L.layers.length} shards=${ranges.length} snapshot=${L.snap.date}`);
     offset += wells.length;
     L.wells = null;
   }
@@ -390,6 +434,7 @@ async function main() {
   writeBin('types.bin', types);
   writeBin('status.bin', status);
   writeBin('apis.bin', apis);
+  writeBin('loc.bin', locs);
 
   // County outlines, normalized.
   const features = [];
@@ -403,10 +448,11 @@ async function main() {
   }
   fs.writeFileSync(path.join(OUT, 'counties.json'), JSON.stringify({ type: 'FeatureCollection', features }));
 
+  const names = metaStates.map((s) => s.name);
   const meta = {
-    app: 'Texas & Oklahoma Wells Map', builtAt: new Date().toISOString(),
-    wellCount: N, bbox, states: metaStates, types: metaTypes, statuses: metaStatuses, shards,
-    countyCount: features.length,
+    app: `${names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}` : names[0]} Wells Map`, builtAt: new Date().toISOString(),
+    wellCount: N, bbox, categories: CATEGORIES.map(({ id, name, color }) => ({ id, name, color })),
+    states: metaStates, types: metaTypes, statuses: metaStatuses, shards, countyCount: features.length,
   };
   fs.writeFileSync(path.join(OUT, 'meta.json'), JSON.stringify(meta, null, 1));
 

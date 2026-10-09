@@ -1,17 +1,26 @@
-# Texas & Oklahoma Wells Map
+# Wells Map (Texas, Oklahoma, Kansas)
 
-An offline desktop app (Mac and Windows) that shows every oil and gas well in Texas and Oklahoma on
-one map. Click a well, or search by API number, to see every field we have for it, grouped by source
+An offline desktop app (Mac and Windows) that shows every oil and gas well in Texas, Oklahoma and
+Kansas on one map. More states are added one at a time; see [docs/ADDING_A_STATE.md](docs/ADDING_A_STATE.md). Click a well, or search by API number, to see every field we have for it, grouped by source
 layer.
 
 | State | Source | Snapshot | Wells | On the map | No location (not drawn) |
 |---|---|---|---|---|---|
 | Texas | Railroad Commission of Texas (RRC) public GIS, RRC Public Viewer MapServer | 2026-10-09 | 1,397,386 | 1,397,386 | 0 |
-| Oklahoma | Oklahoma Corporation Commission (OCC): `rbdms-wells.csv` nightly file + OCC GIS FeatureServer | 2026-10-09 | 457,138 | 442,409 | 14,729 (14,707 null/0 + 22 invalid) |
+| Oklahoma | Oklahoma Corporation Commission (OCC): `rbdms-wells.csv` nightly file + OCC GIS FeatureServer | 2026-10-09 | 457,138 | 456,337 (442,409 exact + 17 repaired + 13,911 approximate) | 801 |
+| Kansas | Kansas Geological Survey (KGS): `ks_wells.zip` bulk file (built 2026-09-11) | 2026-09-11 | 519,568 | 519,518 | 50 |
 
-Oklahoma wells with null or 0 coordinates (14,707), plus 22 whose coordinates are outside any valid
-latitude/longitude (for example a missing decimal point, `-1007768207`), are left off the map and out
-of the legend counts, but you can still find them by API search. Both snapshot dates are shown in the app header.
+- **Repaired coordinates:** 17 Oklahoma wells had a coordinate with a lost decimal point (for example
+  `-1007768207`). They are drawn at the corrected point because exactly one correction lands inside
+  Oklahoma and next to the well's PLSS section. The panel says what was changed.
+- **Approximate locations:** 13,911 Oklahoma wells have no usable coordinates in the OCC file but do have
+  meridian/township/range/section. They are drawn as hollow rings at the center of the section (or of
+  the quarter call), using the BLM CadNSDI PLSS grid, and the panel says "Location: APPROXIMATE".
+  Checked against wells that have real coordinates, this method is off by a median of 0.04 km.
+- **Unmapped** wells (no usable location at all) are left off the map and out of the legend counts, but
+  you can still find them by API search. Each state's snapshot date is shown in the app header.
+- Kansas coordinates are NAD27 as published by KGS (a few tens of meters from WGS84 in Kansas). The KGS
+  live service had 65 more wells on 2026-10-09 than the 2026-09-11 bulk file.
 
 **No automatic network connections.** The app does not connect to anything by itself: no telemetry,
 no auto-update, no map tiles, no login. All data ships inside the installer. The only time anything
@@ -69,14 +78,19 @@ certutil -hashfile %USERPROFILE%\Downloads\TexasWellsMap-1.1.0-win-x64-setup.exe
 ## Using the app
 
 - **Legend (left):** one section per state with a checkbox to show or hide the whole state, then
-  well types with counts. Oklahoma also has well statuses (filterable) and a **Color by Type / Status**
-  switch. Counts are wells on the map. Each state's footer shows mapped, shown, and no-location counts.
+  well types grouped by category with counts. Categories share colors across states (oil green, gas
+  red, plugged/abandoned gray, injection/disposal blue, dry hole orange, permit/other purple). Spelling
+  variants (Oklahoma `Gas`/`GAS`, `2RIn`/`2RIN`) are one legend entry; the raw value is still shown in
+  the details. Oklahoma and Kansas also have well statuses (filterable) and a **Color by Type / Status**
+  switch. Counts are wells on the map. Each state's footer shows source rows, exact, approximate and
+  unmapped counts. "Show approximate locations" hides or shows the hollow-ring wells.
 - **Search (top):** type an API number.
   - Texas: 8-digit RRC form (`38934010`), or 10 digits with the `42` prefix (`4238934010`, `42-389-34010`).
   - Oklahoma: 10 digits starting with `35` (`3514777096` or `35-147-77096`).
-  - An 8-digit number is always treated as Texas. Each state has its own search key, so a Texas
-    API and an Oklahoma API can never match each other. If several wells share an API, the app
-    lists them and you pick one.
+  - Kansas: 10 digits starting with `15` (`1500720008` or `15-007-20008`; a 14-digit API with suffix also works).
+  - An 8-digit number is always treated as Texas. The first two digits of a 10-digit API pick the state,
+    and each state is searched separately, so APIs of different states can never match each other.
+    If several wells share an API, the app lists them and you pick one.
 - **Details (right):** every field for the well, grouped by source layer, with a readable label and
   the raw field name. Oklahoma status and type codes also show their description from the OCC data
   dictionary. Layers with no record for that well say "No record".
@@ -84,6 +98,7 @@ certutil -hashfile %USERPROFILE%\Downloads\TexasWellsMap-1.1.0-win-x64-setup.exe
     Deeper than 15,000 ft., High Cost Tight Sands, EOR H13 Oil Wells, Well Logs, Horiz/Dir Surface
     Locations.
   - Oklahoma layers: Well, Orphan Fund, Completion Report.
+  - Kansas layer: Well (all 43 KGS columns).
 
 ## How it works / why no automatic network connections
 
@@ -104,9 +119,16 @@ certutil -hashfile %USERPROFILE%\Downloads\TexasWellsMap-1.1.0-win-x64-setup.exe
 |---|---|
 | `scripts/01_layers.py` ... `05_report.py`, `common.py` | One-time throttled pull of the RRC layers into `data/raw/` (not run in CI) |
 | `scripts/ok_pull.py`, `scripts/ok_report.py` | One-time polite pull of the OCC data into `data/raw/ok/`, plus its snapshot report and code dictionary |
-| `scripts/build_data.mjs` | Converts the raw data into compact app assets (data-driven: discovers layer files and fields) |
+| `scripts/ks_pull.py` | One-time polite pull of the KGS bulk file into `data/raw/ks/` |
+| `scripts/plss_pull.py` | One-time polite pull of the BLM CadNSDI PLSS section grid per state into `data/raw/plss/` |
+| `scripts/states_pull.py`, `scripts/build_states.mjs` | US state outlines (Census) for the state boundary layer and the coordinate-repair check |
+| `scripts/states.config.mjs` | **One entry per state**: files, API prefix, columns, PLSS columns, category overrides |
+| `scripts/build_data.mjs`, `scripts/lib/` | Converts the raw data into compact app assets (data-driven), repairs coordinates, places PLSS approximate locations |
+| `scripts/state_report.mjs` | Generic snapshot report for a state (`data/ks_snapshot_report.md`) |
+| `app/src/api.mjs` | API number rules shared by the build and the app |
+| `docs/ADDING_A_STATE.md` | Recipe for adding the next state |
 | `scripts/build_check_data.mjs` | Validates the built assets (counts, shards, 50 MB per-file limit) before packaging |
-| `data/snapshot_report.md`, `data/ok_snapshot_report.md` | Row counts, nulls, join coverage, type/status counts for each snapshot |
+| `data/snapshot_report.md`, `data/ok_snapshot_report.md`, `data/ks_snapshot_report.md` | Row counts, nulls, join coverage, type/status counts for each snapshot |
 | `data/ok_codes.json` | OCC well status / well type code descriptions (from the OCC data dictionary) |
 | `app/assets/data/` | Built app assets (committed, see below) |
 | `app/main.js`, `app/preload.js` | Electron main process (offline guard, local file server, link opener) |
@@ -116,13 +138,14 @@ certutil -hashfile %USERPROFILE%\Downloads\TexasWellsMap-1.1.0-win-x64-setup.exe
 ### Data in the repository
 
 The raw downloads (`data/raw/`, several hundred MB) are **not** committed. The compact built assets
-in `app/assets/data/` (about 94 MB in total, no file over 15 MB) **are** committed, so CI and anyone
-rebuilding from source never needs to contact the RRC or OCC:
+in `app/assets/data/` (about 128 MB in total, no file over 20 MB) **are** committed, so CI and anyone
+rebuilding from source never needs to contact a regulator:
 
 - `points.bin` (Float32 lon/lat per well), `types.bin` / `status.bin` (Uint8 category index),
-  `apis.bin` (Uint32 search key: Texas 8-digit API, Oklahoma 10-digit API)
+  `apis.bin` (Uint32 search key: the 8 digits after the state code), `loc.bin` (Uint8: exact,
+  repaired, approximate, or not drawn)
 - `shards/<state>-<county code>.json.br` (brotli JSON, one file per county: every field per well
-  plus the joined layer records)
+  plus the joined layer records and location notes)
 - `meta.json` (states, types, statuses, counts, layer and field definitions, snapshot dates),
   `counties.json` (outlines for both states)
 
@@ -134,6 +157,7 @@ Join rules (decided from the data by `build_data.mjs`):
   RRC layer 10 (horizontal/directional lines, no API field) and layer 0 (duplicate of layer 1).
 - **Oklahoma:** Orphan Fund (`api`) and Completion Report (`api_number`) join on the 10-digit API.
   All 18,136 orphan-fund rows and all 9,466 completion-report rows (2,613 wells) match a well.
+- **Kansas:** one base file, no extra layers.
 
 ## Build from source
 
@@ -162,8 +186,12 @@ python3 scripts/05_report.py
 # Oklahoma (OCC)
 python3 scripts/ok_pull.py
 python3 scripts/ok_report.py
-# Rebuild the app assets
-cd app && npm run data
+# Kansas (KGS)
+python3 -I scripts/ks_pull.py
+# PLSS section grids for approximate locations
+python3 -I scripts/plss_pull.py OK KS
+# Rebuild the app assets and the Kansas report
+cd app && npm run data && node ../scripts/state_report.mjs KS
 ```
 
 ## Releases

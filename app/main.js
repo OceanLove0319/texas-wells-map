@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Texas Wells Map - Electron main process.
+ * Wells Map - Electron main process.
  *
  * Offline by design:
  *   - UI and data are served from a private "app://" scheme backed by local files.
@@ -30,6 +30,8 @@ const DATA_DIR = app.isPackaged
 //   --view=<lon>,<lat>,<zoom>  start at this map view
 //   --pick=<n>            when that API matches several wells, open the n-th (1-based)
 //   --log-renderer        mirror renderer console output to stdout
+//   --screenshot=<file.png> [--screenshot-delay=<ms>] [--quit-after-screenshot]
+//                         save a PNG of the window after the delay (local file only; for verification)
 const argOf = (name) => {
   const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
   return hit ? hit.slice(name.length + 3) : null;
@@ -80,7 +82,7 @@ function createWindow() {
     height: 900,
     minWidth: 900,
     minHeight: 600,
-    title: 'Texas & Oklahoma Wells Map',
+    title: 'Wells Map',
     backgroundColor: '#f4f5f7',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -108,6 +110,17 @@ function createWindow() {
   const pick = argOf('pick');
   if (pick) q.set('pick', pick);
   win.loadURL(`${SCHEME}://local/index.html${q.toString() ? `?${q}` : ''}`);
+
+  const shot = argOf('screenshot');
+  if (shot) {
+    const delay = Number(argOf('screenshot-delay')) || 8000;
+    win.webContents.once('did-finish-load', () => setTimeout(async () => {
+      const img = await win.webContents.capturePage();
+      fs.writeFileSync(path.resolve(shot), img.toPNG());
+      console.log(`[screenshot] ${path.resolve(shot)}`);
+      if (process.argv.includes('--quit-after-screenshot')) app.quit();
+    }, delay));
+  }
 }
 
 /** Open a user-clicked http(s) link in the default browser. Nothing else is accepted. */

@@ -1,27 +1,95 @@
 {
- "app": "Texas & Oklahoma Wells Map",
- "builtAt": "2026-10-09T19:02:30.453Z",
- "wellCount": 1854524,
+ "app": "Texas, Oklahoma & Kansas Wells Map",
+ "builtAt": "2026-10-09T20:03:15.716Z",
+ "wellCount": 2374092,
  "bbox": [
   -106.61454772486502,
   25.85653014574505,
   -93.52908945387375,
-  37.0013168
+  40.0020005
+ ],
+ "categories": [
+  {
+   "id": "oil",
+   "name": "Oil",
+   "color": [
+    26,
+    150,
+    65
+   ]
+  },
+  {
+   "id": "gas",
+   "name": "Gas",
+   "color": [
+    215,
+    48,
+    39
+   ]
+  },
+  {
+   "id": "plugged",
+   "name": "Plugged / abandoned",
+   "color": [
+    115,
+    115,
+    115
+   ]
+  },
+  {
+   "id": "injection",
+   "name": "Injection / disposal",
+   "color": [
+    33,
+    113,
+    181
+   ]
+  },
+  {
+   "id": "dry",
+   "name": "Dry hole",
+   "color": [
+    237,
+    140,
+    20
+   ]
+  },
+  {
+   "id": "other",
+   "name": "Permit / other",
+   "color": [
+    174,
+    82,
+    168
+   ]
+  }
  ],
  "states": [
   {
    "id": "TX",
    "name": "Texas",
    "agency": "Railroad Commission of Texas (RRC)",
+   "short": "RRC",
+   "apiPrefix": "42",
+   "apiForm": "county8",
+   "datum": "WGS84",
    "snapshot": "2026-10-09",
    "snapshotSource": "data/snapshot_report.md",
    "start": 0,
    "wellCount": 1397386,
    "sourceRowCount": 1397386,
    "mapped": 1397386,
+   "exact": 1397386,
+   "repaired": 0,
+   "approximate": 0,
    "unplottable": 0,
-   "noLocation": 0,
-   "invalidLocation": 0,
+   "nullCoords": 0,
+   "invalidCoords": 0,
+   "repairFailed": {},
+   "approxFailed": {},
+   "approxMeridianInferred": 0,
+   "approxWithQuarterCalls": 0,
+   "plss": null,
    "typeRange": [
     0,
     53
@@ -363,18 +431,40 @@
    "id": "OK",
    "name": "Oklahoma",
    "agency": "Oklahoma Corporation Commission (OCC)",
+   "short": "OCC",
+   "apiPrefix": "35",
+   "apiForm": "full",
+   "datum": "NAD83 (per OCC)",
    "snapshot": "2026-10-09",
-   "snapshotSource": "data/raw/ok/pull_log.jsonl (rbdms-wells.csv download)",
+   "snapshotSource": "data/raw/ok/pull_log.jsonl (rbdms-wells.csv)",
    "start": 1397386,
    "wellCount": 457138,
    "sourceRowCount": 457138,
-   "mapped": 442409,
-   "unplottable": 14729,
-   "noLocation": 14707,
-   "invalidLocation": 22,
+   "mapped": 456337,
+   "exact": 442409,
+   "repaired": 17,
+   "approximate": 13911,
+   "unplottable": 801,
+   "nullCoords": 14707,
+   "invalidCoords": 22,
+   "repairFailed": {
+    "no candidate inside the state near its PLSS section": 5
+   },
+   "approxFailed": {
+    "missing or invalid township/range/section": 799,
+    "section not found in the BLM grid": 2
+   },
+   "approxMeridianInferred": 94,
+   "approxWithQuarterCalls": 13740,
+   "plss": {
+    "file": "data/raw/plss/OK_sections.jsonl",
+    "sections": 70926,
+    "keys": 70874,
+    "ambiguous": 7
+   },
    "typeRange": [
     53,
-    86
+    83
    ],
    "statusRange": [
     0,
@@ -1171,1270 +1261,3916 @@
      "wellsWithRecords": 18136
     }
    ]
+  },
+  {
+   "id": "KS",
+   "name": "Kansas",
+   "agency": "Kansas Geological Survey (KGS)",
+   "short": "KGS",
+   "apiPrefix": "15",
+   "apiForm": "full",
+   "datum": "NAD27 (per KGS)",
+   "snapshot": "2026-09-11",
+   "snapshotSource": "data/raw/ks/pull_log.jsonl (ks_wells.txt, zip_entry_date)",
+   "start": 1854524,
+   "wellCount": 519568,
+   "sourceRowCount": 519568,
+   "mapped": 519518,
+   "exact": 519518,
+   "repaired": 0,
+   "approximate": 0,
+   "unplottable": 50,
+   "nullCoords": 50,
+   "invalidCoords": 0,
+   "repairFailed": {},
+   "approxFailed": {
+    "section not found in the BLM grid": 34,
+    "missing or invalid township/range/section": 16
+   },
+   "approxMeridianInferred": 0,
+   "approxWithQuarterCalls": 0,
+   "plss": {
+    "file": "data/raw/plss/KS_sections.jsonl",
+    "sections": 82466,
+    "keys": 82448,
+    "ambiguous": 117
+   },
+   "typeRange": [
+    83,
+    165
+   ],
+   "statusRange": [
+    19,
+    54
+   ],
+   "typeField": "STATUS",
+   "statusField": "STATUS2",
+   "decode": {},
+   "base": {
+    "key": "KS_base",
+    "file": "ks_wells.txt",
+    "name": "Well",
+    "fields": [
+     {
+      "name": "KID",
+      "label": "Kid"
+     },
+     {
+      "name": "API_NUMBER",
+      "label": "API Number"
+     },
+     {
+      "name": "API_NUM_NODASH",
+      "label": "API Number Nodash"
+     },
+     {
+      "name": "LEASE",
+      "label": "Lease"
+     },
+     {
+      "name": "WELL",
+      "label": "Well"
+     },
+     {
+      "name": "FIELD",
+      "label": "Field"
+     },
+     {
+      "name": "LATITUDE",
+      "label": "Latitude"
+     },
+     {
+      "name": "LONGITUDE",
+      "label": "Longitude"
+     },
+     {
+      "name": "LONG_LAT_SOURCE",
+      "label": "Longitude Latitude Source"
+     },
+     {
+      "name": "TOWNSHIP",
+      "label": "Township"
+     },
+     {
+      "name": "TWN_DIR",
+      "label": "Twn Dir"
+     },
+     {
+      "name": "RANGE",
+      "label": "Range"
+     },
+     {
+      "name": "RANGE_DIR",
+      "label": "Range Dir"
+     },
+     {
+      "name": "SECTION",
+      "label": "Section"
+     },
+     {
+      "name": "SPOT",
+      "label": "Spot"
+     },
+     {
+      "name": "FEET_NORTH",
+      "label": "Feet North"
+     },
+     {
+      "name": "FEET_EAST",
+      "label": "Feet East"
+     },
+     {
+      "name": "FOOT_REF",
+      "label": "Foot Ref"
+     },
+     {
+      "name": "ORIG_OPERATOR",
+      "label": "Orig Operator"
+     },
+     {
+      "name": "CURR_OPERATOR",
+      "label": "Curr Operator"
+     },
+     {
+      "name": "ELEVATION",
+      "label": "Elevation"
+     },
+     {
+      "name": "ELEV_REF",
+      "label": "Elev Ref"
+     },
+     {
+      "name": "SURFACE_ELEVATION_LIDAR",
+      "label": "Surface Elevation Lidar"
+     },
+     {
+      "name": "DEPTH",
+      "label": "Depth"
+     },
+     {
+      "name": "FORMATION_AT_TOTAL_DEPTH",
+      "label": "Formation At Total Depth"
+     },
+     {
+      "name": "PRODUCE_FORM",
+      "label": "Produce Form"
+     },
+     {
+      "name": "IP_OIL",
+      "label": "Ip Oil"
+     },
+     {
+      "name": "IP_GAS",
+      "label": "Ip Gas"
+     },
+     {
+      "name": "IP_WATER",
+      "label": "Ip Water"
+     },
+     {
+      "name": "PERMIT",
+      "label": "Permit"
+     },
+     {
+      "name": "SPUD",
+      "label": "Spud"
+     },
+     {
+      "name": "COMPLETION",
+      "label": "Completion"
+     },
+     {
+      "name": "PLUGGING",
+      "label": "Plugging"
+     },
+     {
+      "name": "MODIFIED",
+      "label": "Modified"
+     },
+     {
+      "name": "OIL_KID",
+      "label": "Oil Kid"
+     },
+     {
+      "name": "OIL_DOR_ID",
+      "label": "Oil Dor ID"
+     },
+     {
+      "name": "GAS_KID",
+      "label": "Gas Kid"
+     },
+     {
+      "name": "GAS_DOR_ID",
+      "label": "Gas Dor ID"
+     },
+     {
+      "name": "KCC_PERMIT",
+      "label": "Kcc Permit"
+     },
+     {
+      "name": "STATUS",
+      "label": "Status"
+     },
+     {
+      "name": "STATUS2",
+      "label": "Status2"
+     },
+     {
+      "name": "COMMENTS",
+      "label": "Comments"
+     },
+     {
+      "name": "LEASE_WELL_NAME",
+      "label": "Lease Well Name"
+     }
+    ]
+   },
+   "layers": []
   }
  ],
  "types": [
   {
-   "name": "Plugged Oil Well",
-   "code": "Plugged Oil Well",
-   "count": 333006,
-   "total": 333006,
-   "state": "TX",
-   "color": [
-    31,
-    119,
-    180
-   ]
-  },
-  {
    "name": "Oil Well",
    "code": "Oil Well",
+   "variants": [
+    "Oil Well"
+   ],
+   "category": "oil",
+   "color": [
+    26,
+    150,
+    65
+   ],
    "count": 315774,
+   "approx": 0,
    "total": 315774,
-   "state": "TX",
-   "color": [
-    214,
-    39,
-    40
-   ]
-  },
-  {
-   "name": "Dry Hole",
-   "code": "Dry Hole",
-   "count": 295093,
-   "total": 295093,
-   "state": "TX",
-   "color": [
-    44,
-    160,
-    44
-   ]
-  },
-  {
-   "name": "Gas Well",
-   "code": "Gas Well",
-   "count": 126333,
-   "total": 126333,
-   "state": "TX",
-   "color": [
-    255,
-    127,
-    14
-   ]
-  },
-  {
-   "name": "Permitted Location",
-   "code": "Permitted Location",
-   "count": 114062,
-   "total": 114062,
-   "state": "TX",
-   "color": [
-    148,
-    103,
-    189
-   ]
-  },
-  {
-   "name": "Plugged Gas Well",
-   "code": "Plugged Gas Well",
-   "count": 68419,
-   "total": 68419,
-   "state": "TX",
-   "color": [
-    140,
-    86,
-    75
-   ]
-  },
-  {
-   "name": "Canceled / Abandoned Location",
-   "code": "Canceled / Abandoned Location",
-   "count": 44587,
-   "total": 44587,
-   "state": "TX",
-   "color": [
-    227,
-    119,
-    194
-   ]
-  },
-  {
-   "name": "Injection / Disposal from Oil",
-   "code": "Injection / Disposal from Oil",
-   "count": 24941,
-   "total": 24941,
-   "state": "TX",
-   "color": [
-    23,
-    190,
-    207
-   ]
-  },
-  {
-   "name": "Plugged Oil / Gas",
-   "code": "Plugged Oil / Gas",
-   "count": 23492,
-   "total": 23492,
-   "state": "TX",
-   "color": [
-    188,
-    189,
-    34
-   ]
+   "state": "TX"
   },
   {
    "name": "Oil/Gas Well",
    "code": "Oil/Gas Well",
+   "variants": [
+    "Oil/Gas Well"
+   ],
+   "category": "oil",
+   "color": [
+    106,
+    187,
+    132
+   ],
    "count": 23241,
+   "approx": 0,
    "total": 23241,
-   "state": "TX",
-   "color": [
-    127,
-    127,
-    127
-   ]
-  },
-  {
-   "name": "Injection / Disposal",
-   "code": "Injection / Disposal",
-   "count": 15619,
-   "total": 15619,
-   "state": "TX",
-   "color": [
-    174,
-    199,
-    232
-   ]
+   "state": "TX"
   },
   {
    "name": "Shut-In Oil",
    "code": "Shut-In Oil",
-   "count": 5831,
-   "total": 5831,
-   "state": "TX",
+   "variants": [
+    "Shut-In Oil"
+   ],
+   "category": "oil",
    "color": [
-    255,
-    152,
-    150
-   ]
+    18,
+    105,
+    46
+   ],
+   "count": 5831,
+   "approx": 0,
+   "total": 5831,
+   "state": "TX"
+  },
+  {
+   "name": "Gas Well",
+   "code": "Gas Well",
+   "variants": [
+    "Gas Well"
+   ],
+   "category": "gas",
+   "color": [
+    215,
+    48,
+    39
+   ],
+   "count": 126333,
+   "approx": 0,
+   "total": 126333,
+   "state": "TX"
   },
   {
    "name": "Shut-In Gas",
    "code": "Shut-In Gas",
-   "count": 2096,
-   "total": 2096,
-   "state": "TX",
+   "variants": [
+    "Shut-In Gas"
+   ],
+   "category": "gas",
    "color": [
-    152,
-    223,
-    138
-   ]
-  },
-  {
-   "name": "Water Supply Well",
-   "code": "Water Supply Well",
-   "count": 809,
-   "total": 809,
-   "state": "TX",
-   "color": [
-    255,
-    187,
-    120
-   ]
-  },
-  {
-   "name": "Core Test",
-   "code": "Core Test",
-   "count": 763,
-   "total": 763,
-   "state": "TX",
-   "color": [
-    197,
-    176,
-    213
-   ]
-  },
-  {
-   "name": "Injection / Disposal from Gas",
-   "code": "Injection / Disposal from Gas",
-   "count": 697,
-   "total": 697,
-   "state": "TX",
-   "color": [
-    196,
-    156,
-    148
-   ]
-  },
-  {
-   "name": "Storage Well",
-   "code": "Storage Well",
-   "count": 648,
-   "total": 648,
-   "state": "TX",
-   "color": [
-    247,
-    182,
-    210
-   ]
-  },
-  {
-   "name": "Injection / Disposal from Oil/Gas",
-   "code": "Injection / Disposal from Oil/Gas",
-   "count": 613,
-   "total": 613,
-   "state": "TX",
-   "color": [
-    158,
-    218,
-    229
-   ]
-  },
-  {
-   "name": "Water Supply from Oil",
-   "code": "Water Supply from Oil",
-   "count": 385,
-   "total": 385,
-   "state": "TX",
-   "color": [
-    219,
-    219,
-    141
-   ]
-  },
-  {
-   "name": "Observation from Oil",
-   "code": "Observation from Oil",
-   "count": 197,
-   "total": 197,
-   "state": "TX",
-   "color": [
-    57,
-    59,
-    121
-   ]
-  },
-  {
-   "name": "Observation Well",
-   "code": "Observation Well",
-   "count": 150,
-   "total": 150,
-   "state": "TX",
-   "color": [
-    99,
-    121,
-    57
-   ]
-  },
-  {
-   "name": "Observation from Oil / Gas",
-   "code": "Observation from Oil / Gas",
-   "count": 114,
-   "total": 114,
-   "state": "TX",
-   "color": [
-    140,
-    109,
-    49
-   ]
-  },
-  {
-   "name": "Storage from Gas",
-   "code": "Storage from Gas",
-   "count": 105,
-   "total": 105,
-   "state": "TX",
-   "color": [
-    132,
-    60,
-    57
-   ]
-  },
-  {
-   "name": "Brine Mining",
-   "code": "Brine Mining",
-   "count": 101,
-   "total": 101,
-   "state": "TX",
-   "color": [
-    123,
-    65,
+    229,
+    120,
     115
-   ]
+   ],
+   "count": 2096,
+   "approx": 0,
+   "total": 2096,
+   "state": "TX"
   },
   {
-   "name": "Storage from Oil",
-   "code": "Storage from Oil",
-   "count": 39,
-   "total": 39,
-   "state": "TX",
+   "name": "Plugged Oil Well",
+   "code": "Plugged Oil Well",
+   "variants": [
+    "Plugged Oil Well"
+   ],
+   "category": "plugged",
    "color": [
-    197,
-    198,
-    57
-   ]
+    115,
+    115,
+    115
+   ],
+   "count": 333006,
+   "approx": 0,
+   "total": 333006,
+   "state": "TX"
+  },
+  {
+   "name": "Plugged Gas Well",
+   "code": "Plugged Gas Well",
+   "variants": [
+    "Plugged Gas Well"
+   ],
+   "category": "plugged",
+   "color": [
+    164,
+    164,
+    164
+   ],
+   "count": 68419,
+   "approx": 0,
+   "total": 68419,
+   "state": "TX"
+  },
+  {
+   "name": "Plugged Oil / Gas",
+   "code": "Plugged Oil / Gas",
+   "variants": [
+    "Plugged Oil / Gas"
+   ],
+   "category": "plugged",
+   "color": [
+    81,
+    81,
+    81
+   ],
+   "count": 23492,
+   "approx": 0,
+   "total": 23492,
+   "state": "TX"
   },
   {
    "name": "Plugged Storage",
    "code": "Plugged Storage",
+   "variants": [
+    "Plugged Storage"
+   ],
+   "category": "plugged",
+   "color": [
+    199,
+    199,
+    199
+   ],
    "count": 37,
+   "approx": 0,
    "total": 37,
-   "state": "TX",
-   "color": [
-    57,
-    156,
-    198
-   ]
-  },
-  {
-   "name": "Storage from Oil/Gas",
-   "code": "Storage from Oil/Gas",
-   "count": 33,
-   "total": 33,
-   "state": "TX",
-   "color": [
-    198,
-    57,
-    115
-   ]
-  },
-  {
-   "name": "Water Supply from Gas",
-   "code": "Water Supply from Gas",
-   "count": 28,
-   "total": 28,
-   "state": "TX",
-   "color": [
-    74,
-    198,
-    57
-   ]
-  },
-  {
-   "name": "Service",
-   "code": "Service",
-   "count": 27,
-   "total": 27,
-   "state": "TX",
-   "color": [
-    81,
-    57,
-    198
-   ]
-  },
-  {
-   "name": "Water Supply from Oil/Gas",
-   "code": "Water Supply from Oil/Gas",
-   "count": 26,
-   "total": 26,
-   "state": "TX",
-   "color": [
-    198,
-    122,
-    57
-   ]
+   "state": "TX"
   },
   {
    "name": "Plugged Brine Mining",
    "code": "Plugged Brine Mining",
+   "variants": [
+    "Plugged Brine Mining"
+   ],
+   "category": "plugged",
+   "color": [
+    58,
+    58,
+    58
+   ],
    "count": 24,
+   "approx": 0,
    "total": 24,
-   "state": "TX",
-   "color": [
-    57,
-    198,
-    163
-   ]
-  },
-  {
-   "name": "Observation from Gas",
-   "code": "Observation from Gas",
-   "count": 21,
-   "total": 21,
-   "state": "TX",
-   "color": [
-    198,
-    57,
-    191
-   ]
+   "state": "TX"
   },
   {
    "name": "Plugged Storage/Brine Mining",
    "code": "Plugged Storage/Brine Mining",
+   "variants": [
+    "Plugged Storage/Brine Mining"
+   ],
+   "category": "plugged",
+   "color": [
+    140,
+    140,
+    140
+   ],
    "count": 15,
+   "approx": 0,
    "total": 15,
-   "state": "TX",
-   "color": [
-    150,
-    198,
-    57
-   ]
-  },
-  {
-   "name": "Injection/Disposal from Storage",
-   "code": "Injection/Disposal from Storage",
-   "count": 14,
-   "total": 14,
-   "state": "TX",
-   "color": [
-    57,
-    109,
-    198
-   ]
-  },
-  {
-   "name": "Sulfur Core Test",
-   "code": "Sulfur Core Test",
-   "count": 8,
-   "total": 8,
-   "state": "TX",
-   "color": [
-    198,
-    57,
-    68
-   ]
-  },
-  {
-   "name": "Horizontal Drainhole",
-   "code": "Horizontal Drainhole",
-   "count": 4,
-   "total": 4,
-   "state": "TX",
-   "color": [
-    57,
-    198,
-    87
-   ]
-  },
-  {
-   "name": "Injection/Disposal from Brine Mining",
-   "code": "Injection/Disposal from Brine Mining",
-   "count": 4,
-   "total": 4,
-   "state": "TX",
-   "color": [
-    128,
-    57,
-    198
-   ]
-  },
-  {
-   "name": "Injection/Disposal from Storage/Oil",
-   "code": "Injection/Disposal from Storage/Oil",
-   "count": 4,
-   "total": 4,
-   "state": "TX",
-   "color": [
-    198,
-    169,
-    57
-   ]
-  },
-  {
-   "name": "Geothermal Well",
-   "code": "Geothermal Well",
-   "count": 3,
-   "total": 3,
-   "state": "TX",
-   "color": [
-    57,
-    185,
-    198
-   ]
-  },
-  {
-   "name": "Injection/Disposal from Storage/Gas",
-   "code": "Injection/Disposal from Storage/Gas",
-   "count": 3,
-   "total": 3,
-   "state": "TX",
-   "color": [
-    198,
-    57,
-    144
-   ]
-  },
-  {
-   "name": "Storage/Brine Mining",
-   "code": "Storage/Brine Mining",
-   "count": 3,
-   "total": 3,
-   "state": "TX",
-   "color": [
-    103,
-    198,
-    57
-   ]
-  },
-  {
-   "name": "Injection/Disposal from Storage/Brine Mining",
-   "code": "Injection/Disposal from Storage/Brine Mining",
-   "count": 2,
-   "total": 2,
-   "state": "TX",
-   "color": [
-    57,
-    62,
-    198
-   ]
-  },
-  {
-   "name": "Service from Oil",
-   "code": "Service from Oil",
-   "count": 2,
-   "total": 2,
-   "state": "TX",
-   "color": [
-    198,
-    93,
-    57
-   ]
-  },
-  {
-   "name": "Observation from Storage",
-   "code": "Observation from Storage",
-   "count": 2,
-   "total": 2,
-   "state": "TX",
-   "color": [
-    57,
-    198,
-    134
-   ]
-  },
-  {
-   "name": "Observation from Storage/Gas",
-   "code": "Observation from Storage/Gas",
-   "count": 2,
-   "total": 2,
-   "state": "TX",
-   "color": [
-    175,
-    57,
-    198
-   ]
+   "state": "TX"
   },
   {
    "name": "Plugged Storage/Gas",
    "code": "Plugged Storage/Gas",
+   "variants": [
+    "Plugged Storage/Gas"
+   ],
+   "category": "plugged",
+   "color": [
+    98,
+    98,
+    98
+   ],
    "count": 2,
+   "approx": 0,
    "total": 2,
-   "state": "TX",
-   "color": [
-    179,
-    198,
-    57
-   ]
-  },
-  {
-   "name": "Observation from Storage/Brine Mining",
-   "code": "Observation from Storage/Brine Mining",
-   "count": 1,
-   "total": 1,
-   "state": "TX",
-   "color": [
-    57,
-    138,
-    198
-   ]
-  },
-  {
-   "name": "Service from Oil / Gas",
-   "code": "Service from Oil / Gas",
-   "count": 1,
-   "total": 1,
-   "state": "TX",
-   "color": [
-    198,
-    57,
-    97
-   ]
-  },
-  {
-   "name": "Service from Gas",
-   "code": "Service from Gas",
-   "count": 1,
-   "total": 1,
-   "state": "TX",
-   "color": [
-    57,
-    198,
-    58
-   ]
-  },
-  {
-   "name": "Injection/Disposal from Brine Mining / Gas",
-   "code": "Injection/Disposal from Brine Mining / Gas",
-   "count": 1,
-   "total": 1,
-   "state": "TX",
-   "color": [
-    99,
-    57,
-    198
-   ]
+   "state": "TX"
   },
   {
    "name": "Plugged Storage/Oil",
    "code": "Plugged Storage/Oil",
-   "count": 1,
-   "total": 1,
-   "state": "TX",
+   "variants": [
+    "Plugged Storage/Oil"
+   ],
+   "category": "plugged",
    "color": [
-    198,
-    140,
-    57
-   ]
-  },
-  {
-   "name": "Service from Storage/Gas",
-   "code": "Service from Storage/Gas",
+    182,
+    182,
+    182
+   ],
    "count": 1,
+   "approx": 0,
    "total": 1,
-   "state": "TX",
-   "color": [
-    57,
-    198,
-    181
-   ]
+   "state": "TX"
   },
   {
    "name": "Plugged Storage/Brine Mining / Oil",
    "code": "Plugged Storage/Brine Mining / Oil",
+   "variants": [
+    "Plugged Storage/Brine Mining / Oil"
+   ],
+   "category": "plugged",
+   "color": [
+    69,
+    69,
+    69
+   ],
    "count": 1,
+   "approx": 0,
    "total": 1,
-   "state": "TX",
-   "color": [
-    198,
-    57,
-    173
-   ]
+   "state": "TX"
   },
   {
-   "name": "Oil production well (OIL)",
-   "code": "OIL",
-   "count": 174691,
-   "total": 180785,
-   "state": "OK",
+   "name": "Injection / Disposal from Oil",
+   "code": "Injection / Disposal from Oil",
+   "variants": [
+    "Injection / Disposal from Oil"
+   ],
+   "category": "injection",
    "color": [
-    31,
-    119,
-    180
-   ]
+    33,
+    113,
+    181
+   ],
+   "count": 24941,
+   "approx": 0,
+   "total": 24941,
+   "state": "TX"
   },
   {
-   "name": "Dry Hole (DRY)",
-   "code": "DRY",
-   "count": 83050,
-   "total": 84903,
-   "state": "OK",
+   "name": "Injection / Disposal",
+   "code": "Injection / Disposal",
+   "variants": [
+    "Injection / Disposal"
+   ],
+   "category": "injection",
    "color": [
-    214,
-    39,
-    40
-   ]
+    111,
+    163,
+    207
+   ],
+   "count": 15619,
+   "approx": 0,
+   "total": 15619,
+   "state": "TX"
   },
   {
-   "name": "No type (NT)",
-   "code": "NT",
-   "count": 80896,
-   "total": 86302,
-   "state": "OK",
-   "color": [
-    44,
-    160,
-    44
-   ]
-  },
-  {
-   "name": "Gas production well (GAS)",
-   "code": "GAS",
-   "count": 73983,
-   "total": 74556,
-   "state": "OK",
-   "color": [
-    255,
-    127,
-    14
-   ]
-  },
-  {
-   "name": "Terminated UIC well (TM)",
-   "code": "TM",
-   "count": 8652,
-   "total": 8894,
-   "state": "OK",
-   "color": [
-    148,
-    103,
-    189
-   ]
-  },
-  {
-   "name": "Enhanced Recovery UIC injection well (2RIn)",
-   "code": "2RIn",
-   "count": 7159,
-   "total": 7330,
-   "state": "OK",
-   "color": [
-    140,
-    86,
-    75
-   ]
-  },
-  {
-   "name": "Non-Commercial UIC disposal well (2DNC)",
-   "code": "2DNC",
-   "count": 3471,
-   "total": 3475,
-   "state": "OK",
-   "color": [
-    227,
-    119,
-    194
-   ]
-  },
-  {
-   "name": "Legacy UIC well type (INJ)",
-   "code": "INJ",
-   "count": 3082,
-   "total": 3129,
-   "state": "OK",
+   "name": "Injection / Disposal from Gas",
+   "code": "Injection / Disposal from Gas",
+   "variants": [
+    "Injection / Disposal from Gas"
+   ],
+   "category": "injection",
    "color": [
     23,
-    190,
-    207
-   ]
+    79,
+    127
+   ],
+   "count": 697,
+   "approx": 0,
+   "total": 697,
+   "state": "TX"
+  },
+  {
+   "name": "Injection / Disposal from Oil/Gas",
+   "code": "Injection / Disposal from Oil/Gas",
+   "variants": [
+    "Injection / Disposal from Oil/Gas"
+   ],
+   "category": "injection",
+   "color": [
+    166,
+    198,
+    225
+   ],
+   "count": 613,
+   "approx": 0,
+   "total": 613,
+   "state": "TX"
+  },
+  {
+   "name": "Injection/Disposal from Storage",
+   "code": "Injection/Disposal from Storage",
+   "variants": [
+    "Injection/Disposal from Storage"
+   ],
+   "category": "injection",
+   "color": [
+    17,
+    57,
+    91
+   ],
+   "count": 14,
+   "approx": 0,
+   "total": 14,
+   "state": "TX"
+  },
+  {
+   "name": "Injection/Disposal from Brine Mining",
+   "code": "Injection/Disposal from Brine Mining",
+   "variants": [
+    "Injection/Disposal from Brine Mining"
+   ],
+   "category": "injection",
+   "color": [
+    73,
+    139,
+    194
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "TX"
+  },
+  {
+   "name": "Injection/Disposal from Storage/Oil",
+   "code": "Injection/Disposal from Storage/Oil",
+   "variants": [
+    "Injection/Disposal from Storage/Oil"
+   ],
+   "category": "injection",
+   "color": [
+    28,
+    96,
+    154
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "TX"
+  },
+  {
+   "name": "Injection/Disposal from Storage/Gas",
+   "code": "Injection/Disposal from Storage/Gas",
+   "variants": [
+    "Injection/Disposal from Storage/Gas"
+   ],
+   "category": "injection",
+   "color": [
+    140,
+    181,
+    217
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "TX"
+  },
+  {
+   "name": "Injection/Disposal from Storage/Brine Mining",
+   "code": "Injection/Disposal from Storage/Brine Mining",
+   "variants": [
+    "Injection/Disposal from Storage/Brine Mining"
+   ],
+   "category": "injection",
+   "color": [
+    20,
+    68,
+    109
+   ],
+   "count": 2,
+   "approx": 0,
+   "total": 2,
+   "state": "TX"
+  },
+  {
+   "name": "Injection/Disposal from Brine Mining / Gas",
+   "code": "Injection/Disposal from Brine Mining / Gas",
+   "variants": [
+    "Injection/Disposal from Brine Mining / Gas"
+   ],
+   "category": "injection",
+   "color": [
+    188,
+    212,
+    233
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "TX"
+  },
+  {
+   "name": "Dry Hole",
+   "code": "Dry Hole",
+   "variants": [
+    "Dry Hole"
+   ],
+   "category": "dry",
+   "color": [
+    237,
+    140,
+    20
+   ],
+   "count": 295093,
+   "approx": 0,
+   "total": 295093,
+   "state": "TX"
+  },
+  {
+   "name": "Permitted Location",
+   "code": "Permitted Location",
+   "variants": [
+    "Permitted Location"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 114062,
+   "approx": 0,
+   "total": 114062,
+   "state": "TX"
+  },
+  {
+   "name": "Canceled / Abandoned Location",
+   "code": "Canceled / Abandoned Location",
+   "variants": [
+    "Canceled / Abandoned Location"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 44587,
+   "approx": 0,
+   "total": 44587,
+   "state": "TX"
+  },
+  {
+   "name": "Water Supply Well",
+   "code": "Water Supply Well",
+   "variants": [
+    "Water Supply Well"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 809,
+   "approx": 0,
+   "total": 809,
+   "state": "TX"
+  },
+  {
+   "name": "Core Test",
+   "code": "Core Test",
+   "variants": [
+    "Core Test"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 763,
+   "approx": 0,
+   "total": 763,
+   "state": "TX"
+  },
+  {
+   "name": "Storage Well",
+   "code": "Storage Well",
+   "variants": [
+    "Storage Well"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 648,
+   "approx": 0,
+   "total": 648,
+   "state": "TX"
+  },
+  {
+   "name": "Water Supply from Oil",
+   "code": "Water Supply from Oil",
+   "variants": [
+    "Water Supply from Oil"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 385,
+   "approx": 0,
+   "total": 385,
+   "state": "TX"
+  },
+  {
+   "name": "Observation from Oil",
+   "code": "Observation from Oil",
+   "variants": [
+    "Observation from Oil"
+   ],
+   "category": "other",
+   "color": [
+    148,
+    70,
+    143
+   ],
+   "count": 197,
+   "approx": 0,
+   "total": 197,
+   "state": "TX"
+  },
+  {
+   "name": "Observation Well",
+   "code": "Observation Well",
+   "variants": [
+    "Observation Well"
+   ],
+   "category": "other",
+   "color": [
+    213,
+    165,
+    210
+   ],
+   "count": 150,
+   "approx": 0,
+   "total": 150,
+   "state": "TX"
+  },
+  {
+   "name": "Observation from Oil / Gas",
+   "code": "Observation from Oil / Gas",
+   "variants": [
+    "Observation from Oil / Gas"
+   ],
+   "category": "other",
+   "color": [
+    104,
+    49,
+    101
+   ],
+   "count": 114,
+   "approx": 0,
+   "total": 114,
+   "state": "TX"
+  },
+  {
+   "name": "Storage from Gas",
+   "code": "Storage from Gas",
+   "variants": [
+    "Storage from Gas"
+   ],
+   "category": "other",
+   "color": [
+    231,
+    203,
+    229
+   ],
+   "count": 105,
+   "approx": 0,
+   "total": 105,
+   "state": "TX"
+  },
+  {
+   "name": "Brine Mining",
+   "code": "Brine Mining",
+   "variants": [
+    "Brine Mining"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 101,
+   "approx": 0,
+   "total": 101,
+   "state": "TX"
+  },
+  {
+   "name": "Storage from Oil",
+   "code": "Storage from Oil",
+   "variants": [
+    "Storage from Oil"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 39,
+   "approx": 0,
+   "total": 39,
+   "state": "TX"
+  },
+  {
+   "name": "Storage from Oil/Gas",
+   "code": "Storage from Oil/Gas",
+   "variants": [
+    "Storage from Oil/Gas"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 33,
+   "approx": 0,
+   "total": 33,
+   "state": "TX"
+  },
+  {
+   "name": "Water Supply from Gas",
+   "code": "Water Supply from Gas",
+   "variants": [
+    "Water Supply from Gas"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 28,
+   "approx": 0,
+   "total": 28,
+   "state": "TX"
+  },
+  {
+   "name": "Service",
+   "code": "Service",
+   "variants": [
+    "Service"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 27,
+   "approx": 0,
+   "total": 27,
+   "state": "TX"
+  },
+  {
+   "name": "Water Supply from Oil/Gas",
+   "code": "Water Supply from Oil/Gas",
+   "variants": [
+    "Water Supply from Oil/Gas"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 26,
+   "approx": 0,
+   "total": 26,
+   "state": "TX"
+  },
+  {
+   "name": "Observation from Gas",
+   "code": "Observation from Gas",
+   "variants": [
+    "Observation from Gas"
+   ],
+   "category": "other",
+   "color": [
+    148,
+    70,
+    143
+   ],
+   "count": 21,
+   "approx": 0,
+   "total": 21,
+   "state": "TX"
+  },
+  {
+   "name": "Sulfur Core Test",
+   "code": "Sulfur Core Test",
+   "variants": [
+    "Sulfur Core Test"
+   ],
+   "category": "other",
+   "color": [
+    213,
+    165,
+    210
+   ],
+   "count": 8,
+   "approx": 0,
+   "total": 8,
+   "state": "TX"
+  },
+  {
+   "name": "Horizontal Drainhole",
+   "code": "Horizontal Drainhole",
+   "variants": [
+    "Horizontal Drainhole"
+   ],
+   "category": "other",
+   "color": [
+    104,
+    49,
+    101
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "TX"
+  },
+  {
+   "name": "Geothermal Well",
+   "code": "Geothermal Well",
+   "variants": [
+    "Geothermal Well"
+   ],
+   "category": "other",
+   "color": [
+    231,
+    203,
+    229
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "TX"
+  },
+  {
+   "name": "Storage/Brine Mining",
+   "code": "Storage/Brine Mining",
+   "variants": [
+    "Storage/Brine Mining"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "TX"
+  },
+  {
+   "name": "Service from Oil",
+   "code": "Service from Oil",
+   "variants": [
+    "Service from Oil"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 2,
+   "approx": 0,
+   "total": 2,
+   "state": "TX"
+  },
+  {
+   "name": "Observation from Storage",
+   "code": "Observation from Storage",
+   "variants": [
+    "Observation from Storage"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 2,
+   "approx": 0,
+   "total": 2,
+   "state": "TX"
+  },
+  {
+   "name": "Observation from Storage/Gas",
+   "code": "Observation from Storage/Gas",
+   "variants": [
+    "Observation from Storage/Gas"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 2,
+   "approx": 0,
+   "total": 2,
+   "state": "TX"
+  },
+  {
+   "name": "Observation from Storage/Brine Mining",
+   "code": "Observation from Storage/Brine Mining",
+   "variants": [
+    "Observation from Storage/Brine Mining"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "TX"
+  },
+  {
+   "name": "Service from Oil / Gas",
+   "code": "Service from Oil / Gas",
+   "variants": [
+    "Service from Oil / Gas"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "TX"
+  },
+  {
+   "name": "Service from Gas",
+   "code": "Service from Gas",
+   "variants": [
+    "Service from Gas"
+   ],
+   "category": "other",
+   "color": [
+    148,
+    70,
+    143
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "TX"
+  },
+  {
+   "name": "Service from Storage/Gas",
+   "code": "Service from Storage/Gas",
+   "variants": [
+    "Service from Storage/Gas"
+   ],
+   "category": "other",
+   "color": [
+    213,
+    165,
+    210
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "TX"
+  },
+  {
+   "name": "Oil production well (OIL / Oil)",
+   "code": "OIL",
+   "variants": [
+    "OIL",
+    "Oil"
+   ],
+   "category": "oil",
+   "color": [
+    26,
+    150,
+    65
+   ],
+   "count": 180664,
+   "approx": 5964,
+   "total": 180786,
+   "state": "OK"
   },
   {
    "name": "Oil/Gas production well (OG)",
    "code": "OG",
-   "count": 1780,
-   "total": 1842,
-   "state": "OK",
+   "variants": [
+    "OG"
+   ],
+   "category": "oil",
    "color": [
-    188,
-    189,
-    34
-   ]
-  },
-  {
-   "name": "Legacy UIC well type (SWD)",
-   "code": "SWD",
-   "count": 1558,
-   "total": 1573,
-   "state": "OK",
-   "color": [
-    127,
-    127,
-    127
-   ]
-  },
-  {
-   "name": "Water Supply Well (WSW)",
-   "code": "WSW",
-   "count": 1452,
-   "total": 1539,
-   "state": "OK",
-   "color": [
-    174,
-    199,
-    232
-   ]
-  },
-  {
-   "name": "Legacy State Funds well (STFD)",
-   "code": "STFD",
-   "count": 565,
-   "total": 672,
-   "state": "OK",
-   "color": [
-    255,
-    152,
-    150
-   ]
-  },
-  {
-   "name": "Commerical UIC disposal well (2DCm)",
-   "code": "2DCm",
-   "count": 386,
-   "total": 386,
-   "state": "OK",
-   "color": [
-    152,
-    223,
-    138
-   ]
-  },
-  {
-   "name": "Natural Gas (refined) Storage well (GSW)",
-   "code": "GSW",
-   "count": 328,
-   "total": 328,
-   "state": "OK",
-   "color": [
-    255,
+    106,
     187,
-    120
-   ]
+    132
+   ],
+   "count": 1842,
+   "approx": 62,
+   "total": 1842,
+   "state": "OK"
+  },
+  {
+   "name": "Gas production well (GAS / Gas)",
+   "code": "GAS",
+   "variants": [
+    "GAS",
+    "Gas"
+   ],
+   "category": "gas",
+   "color": [
+    215,
+    48,
+    39
+   ],
+   "count": 74535,
+   "approx": 548,
+   "total": 74557,
+   "state": "OK"
   },
   {
    "name": "Legacy plugged and abandoned well (P&A)",
    "code": "P&A",
+   "variants": [
+    "P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    115,
+    115,
+    115
+   ],
    "count": 272,
+   "approx": 0,
    "total": 272,
-   "state": "OK",
-   "color": [
-    197,
-    176,
-    213
-   ]
-  },
-  {
-   "name": "Service Well (SW)",
-   "code": "SW",
-   "count": 258,
-   "total": 265,
-   "state": "OK",
-   "color": [
-    196,
-    156,
-    148
-   ]
-  },
-  {
-   "name": "Legacy temporarily abandoned well (TA)",
-   "code": "TA",
-   "count": 234,
-   "total": 236,
-   "state": "OK",
-   "color": [
-    247,
-    182,
-    210
-   ]
-  },
-  {
-   "name": "Legacy UIC well type (2D)",
-   "code": "2D",
-   "count": 171,
-   "total": 178,
-   "state": "OK",
-   "color": [
-    158,
-    218,
-    229
-   ]
-  },
-  {
-   "name": "Legacy UIC well type (2R)",
-   "code": "2R",
-   "count": 130,
-   "total": 148,
-   "state": "OK",
-   "color": [
-    219,
-    219,
-    141
-   ]
-  },
-  {
-   "name": "DUC (code not in data dictionary)",
-   "code": "DUC",
-   "count": 61,
-   "total": 62,
-   "state": "OK",
-   "color": [
-    57,
-    59,
-    121
-   ]
-  },
-  {
-   "name": "UIC Simultaneous Injection well (2RSI)",
-   "code": "2RSI",
-   "count": 59,
-   "total": 61,
-   "state": "OK",
-   "color": [
-    99,
-    121,
-    57
-   ]
-  },
-  {
-   "name": "Unknown (blank)",
-   "code": "",
-   "count": 48,
-   "total": 73,
-   "state": "OK",
-   "color": [
-    140,
-    109,
-    49
-   ]
-  },
-  {
-   "name": "LPG storage well (LPSW)",
-   "code": "LPSW",
-   "count": 27,
-   "total": 27,
-   "state": "OK",
-   "color": [
-    132,
-    60,
-    57
-   ]
+   "state": "OK"
   },
   {
    "name": "Legacy plugged and abandoned well (PA)",
    "code": "PA",
-   "count": 26,
+   "variants": [
+    "PA"
+   ],
+   "category": "plugged",
+   "color": [
+    164,
+    164,
+    164
+   ],
+   "count": 31,
+   "approx": 5,
    "total": 31,
-   "state": "OK",
-   "color": [
-    123,
-    65,
-    115
-   ]
+   "state": "OK"
   },
   {
-   "name": "Obervation well for Gas Storage facility (OBS)",
-   "code": "OBS",
-   "count": 14,
-   "total": 14,
-   "state": "OK",
+   "name": "Terminated UIC well (TM)",
+   "code": "TM",
+   "variants": [
+    "TM"
+   ],
+   "category": "injection",
    "color": [
-    197,
+    33,
+    113,
+    181
+   ],
+   "count": 8877,
+   "approx": 224,
+   "total": 8894,
+   "state": "OK"
+  },
+  {
+   "name": "Enhanced Recovery UIC injection well (2RIn / 2RIN)",
+   "code": "2RIn",
+   "variants": [
+    "2RIn",
+    "2RIN"
+   ],
+   "category": "injection",
+   "color": [
+    111,
+    163,
+    207
+   ],
+   "count": 7339,
+   "approx": 167,
+   "total": 7342,
+   "state": "OK"
+  },
+  {
+   "name": "Non-Commercial UIC disposal well (2DNC)",
+   "code": "2DNC",
+   "variants": [
+    "2DNC"
+   ],
+   "category": "injection",
+   "color": [
+    23,
+    79,
+    127
+   ],
+   "count": 3474,
+   "approx": 3,
+   "total": 3475,
+   "state": "OK"
+  },
+  {
+   "name": "Legacy UIC well type (INJ)",
+   "code": "INJ",
+   "variants": [
+    "INJ"
+   ],
+   "category": "injection",
+   "color": [
+    166,
     198,
-    57
-   ]
+    225
+   ],
+   "count": 3114,
+   "approx": 32,
+   "total": 3129,
+   "state": "OK"
   },
   {
-   "name": "Legacy No documents (ND)",
-   "code": "ND",
-   "count": 14,
-   "total": 14,
-   "state": "OK",
+   "name": "Legacy UIC well type (SWD)",
+   "code": "SWD",
+   "variants": [
+    "SWD"
+   ],
+   "category": "injection",
    "color": [
+    17,
     57,
-    156,
-    198
-   ]
+    91
+   ],
+   "count": 1568,
+   "approx": 10,
+   "total": 1573,
+   "state": "OK"
   },
   {
-   "name": "Enhanced Recovery UIC injection well (2RIN)",
-   "code": "2RIN",
-   "count": 12,
-   "total": 12,
-   "state": "OK",
+   "name": "Commerical UIC disposal well (2DCm)",
+   "code": "2DCm",
+   "variants": [
+    "2DCm"
+   ],
+   "category": "injection",
    "color": [
-    198,
-    57,
-    115
-   ]
+    73,
+    139,
+    194
+   ],
+   "count": 386,
+   "approx": 0,
+   "total": 386,
+   "state": "OK"
+  },
+  {
+   "name": "Legacy UIC well type (2D)",
+   "code": "2D",
+   "variants": [
+    "2D"
+   ],
+   "category": "injection",
+   "color": [
+    28,
+    96,
+    154
+   ],
+   "count": 171,
+   "approx": 0,
+   "total": 178,
+   "state": "OK"
+  },
+  {
+   "name": "Legacy UIC well type (2R)",
+   "code": "2R",
+   "variants": [
+    "2R"
+   ],
+   "category": "injection",
+   "color": [
+    140,
+    181,
+    217
+   ],
+   "count": 130,
+   "approx": 0,
+   "total": 148,
+   "state": "OK"
+  },
+  {
+   "name": "UIC Simultaneous Injection well (2RSI)",
+   "code": "2RSI",
+   "variants": [
+    "2RSI"
+   ],
+   "category": "injection",
+   "color": [
+    20,
+    68,
+    109
+   ],
+   "count": 60,
+   "approx": 1,
+   "total": 61,
+   "state": "OK"
   },
   {
    "name": "Legacy UIC well type (WIW)",
    "code": "WIW",
+   "variants": [
+    "WIW"
+   ],
+   "category": "injection",
+   "color": [
+    188,
+    212,
+    233
+   ],
    "count": 11,
+   "approx": 0,
    "total": 11,
-   "state": "OK",
-   "color": [
-    74,
-    198,
-    57
-   ]
-  },
-  {
-   "name": "SCO (code not in data dictionary)",
-   "code": "SCO",
-   "count": 8,
-   "total": 9,
-   "state": "OK",
-   "color": [
-    81,
-    57,
-    198
-   ]
+   "state": "OK"
   },
   {
    "name": "2EPA (code not in data dictionary)",
    "code": "2EPA",
+   "variants": [
+    "2EPA"
+   ],
+   "category": "injection",
+   "color": [
+    33,
+    113,
+    181
+   ],
    "count": 8,
+   "approx": 0,
    "total": 8,
-   "state": "OK",
-   "color": [
-    198,
-    122,
-    57
-   ]
-  },
-  {
-   "name": "Gas production well (Gas)",
-   "code": "Gas",
-   "count": 1,
-   "total": 1,
-   "state": "OK",
-   "color": [
-    57,
-    198,
-    163
-   ]
-  },
-  {
-   "name": "Oil production well (Oil)",
-   "code": "Oil",
-   "count": 1,
-   "total": 1,
-   "state": "OK",
-   "color": [
-    198,
-    57,
-    191
-   ]
+   "state": "OK"
   },
   {
    "name": "Enhanced Recovery EPA Injection Well (Federal) (IEPA)",
    "code": "IEPA",
-   "count": 1,
-   "total": 1,
-   "state": "OK",
+   "variants": [
+    "IEPA"
+   ],
+   "category": "injection",
    "color": [
+    111,
+    163,
+    207
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "OK"
+  },
+  {
+   "name": "Dry Hole (DRY)",
+   "code": "DRY",
+   "variants": [
+    "DRY"
+   ],
+   "category": "dry",
+   "color": [
+    237,
+    140,
+    20
+   ],
+   "count": 84849,
+   "approx": 1797,
+   "total": 84903,
+   "state": "OK"
+  },
+  {
+   "name": "No type (NT)",
+   "code": "NT",
+   "variants": [
+    "NT"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 85797,
+   "approx": 4899,
+   "total": 86302,
+   "state": "OK"
+  },
+  {
+   "name": "Water Supply Well (WSW)",
+   "code": "WSW",
+   "variants": [
+    "WSW"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 1537,
+   "approx": 85,
+   "total": 1539,
+   "state": "OK"
+  },
+  {
+   "name": "Legacy State Funds well (STFD)",
+   "code": "STFD",
+   "variants": [
+    "STFD"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 669,
+   "approx": 104,
+   "total": 672,
+   "state": "OK"
+  },
+  {
+   "name": "Natural Gas (refined) Storage well (GSW)",
+   "code": "GSW",
+   "variants": [
+    "GSW"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 328,
+   "approx": 0,
+   "total": 328,
+   "state": "OK"
+  },
+  {
+   "name": "Service Well (SW)",
+   "code": "SW",
+   "variants": [
+    "SW"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 265,
+   "approx": 7,
+   "total": 265,
+   "state": "OK"
+  },
+  {
+   "name": "Legacy temporarily abandoned well (TA)",
+   "code": "TA",
+   "variants": [
+    "TA"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 235,
+   "approx": 1,
+   "total": 236,
+   "state": "OK"
+  },
+  {
+   "name": "DUC (code not in data dictionary)",
+   "code": "DUC",
+   "variants": [
+    "DUC"
+   ],
+   "category": "other",
+   "color": [
+    148,
+    70,
+    143
+   ],
+   "count": 61,
+   "approx": 0,
+   "total": 62,
+   "state": "OK"
+  },
+  {
+   "name": "Unknown (blank)",
+   "code": "",
+   "variants": [
+    ""
+   ],
+   "category": "other",
+   "color": [
+    213,
+    165,
+    210
+   ],
+   "count": 49,
+   "approx": 1,
+   "total": 73,
+   "state": "OK"
+  },
+  {
+   "name": "LPG storage well (LPSW)",
+   "code": "LPSW",
+   "variants": [
+    "LPSW"
+   ],
+   "category": "other",
+   "color": [
+    104,
+    49,
+    101
+   ],
+   "count": 27,
+   "approx": 0,
+   "total": 27,
+   "state": "OK"
+  },
+  {
+   "name": "Obervation well for Gas Storage facility (OBS)",
+   "code": "OBS",
+   "variants": [
+    "OBS"
+   ],
+   "category": "other",
+   "color": [
+    231,
+    203,
+    229
+   ],
+   "count": 14,
+   "approx": 0,
+   "total": 14,
+   "state": "OK"
+  },
+  {
+   "name": "Legacy No documents (ND)",
+   "code": "ND",
+   "variants": [
+    "ND"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 14,
+   "approx": 0,
+   "total": 14,
+   "state": "OK"
+  },
+  {
+   "name": "SCO (code not in data dictionary)",
+   "code": "SCO",
+   "variants": [
+    "SCO"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 9,
+   "approx": 1,
+   "total": 9,
+   "state": "OK"
+  },
+  {
+   "name": "OIL",
+   "code": "OIL",
+   "variants": [
+    "OIL"
+   ],
+   "category": "oil",
+   "color": [
+    26,
     150,
+    65
+   ],
+   "count": 104051,
+   "approx": 0,
+   "total": 104051,
+   "state": "KS"
+  },
+  {
+   "name": "O&G",
+   "code": "O&G",
+   "variants": [
+    "O&G"
+   ],
+   "category": "oil",
+   "color": [
+    106,
+    187,
+    132
+   ],
+   "count": 4712,
+   "approx": 0,
+   "total": 4712,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(OIL/GAS)",
+   "code": "OTHER(OIL/GAS)",
+   "variants": [
+    "OTHER(OIL/GAS)"
+   ],
+   "category": "oil",
+   "color": [
+    18,
+    105,
+    46
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "KS"
+  },
+  {
+   "name": "GAS",
+   "code": "GAS",
+   "variants": [
+    "GAS"
+   ],
+   "category": "gas",
+   "color": [
+    215,
+    48,
+    39
+   ],
+   "count": 25524,
+   "approx": 0,
+   "total": 25525,
+   "state": "KS"
+  },
+  {
+   "name": "CBM",
+   "code": "CBM",
+   "variants": [
+    "CBM"
+   ],
+   "category": "gas",
+   "color": [
+    229,
+    120,
+    115
+   ],
+   "count": 4600,
+   "approx": 0,
+   "total": 4600,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(Gas)",
+   "code": "OTHER(Gas)",
+   "variants": [
+    "OTHER(Gas)",
+    "OTHER(gas)"
+   ],
+   "category": "gas",
+   "color": [
+    151,
+    34,
+    27
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "KS"
+  },
+  {
+   "name": "OIL-P&A",
+   "code": "OIL-P&A",
+   "variants": [
+    "OIL-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    115,
+    115,
+    115
+   ],
+   "count": 112994,
+   "approx": 0,
+   "total": 112997,
+   "state": "KS"
+  },
+  {
+   "name": "GAS-P&A",
+   "code": "GAS-P&A",
+   "variants": [
+    "GAS-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    164,
+    164,
+    164
+   ],
+   "count": 16267,
+   "approx": 0,
+   "total": 16267,
+   "state": "KS"
+  },
+  {
+   "name": "EOR-P&A",
+   "code": "EOR-P&A",
+   "variants": [
+    "EOR-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    81,
+    81,
+    81
+   ],
+   "count": 13931,
+   "approx": 0,
+   "total": 13931,
+   "state": "KS"
+  },
+  {
+   "name": "SWD-P&A",
+   "code": "SWD-P&A",
+   "variants": [
+    "SWD-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    199,
+    199,
+    199
+   ],
+   "count": 7622,
+   "approx": 0,
+   "total": 7622,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(INJ or EOR)",
+   "code": "OTHER-P&A(INJ or EOR)",
+   "variants": [
+    "OTHER-P&A(INJ or EOR)"
+   ],
+   "category": "plugged",
+   "color": [
+    58,
+    58,
+    58
+   ],
+   "count": 4602,
+   "approx": 0,
+   "total": 4602,
+   "state": "KS"
+  },
+  {
+   "name": "O&G-P&A",
+   "code": "O&G-P&A",
+   "variants": [
+    "O&G-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    140,
+    140,
+    140
+   ],
+   "count": 1917,
+   "approx": 0,
+   "total": 1917,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(LH)",
+   "code": "OTHER-P&A(LH)",
+   "variants": [
+    "OTHER-P&A(LH)"
+   ],
+   "category": "plugged",
+   "color": [
+    98,
+    98,
+    98
+   ],
+   "count": 1107,
+   "approx": 0,
+   "total": 1107,
+   "state": "KS"
+  },
+  {
+   "name": "CBM-P&A",
+   "code": "CBM-P&A",
+   "variants": [
+    "CBM-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    182,
+    182,
+    182
+   ],
+   "count": 900,
+   "approx": 0,
+   "total": 900,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(WATER)",
+   "code": "OTHER-P&A(WATER)",
+   "variants": [
+    "OTHER-P&A(WATER)"
+   ],
+   "category": "plugged",
+   "color": [
+    69,
+    69,
+    69
+   ],
+   "count": 710,
+   "approx": 0,
+   "total": 710,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(STRAT)",
+   "code": "OTHER-P&A(STRAT)",
+   "variants": [
+    "OTHER-P&A(STRAT)"
+   ],
+   "category": "plugged",
+   "color": [
+    213,
+    213,
+    213
+   ],
+   "count": 647,
+   "approx": 0,
+   "total": 647,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A()",
+   "code": "OTHER-P&A()",
+   "variants": [
+    "OTHER-P&A()"
+   ],
+   "category": "plugged",
+   "color": [
+    115,
+    115,
+    115
+   ],
+   "count": 500,
+   "approx": 0,
+   "total": 500,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(CATH)",
+   "code": "OTHER-P&A(CATH)",
+   "variants": [
+    "OTHER-P&A(CATH)"
+   ],
+   "category": "plugged",
+   "color": [
+    164,
+    164,
+    164
+   ],
+   "count": 331,
+   "approx": 0,
+   "total": 331,
+   "state": "KS"
+  },
+  {
+   "name": "INJ-P&A",
+   "code": "INJ-P&A",
+   "variants": [
+    "INJ-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    81,
+    81,
+    81
+   ],
+   "count": 328,
+   "approx": 0,
+   "total": 328,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(Unknown)",
+   "code": "OTHER-P&A(Unknown)",
+   "variants": [
+    "OTHER-P&A(Unknown)",
+    "OTHER-P&A(unknown)"
+   ],
+   "category": "plugged",
+   "color": [
+    199,
+    199,
+    199
+   ],
+   "count": 273,
+   "approx": 0,
+   "total": 273,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(GAS-INJ)",
+   "code": "OTHER-P&A(GAS-INJ)",
+   "variants": [
+    "OTHER-P&A(GAS-INJ)"
+   ],
+   "category": "plugged",
+   "color": [
+    58,
+    58,
+    58
+   ],
+   "count": 165,
+   "approx": 0,
+   "total": 165,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(OBS)",
+   "code": "OTHER-P&A(OBS)",
+   "variants": [
+    "OTHER-P&A(OBS)"
+   ],
+   "category": "plugged",
+   "color": [
+    140,
+    140,
+    140
+   ],
+   "count": 125,
+   "approx": 0,
+   "total": 125,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(TA)",
+   "code": "OTHER-P&A(TA)",
+   "variants": [
+    "OTHER-P&A(TA)"
+   ],
+   "category": "plugged",
+   "color": [
+    98,
+    98,
+    98
+   ],
+   "count": 79,
+   "approx": 0,
+   "total": 79,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(OIL&GAS-INJ)",
+   "code": "OTHER-P&A(OIL&GAS-INJ)",
+   "variants": [
+    "OTHER-P&A(OIL&GAS-INJ)"
+   ],
+   "category": "plugged",
+   "color": [
+    182,
+    182,
+    182
+   ],
+   "count": 69,
+   "approx": 0,
+   "total": 69,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(Plugged)",
+   "code": "OTHER-P&A(Plugged)",
+   "variants": [
+    "OTHER-P&A(Plugged)"
+   ],
+   "category": "plugged",
+   "color": [
+    69,
+    69,
+    69
+   ],
+   "count": 40,
+   "approx": 0,
+   "total": 40,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(GAS-STG)",
+   "code": "OTHER-P&A(GAS-STG)",
+   "variants": [
+    "OTHER-P&A(GAS-STG)"
+   ],
+   "category": "plugged",
+   "color": [
+    213,
+    213,
+    213
+   ],
+   "count": 34,
+   "approx": 0,
+   "total": 34,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(Plugged)",
+   "code": "OTHER(Plugged)",
+   "variants": [
+    "OTHER(Plugged)",
+    "OTHER(PLUGGED)",
+    "OTHER(plugged)"
+   ],
+   "category": "plugged",
+   "color": [
+    115,
+    115,
+    115
+   ],
+   "count": 27,
+   "approx": 0,
+   "total": 27,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(GSW)",
+   "code": "OTHER-P&A(GSW)",
+   "variants": [
+    "OTHER-P&A(GSW)"
+   ],
+   "category": "plugged",
+   "color": [
+    164,
+    164,
+    164
+   ],
+   "count": 16,
+   "approx": 0,
+   "total": 16,
+   "state": "KS"
+  },
+  {
+   "name": "SERVICE-P&A",
+   "code": "SERVICE-P&A",
+   "variants": [
+    "SERVICE-P&A"
+   ],
+   "category": "plugged",
+   "color": [
+    81,
+    81,
+    81
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(CLASS ONE (OLD))",
+   "code": "OTHER-P&A(CLASS ONE (OLD))",
+   "variants": [
+    "OTHER-P&A(CLASS ONE (OLD))"
+   ],
+   "category": "plugged",
+   "color": [
+    199,
+    199,
+    199
+   ],
+   "count": 2,
+   "approx": 0,
+   "total": 2,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(GAS-P&A)",
+   "code": "OTHER(GAS-P&A)",
+   "variants": [
+    "OTHER(GAS-P&A)"
+   ],
+   "category": "plugged",
+   "color": [
+    58,
+    58,
+    58
+   ],
+   "count": 2,
+   "approx": 0,
+   "total": 2,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(Inj)",
+   "code": "OTHER-P&A(Inj)",
+   "variants": [
+    "OTHER-P&A(Inj)"
+   ],
+   "category": "plugged",
+   "color": [
+    140,
+    140,
+    140
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(2 OIL)",
+   "code": "OTHER-P&A(2 OIL)",
+   "variants": [
+    "OTHER-P&A(2 OIL)"
+   ],
+   "category": "plugged",
+   "color": [
+    98,
+    98,
+    98
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(COREHOLE)",
+   "code": "OTHER-P&A(COREHOLE)",
+   "variants": [
+    "OTHER-P&A(COREHOLE)"
+   ],
+   "category": "plugged",
+   "color": [
+    182,
+    182,
+    182
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER-P&A(SWD-P&A)",
+   "code": "OTHER-P&A(SWD-P&A)",
+   "variants": [
+    "OTHER-P&A(SWD-P&A)"
+   ],
+   "category": "plugged",
+   "color": [
+    69,
+    69,
+    69
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "EOR",
+   "code": "EOR",
+   "variants": [
+    "EOR"
+   ],
+   "category": "injection",
+   "color": [
+    33,
+    113,
+    181
+   ],
+   "count": 20029,
+   "approx": 0,
+   "total": 20029,
+   "state": "KS"
+  },
+  {
+   "name": "SWD",
+   "code": "SWD",
+   "variants": [
+    "SWD"
+   ],
+   "category": "injection",
+   "color": [
+    111,
+    163,
+    207
+   ],
+   "count": 8357,
+   "approx": 0,
+   "total": 8357,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(GAS-INJ)",
+   "code": "OTHER(GAS-INJ)",
+   "variants": [
+    "OTHER(GAS-INJ)"
+   ],
+   "category": "injection",
+   "color": [
+    23,
+    79,
+    127
+   ],
+   "count": 695,
+   "approx": 0,
+   "total": 695,
+   "state": "KS"
+  },
+  {
+   "name": "INJ",
+   "code": "INJ",
+   "variants": [
+    "INJ"
+   ],
+   "category": "injection",
+   "color": [
+    166,
     198,
-    57
-   ]
+    225
+   ],
+   "count": 377,
+   "approx": 0,
+   "total": 377,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(OIL&GAS-INJ)",
+   "code": "OTHER(OIL&GAS-INJ)",
+   "variants": [
+    "OTHER(OIL&GAS-INJ)"
+   ],
+   "category": "injection",
+   "color": [
+    17,
+    57,
+    91
+   ],
+   "count": 75,
+   "approx": 0,
+   "total": 75,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(CLASS ONE (OLD))",
+   "code": "OTHER(CLASS ONE (OLD))",
+   "variants": [
+    "OTHER(CLASS ONE (OLD))"
+   ],
+   "category": "injection",
+   "color": [
+    73,
+    139,
+    194
+   ],
+   "count": 65,
+   "approx": 0,
+   "total": 65,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(CLASS1)",
+   "code": "OTHER(CLASS1)",
+   "variants": [
+    "OTHER(CLASS1)"
+   ],
+   "category": "injection",
+   "color": [
+    28,
+    96,
+    154
+   ],
+   "count": 50,
+   "approx": 0,
+   "total": 50,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(GAS INJ)",
+   "code": "OTHER(GAS INJ)",
+   "variants": [
+    "OTHER(GAS INJ)"
+   ],
+   "category": "injection",
+   "color": [
+    140,
+    181,
+    217
+   ],
+   "count": 31,
+   "approx": 0,
+   "total": 31,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(INJ or EOR)",
+   "code": "OTHER(INJ or EOR)",
+   "variants": [
+    "OTHER(INJ or EOR)"
+   ],
+   "category": "injection",
+   "color": [
+    20,
+    68,
+    109
+   ],
+   "count": 7,
+   "approx": 0,
+   "total": 7,
+   "state": "KS"
+  },
+  {
+   "name": "D&A",
+   "code": "D&A",
+   "variants": [
+    "D&A"
+   ],
+   "category": "dry",
+   "color": [
+    237,
+    140,
+    20
+   ],
+   "count": 122667,
+   "approx": 0,
+   "total": 122668,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(Dry)",
+   "code": "OTHER(Dry)",
+   "variants": [
+    "OTHER(Dry)",
+    "OTHER(dry)"
+   ],
+   "category": "dry",
+   "color": [
+    243,
+    180,
+    102
+   ],
+   "count": 5,
+   "approx": 0,
+   "total": 5,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER()",
+   "code": "OTHER()",
+   "variants": [
+    "OTHER()"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 28062,
+   "approx": 0,
+   "total": 28099,
+   "state": "KS"
+  },
+  {
+   "name": "LOC",
+   "code": "LOC",
+   "variants": [
+    "LOC"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 23390,
+   "approx": 0,
+   "total": 23390,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(Unknown)",
+   "code": "OTHER(Unknown)",
+   "variants": [
+    "OTHER(Unknown)",
+    "OTHER(unknown)"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 6254,
+   "approx": 0,
+   "total": 6256,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(STRAT)",
+   "code": "OTHER(STRAT)",
+   "variants": [
+    "OTHER(STRAT)"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 2418,
+   "approx": 0,
+   "total": 2419,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(CATH)",
+   "code": "OTHER(CATH)",
+   "variants": [
+    "OTHER(CATH)"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 2099,
+   "approx": 0,
+   "total": 2099,
+   "state": "KS"
+  },
+  {
+   "name": "INTENT",
+   "code": "INTENT",
+   "variants": [
+    "INTENT"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 1285,
+   "approx": 0,
+   "total": 1285,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(WATER)",
+   "code": "OTHER(WATER)",
+   "variants": [
+    "OTHER(WATER)",
+    "OTHER(Water)"
+   ],
+   "category": "other",
+   "color": [
+    148,
+    70,
+    143
+   ],
+   "count": 974,
+   "approx": 0,
+   "total": 974,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(OBS)",
+   "code": "OTHER(OBS)",
+   "variants": [
+    "OTHER(OBS)"
+   ],
+   "category": "other",
+   "color": [
+    213,
+    165,
+    210
+   ],
+   "count": 204,
+   "approx": 0,
+   "total": 204,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(GAS-STG)",
+   "code": "OTHER(GAS-STG)",
+   "variants": [
+    "OTHER(GAS-STG)"
+   ],
+   "category": "other",
+   "color": [
+    104,
+    49,
+    101
+   ],
+   "count": 192,
+   "approx": 0,
+   "total": 192,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(COREHOLE)",
+   "code": "OTHER(COREHOLE)",
+   "variants": [
+    "OTHER(COREHOLE)"
+   ],
+   "category": "other",
+   "color": [
+    231,
+    203,
+    229
+   ],
+   "count": 190,
+   "approx": 0,
+   "total": 190,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(TA)",
+   "code": "OTHER(TA)",
+   "variants": [
+    "OTHER(TA)"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 168,
+   "approx": 0,
+   "total": 168,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(MONITOR)",
+   "code": "OTHER(MONITOR)",
+   "variants": [
+    "OTHER(MONITOR)",
+    "OTHER(Monitor)"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 120,
+   "approx": 0,
+   "total": 125,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(GSW)",
+   "code": "OTHER(GSW)",
+   "variants": [
+    "OTHER(GSW)"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 57,
+   "approx": 0,
+   "total": 57,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(LH)",
+   "code": "OTHER(LH)",
+   "variants": [
+    "OTHER(LH)"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 50,
+   "approx": 0,
+   "total": 50,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(ABD LOC)",
+   "code": "OTHER(ABD LOC)",
+   "variants": [
+    "OTHER(ABD LOC)"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 41,
+   "approx": 0,
+   "total": 41,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(OTHER)",
+   "code": "OTHER(OTHER)",
+   "variants": [
+    "OTHER(OTHER)"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 15,
+   "approx": 0,
+   "total": 15,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(SERVICE)",
+   "code": "OTHER(SERVICE)",
+   "variants": [
+    "OTHER(SERVICE)"
+   ],
+   "category": "other",
+   "color": [
+    148,
+    70,
+    143
+   ],
+   "count": 8,
+   "approx": 0,
+   "total": 8,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(HELIUM)",
+   "code": "OTHER(HELIUM)",
+   "variants": [
+    "OTHER(HELIUM)"
+   ],
+   "category": "other",
+   "color": [
+    213,
+    165,
+    210
+   ],
+   "count": 5,
+   "approx": 0,
+   "total": 5,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(OBSERVATION)",
+   "code": "OTHER(OBSERVATION)",
+   "variants": [
+    "OTHER(OBSERVATION)"
+   ],
+   "category": "other",
+   "color": [
+    104,
+    49,
+    101
+   ],
+   "count": 5,
+   "approx": 0,
+   "total": 5,
+   "state": "KS"
+  },
+  {
+   "name": "SERVICE",
+   "code": "SERVICE",
+   "variants": [
+    "SERVICE"
+   ],
+   "category": "other",
+   "color": [
+    231,
+    203,
+    229
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(NULL)",
+   "code": "OTHER(NULL)",
+   "variants": [
+    "OTHER(NULL)"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(HY)",
+   "code": "OTHER(HY)",
+   "variants": [
+    "OTHER(HY)"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(Input)",
+   "code": "OTHER(Input)",
+   "variants": [
+    "OTHER(Input)"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(TEMP ABD)",
+   "code": "OTHER(TEMP ABD)",
+   "variants": [
+    "OTHER(TEMP ABD)"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(UNKOWN)",
+   "code": "OTHER(UNKOWN)",
+   "variants": [
+    "OTHER(UNKOWN)",
+    "OTHER(unkown)"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(2OIL)",
+   "code": "OTHER(2OIL)",
+   "variants": [
+    "OTHER(2OIL)"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 2,
+   "approx": 0,
+   "total": 2,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(SHUT-IN)",
+   "code": "OTHER(SHUT-IN)",
+   "variants": [
+    "OTHER(SHUT-IN)"
+   ],
+   "category": "other",
+   "color": [
+    148,
+    70,
+    143
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(1O&1SWD)",
+   "code": "OTHER(1O&1SWD)",
+   "variants": [
+    "OTHER(1O&1SWD)"
+   ],
+   "category": "other",
+   "color": [
+    213,
+    165,
+    210
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(NHDW)",
+   "code": "OTHER(NHDW)",
+   "variants": [
+    "OTHER(NHDW)"
+   ],
+   "category": "other",
+   "color": [
+    104,
+    49,
+    101
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(INTAKE)",
+   "code": "OTHER(INTAKE)",
+   "variants": [
+    "OTHER(INTAKE)"
+   ],
+   "category": "other",
+   "color": [
+    231,
+    203,
+    229
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(CORE HOLE)",
+   "code": "OTHER(CORE HOLE)",
+   "variants": [
+    "OTHER(CORE HOLE)"
+   ],
+   "category": "other",
+   "color": [
+    174,
+    82,
+    168
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(WATER INPUT)",
+   "code": "OTHER(WATER INPUT)",
+   "variants": [
+    "OTHER(WATER INPUT)"
+   ],
+   "category": "other",
+   "color": [
+    202,
+    143,
+    198
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(WATER SUPPLY)",
+   "code": "OTHER(WATER SUPPLY)",
+   "variants": [
+    "OTHER(WATER SUPPLY)"
+   ],
+   "category": "other",
+   "color": [
+    122,
+    57,
+    118
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(738)",
+   "code": "OTHER(738)",
+   "variants": [
+    "OTHER(738)"
+   ],
+   "category": "other",
+   "color": [
+    223,
+    186,
+    220
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(212)",
+   "code": "OTHER(212)",
+   "variants": [
+    "OTHER(212)"
+   ],
+   "category": "other",
+   "color": [
+    87,
+    41,
+    84
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
+  },
+  {
+   "name": "OTHER(50)",
+   "code": "OTHER(50)",
+   "variants": [
+    "OTHER(50)"
+   ],
+   "category": "other",
+   "color": [
+    189,
+    113,
+    184
+   ],
+   "count": 1,
+   "approx": 0,
+   "total": 1,
+   "state": "KS"
   }
  ],
  "statuses": [
   {
    "name": "Plugged and Abandoned (PA)",
    "code": "PA",
-   "count": 238928,
-   "total": 247597,
-   "state": "OK",
+   "variants": [
+    "PA"
+   ],
    "color": [
     31,
     119,
     180
-   ]
+   ],
+   "count": 247249,
+   "approx": 8318,
+   "total": 247597,
+   "state": "OK"
   },
   {
    "name": "Active (AC)",
    "code": "AC",
-   "count": 127918,
-   "total": 129384,
-   "state": "OK",
+   "variants": [
+    "AC"
+   ],
    "color": [
     214,
     39,
     40
-   ]
+   ],
+   "count": 129329,
+   "approx": 1402,
+   "total": 129384,
+   "state": "OK"
   },
   {
    "name": "No Evidence (NE)",
    "code": "NE",
-   "count": 42806,
-   "total": 45495,
-   "state": "OK",
+   "variants": [
+    "NE"
+   ],
    "color": [
     44,
     160,
     44
-   ]
+   ],
+   "count": 45423,
+   "approx": 2615,
+   "total": 45495,
+   "state": "OK"
   },
   {
    "name": "Orphaned Wells (OR)",
    "code": "OR",
-   "count": 18068,
-   "total": 18139,
-   "state": "OK",
+   "variants": [
+    "OR"
+   ],
    "color": [
     255,
     127,
     14
-   ]
+   ],
+   "count": 18132,
+   "approx": 61,
+   "total": 18139,
+   "state": "OK"
   },
   {
    "name": "Expired Permit (EX)",
    "code": "EX",
-   "count": 3887,
-   "total": 5350,
-   "state": "OK",
+   "variants": [
+    "EX"
+   ],
    "color": [
     148,
     103,
     189
-   ]
+   ],
+   "count": 5059,
+   "approx": 1172,
+   "total": 5350,
+   "state": "OK"
   },
   {
    "name": "State Fund (STFD)",
    "code": "STFD",
-   "count": 2817,
-   "total": 2835,
-   "state": "OK",
+   "variants": [
+    "STFD"
+   ],
    "color": [
     140,
     86,
     75
-   ]
+   ],
+   "count": 2834,
+   "approx": 17,
+   "total": 2835,
+   "state": "OK"
   },
   {
    "name": "Wells shut in by Final Order (SIFORDER)",
    "code": "SIFORDER",
-   "count": 1366,
-   "total": 1373,
-   "state": "OK",
+   "variants": [
+    "SIFORDER"
+   ],
    "color": [
     227,
     119,
     194
-   ]
+   ],
+   "count": 1373,
+   "approx": 7,
+   "total": 1373,
+   "state": "OK"
   },
   {
    "name": "Temporarily Abandoned (TA)",
    "code": "TA",
-   "count": 1309,
-   "total": 1320,
-   "state": "OK",
+   "variants": [
+    "TA"
+   ],
    "color": [
     23,
     190,
     207
-   ]
+   ],
+   "count": 1319,
+   "approx": 10,
+   "total": 1320,
+   "state": "OK"
   },
   {
    "name": "Plugged and Abandoned (PAFF)",
    "code": "PAFF",
-   "count": 1124,
-   "total": 1125,
-   "state": "OK",
+   "variants": [
+    "PAFF"
+   ],
    "color": [
     188,
     189,
     34
-   ]
+   ],
+   "count": 1125,
+   "approx": 1,
+   "total": 1125,
+   "state": "OK"
   },
   {
    "name": "Plugged and Abandoned (PASF)",
    "code": "PASF",
-   "count": 1032,
-   "total": 1081,
-   "state": "OK",
+   "variants": [
+    "PASF"
+   ],
    "color": [
     127,
     127,
     127
-   ]
+   ],
+   "count": 1079,
+   "approx": 47,
+   "total": 1081,
+   "state": "OK"
   },
   {
    "name": "Terminated (TM)",
    "code": "TM",
-   "count": 991,
-   "total": 1002,
-   "state": "OK",
+   "variants": [
+    "TM"
+   ],
    "color": [
     174,
     199,
     232
-   ]
-  },
-  {
-   "name": "State Funds (SFFO)",
-   "code": "SFFO",
-   "count": 715,
-   "total": 715,
-   "state": "OK",
-   "color": [
-    255,
-    152,
-    150
-   ]
+   ],
+   "count": 993,
+   "approx": 2,
+   "total": 1002,
+   "state": "OK"
   },
   {
    "name": "New Drill (ND)",
    "code": "ND",
-   "count": 618,
+   "variants": [
+    "ND"
+   ],
+   "color": [
+    255,
+    152,
+    150
+   ],
+   "count": 868,
+   "approx": 250,
    "total": 880,
-   "state": "OK",
+   "state": "OK"
+  },
+  {
+   "name": "State Funds (SFFO)",
+   "code": "SFFO",
+   "variants": [
+    "SFFO"
+   ],
    "color": [
     152,
     223,
     138
-   ]
+   ],
+   "count": 715,
+   "approx": 0,
+   "total": 715,
+   "state": "OK"
   },
   {
    "name": "Spudded Wells (SP)",
    "code": "SP",
-   "count": 539,
-   "total": 544,
-   "state": "OK",
+   "variants": [
+    "SP"
+   ],
    "color": [
     255,
     187,
     120
-   ]
+   ],
+   "count": 543,
+   "approx": 4,
+   "total": 544,
+   "state": "OK"
   },
   {
    "name": "Plugged and Abandoned (PASURSF)",
    "code": "PASURSF",
-   "count": 103,
-   "total": 106,
-   "state": "OK",
+   "variants": [
+    "PASURSF"
+   ],
    "color": [
     197,
     176,
     213
-   ]
+   ],
+   "count": 106,
+   "approx": 3,
+   "total": 106,
+   "state": "OK"
   },
   {
    "name": "Plugged and Abandoned (PASUR)",
    "code": "PASUR",
-   "count": 88,
-   "total": 88,
-   "state": "OK",
+   "variants": [
+    "PASUR"
+   ],
    "color": [
     196,
     156,
     148
-   ]
+   ],
+   "count": 88,
+   "approx": 0,
+   "total": 88,
+   "state": "OK"
   },
   {
    "name": "Active (ACRT)",
    "code": "ACRT",
-   "count": 69,
-   "total": 70,
-   "state": "OK",
+   "variants": [
+    "ACRT"
+   ],
    "color": [
     247,
     182,
     210
-   ]
+   ],
+   "count": 70,
+   "approx": 1,
+   "total": 70,
+   "state": "OK"
   },
   {
    "name": "State Funds (SFAW)",
    "code": "SFAW",
-   "count": 21,
-   "total": 21,
-   "state": "OK",
+   "variants": [
+    "SFAW"
+   ],
    "color": [
     158,
     218,
     229
-   ]
+   ],
+   "count": 21,
+   "approx": 0,
+   "total": 21,
+   "state": "OK"
   },
   {
    "name": "Unknown (blank)",
    "code": "",
-   "count": 10,
-   "total": 13,
-   "state": "OK",
+   "variants": [
+    ""
+   ],
    "color": [
     219,
     219,
     141
-   ]
+   ],
+   "count": 11,
+   "approx": 1,
+   "total": 13,
+   "state": "OK"
+  },
+  {
+   "name": "Plugged and Abandoned",
+   "code": "Plugged and Abandoned",
+   "variants": [
+    "Plugged and Abandoned"
+   ],
+   "color": [
+    31,
+    119,
+    180
+   ],
+   "count": 245327,
+   "approx": 0,
+   "total": 245328,
+   "state": "KS"
+  },
+  {
+   "name": "Producing",
+   "code": "Producing",
+   "variants": [
+    "Producing"
+   ],
+   "color": [
+    214,
+    39,
+    40
+   ],
+   "count": 68148,
+   "approx": 0,
+   "total": 68148,
+   "state": "KS"
+  },
+  {
+   "name": "(blank)",
+   "code": "",
+   "variants": [
+    ""
+   ],
+   "color": [
+    44,
+    160,
+    44
+   ],
+   "count": 54725,
+   "approx": 0,
+   "total": 54774,
+   "state": "KS"
+  },
+  {
+   "name": "Approved Intent to Drill",
+   "code": "Approved Intent to Drill",
+   "variants": [
+    "Approved Intent to Drill"
+   ],
+   "color": [
+    255,
+    127,
+    14
+   ],
+   "count": 36528,
+   "approx": 0,
+   "total": 36528,
+   "state": "KS"
+  },
+  {
+   "name": "Expired Intent to Drill (C-1)",
+   "code": "Expired Intent to Drill (C-1)",
+   "variants": [
+    "Expired Intent to Drill (C-1)"
+   ],
+   "color": [
+    148,
+    103,
+    189
+   ],
+   "count": 18534,
+   "approx": 0,
+   "total": 18534,
+   "state": "KS"
+  },
+  {
+   "name": "Authorized Injection Well",
+   "code": "Authorized Injection Well",
+   "variants": [
+    "Authorized Injection Well"
+   ],
+   "color": [
+    140,
+    86,
+    75
+   ],
+   "count": 15599,
+   "approx": 0,
+   "total": 15599,
+   "state": "KS"
+  },
+  {
+   "name": "Inactive Well",
+   "code": "Inactive Well",
+   "variants": [
+    "Inactive Well"
+   ],
+   "color": [
+    227,
+    119,
+    194
+   ],
+   "count": 14976,
+   "approx": 0,
+   "total": 14976,
+   "state": "KS"
+  },
+  {
+   "name": "Recompleted",
+   "code": "Recompleted",
+   "variants": [
+    "Recompleted"
+   ],
+   "color": [
+    23,
+    190,
+    207
+   ],
+   "count": 13521,
+   "approx": 0,
+   "total": 13521,
+   "state": "KS"
+  },
+  {
+   "name": "KCC Fee Fund Plugging",
+   "code": "KCC Fee Fund Plugging",
+   "variants": [
+    "KCC Fee Fund Plugging"
+   ],
+   "color": [
+    188,
+    189,
+    34
+   ],
+   "count": 12299,
+   "approx": 0,
+   "total": 12299,
+   "state": "KS"
+  },
+  {
+   "name": "Converted to EOR Well",
+   "code": "Converted to EOR Well",
+   "variants": [
+    "Converted to EOR Well"
+   ],
+   "color": [
+    127,
+    127,
+    127
+   ],
+   "count": 9498,
+   "approx": 0,
+   "total": 9498,
+   "state": "KS"
+  },
+  {
+   "name": "ON LIST",
+   "code": "ON LIST",
+   "variants": [
+    "ON LIST"
+   ],
+   "color": [
+    174,
+    199,
+    232
+   ],
+   "count": 6281,
+   "approx": 0,
+   "total": 6281,
+   "state": "KS"
+  },
+  {
+   "name": "Well Drilled",
+   "code": "Well Drilled",
+   "variants": [
+    "Well Drilled"
+   ],
+   "color": [
+    255,
+    152,
+    150
+   ],
+   "count": 4977,
+   "approx": 0,
+   "total": 4977,
+   "state": "KS"
+  },
+  {
+   "name": "Converted to SWD Well",
+   "code": "Converted to SWD Well",
+   "variants": [
+    "Converted to SWD Well"
+   ],
+   "color": [
+    152,
+    223,
+    138
+   ],
+   "count": 3721,
+   "approx": 0,
+   "total": 3721,
+   "state": "KS"
+  },
+  {
+   "name": "Plugged with Federal Funds",
+   "code": "Plugged with Federal Funds",
+   "variants": [
+    "Plugged with Federal Funds"
+   ],
+   "color": [
+    255,
+    187,
+    120
+   ],
+   "count": 2736,
+   "approx": 0,
+   "total": 2736,
+   "state": "KS"
+  },
+  {
+   "name": "Cancelled API Number",
+   "code": "Cancelled API Number",
+   "variants": [
+    "Cancelled API Number"
+   ],
+   "color": [
+    197,
+    176,
+    213
+   ],
+   "count": 2151,
+   "approx": 0,
+   "total": 2151,
+   "state": "KS"
+  },
+  {
+   "name": "Federal Plugging Project",
+   "code": "Federal Plugging Project",
+   "variants": [
+    "Federal Plugging Project"
+   ],
+   "color": [
+    196,
+    156,
+    148
+   ],
+   "count": 2130,
+   "approx": 0,
+   "total": 2130,
+   "state": "KS"
+  },
+  {
+   "name": "Injection Authorization Terminated",
+   "code": "Injection Authorization Terminated",
+   "variants": [
+    "Injection Authorization Terminated"
+   ],
+   "color": [
+    247,
+    182,
+    210
+   ],
+   "count": 2030,
+   "approx": 0,
+   "total": 2030,
+   "state": "KS"
+  },
+  {
+   "name": "Approved for Plugging - CP-1 Received",
+   "code": "Approved for Plugging - CP-1 Received",
+   "variants": [
+    "Approved for Plugging - CP-1 Received"
+   ],
+   "color": [
+    158,
+    218,
+    229
+   ],
+   "count": 1721,
+   "approx": 0,
+   "total": 1721,
+   "state": "KS"
+  },
+  {
+   "name": "Converted to Producing Well",
+   "code": "Converted to Producing Well",
+   "variants": [
+    "Converted to Producing Well"
+   ],
+   "color": [
+    219,
+    219,
+    141
+   ],
+   "count": 1678,
+   "approx": 0,
+   "total": 1678,
+   "state": "KS"
+  },
+  {
+   "name": "Spudded",
+   "code": "Spudded",
+   "variants": [
+    "Spudded"
+   ],
+   "color": [
+    57,
+    59,
+    121
+   ],
+   "count": 781,
+   "approx": 0,
+   "total": 781,
+   "state": "KS"
+  },
+  {
+   "name": "Injection Well Split to Another Dkt",
+   "code": "Injection Well Split to Another Dkt",
+   "variants": [
+    "Injection Well Split to Another Dkt"
+   ],
+   "color": [
+    99,
+    121,
+    57
+   ],
+   "count": 640,
+   "approx": 0,
+   "total": 640,
+   "state": "KS"
+  },
+  {
+   "name": "Unplugged Former Injection Well",
+   "code": "Unplugged Former Injection Well",
+   "variants": [
+    "Unplugged Former Injection Well"
+   ],
+   "color": [
+    140,
+    109,
+    49
+   ],
+   "count": 584,
+   "approx": 0,
+   "total": 584,
+   "state": "KS"
+  },
+  {
+   "name": "UIC Application Dismissed",
+   "code": "UIC Application Dismissed",
+   "variants": [
+    "UIC Application Dismissed"
+   ],
+   "color": [
+    132,
+    60,
+    57
+   ],
+   "count": 253,
+   "approx": 0,
+   "total": 253,
+   "state": "KS"
+  },
+  {
+   "name": "UIC Application Withdrawn",
+   "code": "UIC Application Withdrawn",
+   "variants": [
+    "UIC Application Withdrawn"
+   ],
+   "color": [
+    123,
+    65,
+    115
+   ],
+   "count": 251,
+   "approx": 0,
+   "total": 251,
+   "state": "KS"
+  },
+  {
+   "name": "Authorized Inj Well Split From Prior Dkt",
+   "code": "Authorized Inj Well Split From Prior Dkt",
+   "variants": [
+    "Authorized Inj Well Split From Prior Dkt"
+   ],
+   "color": [
+    197,
+    198,
+    57
+   ],
+   "count": 162,
+   "approx": 0,
+   "total": 162,
+   "state": "KS"
+  },
+  {
+   "name": "Re-Plugged (non Fee-Fund)",
+   "code": "Re-Plugged (non Fee-Fund)",
+   "variants": [
+    "Re-Plugged (non Fee-Fund)"
+   ],
+   "color": [
+    57,
+    156,
+    198
+   ],
+   "count": 79,
+   "approx": 0,
+   "total": 79,
+   "state": "KS"
+  },
+  {
+   "name": "Unknown",
+   "code": "Unknown",
+   "variants": [
+    "Unknown"
+   ],
+   "color": [
+    198,
+    57,
+    115
+   ],
+   "count": 64,
+   "approx": 0,
+   "total": 64,
+   "state": "KS"
+  },
+  {
+   "name": "Expired Plugging Application (CP-1)",
+   "code": "Expired Plugging Application (CP-1)",
+   "variants": [
+    "Expired Plugging Application (CP-1)"
+   ],
+   "color": [
+    74,
+    198,
+    57
+   ],
+   "count": 43,
+   "approx": 0,
+   "total": 43,
+   "state": "KS"
+  },
+  {
+   "name": "DEVELOPMENT",
+   "code": "DEVELOPMENT",
+   "variants": [
+    "DEVELOPMENT"
+   ],
+   "color": [
+    81,
+    57,
+    198
+   ],
+   "count": 30,
+   "approx": 0,
+   "total": 30,
+   "state": "KS"
+  },
+  {
+   "name": "UIC Application Denied",
+   "code": "UIC Application Denied",
+   "variants": [
+    "UIC Application Denied"
+   ],
+   "color": [
+    198,
+    122,
+    57
+   ],
+   "count": 21,
+   "approx": 0,
+   "total": 21,
+   "state": "KS"
+  },
+  {
+   "name": "Not Confirmed",
+   "code": "Not Confirmed",
+   "variants": [
+    "Not Confirmed"
+   ],
+   "color": [
+    57,
+    198,
+    163
+   ],
+   "count": 9,
+   "approx": 0,
+   "total": 9,
+   "state": "KS"
+  },
+  {
+   "name": "Pending Injection Application",
+   "code": "Pending Injection Application",
+   "variants": [
+    "Pending Injection Application"
+   ],
+   "color": [
+    198,
+    57,
+    191
+   ],
+   "count": 9,
+   "approx": 0,
+   "total": 9,
+   "state": "KS"
+  },
+  {
+   "name": "Injection Authority Suspended",
+   "code": "Injection Authority Suspended",
+   "variants": [
+    "Injection Authority Suspended"
+   ],
+   "color": [
+    150,
+    198,
+    57
+   ],
+   "count": 5,
+   "approx": 0,
+   "total": 5,
+   "state": "KS"
+  },
+  {
+   "name": "Injection Authorization Terminated - INACTIVE CODE",
+   "code": "Injection Authorization Terminated - INACTIVE CODE",
+   "variants": [
+    "Injection Authorization Terminated - INACTIVE CODE"
+   ],
+   "color": [
+    57,
+    109,
+    198
+   ],
+   "count": 4,
+   "approx": 0,
+   "total": 4,
+   "state": "KS"
+  },
+  {
+   "name": "WILDCAT",
+   "code": "WILDCAT",
+   "variants": [
+    "WILDCAT"
+   ],
+   "color": [
+    198,
+    57,
+    68
+   ],
+   "count": 3,
+   "approx": 0,
+   "total": 3,
+   "state": "KS"
   }
  ],
  "shards": [
@@ -4873,7 +7609,749 @@
    "start": 1854522,
    "count": 2,
    "file": "shards/OK-405.json.br"
+  },
+  {
+   "key": "KS-001",
+   "state": "KS",
+   "start": 1854524,
+   "count": 20681,
+   "file": "shards/KS-001.json.br"
+  },
+  {
+   "key": "KS-003",
+   "state": "KS",
+   "start": 1875205,
+   "count": 12693,
+   "file": "shards/KS-003.json.br"
+  },
+  {
+   "key": "KS-005",
+   "state": "KS",
+   "start": 1887898,
+   "count": 144,
+   "file": "shards/KS-005.json.br"
+  },
+  {
+   "key": "KS-007",
+   "state": "KS",
+   "start": 1888042,
+   "count": 7832,
+   "file": "shards/KS-007.json.br"
+  },
+  {
+   "key": "KS-009",
+   "state": "KS",
+   "start": 1895874,
+   "count": 17846,
+   "file": "shards/KS-009.json.br"
+  },
+  {
+   "key": "KS-011",
+   "state": "KS",
+   "start": 1913720,
+   "count": 6338,
+   "file": "shards/KS-011.json.br"
+  },
+  {
+   "key": "KS-013",
+   "state": "KS",
+   "start": 1920058,
+   "count": 116,
+   "file": "shards/KS-013.json.br"
+  },
+  {
+   "key": "KS-015",
+   "state": "KS",
+   "start": 1920174,
+   "count": 15084,
+   "file": "shards/KS-015.json.br"
+  },
+  {
+   "key": "KS-017",
+   "state": "KS",
+   "start": 1935258,
+   "count": 1340,
+   "file": "shards/KS-017.json.br"
+  },
+  {
+   "key": "KS-019",
+   "state": "KS",
+   "start": 1936598,
+   "count": 14375,
+   "file": "shards/KS-019.json.br"
+  },
+  {
+   "key": "KS-021",
+   "state": "KS",
+   "start": 1950973,
+   "count": 365,
+   "file": "shards/KS-021.json.br"
+  },
+  {
+   "key": "KS-023",
+   "state": "KS",
+   "start": 1951338,
+   "count": 1794,
+   "file": "shards/KS-023.json.br"
+  },
+  {
+   "key": "KS-025",
+   "state": "KS",
+   "start": 1953132,
+   "count": 2206,
+   "file": "shards/KS-025.json.br"
+  },
+  {
+   "key": "KS-027",
+   "state": "KS",
+   "start": 1955338,
+   "count": 120,
+   "file": "shards/KS-027.json.br"
+  },
+  {
+   "key": "KS-029",
+   "state": "KS",
+   "start": 1955458,
+   "count": 52,
+   "file": "shards/KS-029.json.br"
+  },
+  {
+   "key": "KS-031",
+   "state": "KS",
+   "start": 1955510,
+   "count": 5842,
+   "file": "shards/KS-031.json.br"
+  },
+  {
+   "key": "KS-033",
+   "state": "KS",
+   "start": 1961352,
+   "count": 2339,
+   "file": "shards/KS-033.json.br"
+  },
+  {
+   "key": "KS-035",
+   "state": "KS",
+   "start": 1963691,
+   "count": 11511,
+   "file": "shards/KS-035.json.br"
+  },
+  {
+   "key": "KS-037",
+   "state": "KS",
+   "start": 1975202,
+   "count": 4943,
+   "file": "shards/KS-037.json.br"
+  },
+  {
+   "key": "KS-039",
+   "state": "KS",
+   "start": 1980145,
+   "count": 1980,
+   "file": "shards/KS-039.json.br"
+  },
+  {
+   "key": "KS-041",
+   "state": "KS",
+   "start": 1982125,
+   "count": 541,
+   "file": "shards/KS-041.json.br"
+  },
+  {
+   "key": "KS-043",
+   "state": "KS",
+   "start": 1982666,
+   "count": 61,
+   "file": "shards/KS-043.json.br"
+  },
+  {
+   "key": "KS-045",
+   "state": "KS",
+   "start": 1982727,
+   "count": 2895,
+   "file": "shards/KS-045.json.br"
+  },
+  {
+   "key": "KS-047",
+   "state": "KS",
+   "start": 1985622,
+   "count": 2526,
+   "file": "shards/KS-047.json.br"
+  },
+  {
+   "key": "KS-049",
+   "state": "KS",
+   "start": 1988148,
+   "count": 4634,
+   "file": "shards/KS-049.json.br"
+  },
+  {
+   "key": "KS-051",
+   "state": "KS",
+   "start": 1992782,
+   "count": 15914,
+   "file": "shards/KS-051.json.br"
+  },
+  {
+   "key": "KS-053",
+   "state": "KS",
+   "start": 2008696,
+   "count": 3850,
+   "file": "shards/KS-053.json.br"
+  },
+  {
+   "key": "KS-055",
+   "state": "KS",
+   "start": 2012546,
+   "count": 4791,
+   "file": "shards/KS-055.json.br"
+  },
+  {
+   "key": "KS-057",
+   "state": "KS",
+   "start": 2017337,
+   "count": 1385,
+   "file": "shards/KS-057.json.br"
+  },
+  {
+   "key": "KS-059",
+   "state": "KS",
+   "start": 2018722,
+   "count": 10641,
+   "file": "shards/KS-059.json.br"
+  },
+  {
+   "key": "KS-061",
+   "state": "KS",
+   "start": 2029363,
+   "count": 122,
+   "file": "shards/KS-061.json.br"
+  },
+  {
+   "key": "KS-063",
+   "state": "KS",
+   "start": 2029485,
+   "count": 3108,
+   "file": "shards/KS-063.json.br"
+  },
+  {
+   "key": "KS-065",
+   "state": "KS",
+   "start": 2032593,
+   "count": 9074,
+   "file": "shards/KS-065.json.br"
+  },
+  {
+   "key": "KS-067",
+   "state": "KS",
+   "start": 2041667,
+   "count": 2937,
+   "file": "shards/KS-067.json.br"
+  },
+  {
+   "key": "KS-069",
+   "state": "KS",
+   "start": 2044604,
+   "count": 602,
+   "file": "shards/KS-069.json.br"
+  },
+  {
+   "key": "KS-071",
+   "state": "KS",
+   "start": 2045206,
+   "count": 1029,
+   "file": "shards/KS-071.json.br"
+  },
+  {
+   "key": "KS-073",
+   "state": "KS",
+   "start": 2046235,
+   "count": 13047,
+   "file": "shards/KS-073.json.br"
+  },
+  {
+   "key": "KS-075",
+   "state": "KS",
+   "start": 2059282,
+   "count": 1413,
+   "file": "shards/KS-075.json.br"
+  },
+  {
+   "key": "KS-077",
+   "state": "KS",
+   "start": 2060695,
+   "count": 3359,
+   "file": "shards/KS-077.json.br"
+  },
+  {
+   "key": "KS-079",
+   "state": "KS",
+   "start": 2064054,
+   "count": 2232,
+   "file": "shards/KS-079.json.br"
+  },
+  {
+   "key": "KS-081",
+   "state": "KS",
+   "start": 2066286,
+   "count": 4236,
+   "file": "shards/KS-081.json.br"
+  },
+  {
+   "key": "KS-083",
+   "state": "KS",
+   "start": 2070522,
+   "count": 2991,
+   "file": "shards/KS-083.json.br"
+  },
+  {
+   "key": "KS-085",
+   "state": "KS",
+   "start": 2073513,
+   "count": 172,
+   "file": "shards/KS-085.json.br"
+  },
+  {
+   "key": "KS-087",
+   "state": "KS",
+   "start": 2073685,
+   "count": 968,
+   "file": "shards/KS-087.json.br"
+  },
+  {
+   "key": "KS-089",
+   "state": "KS",
+   "start": 2074653,
+   "count": 20,
+   "file": "shards/KS-089.json.br"
+  },
+  {
+   "key": "KS-091",
+   "state": "KS",
+   "start": 2074673,
+   "count": 5389,
+   "file": "shards/KS-091.json.br"
+  },
+  {
+   "key": "KS-093",
+   "state": "KS",
+   "start": 2080062,
+   "count": 3249,
+   "file": "shards/KS-093.json.br"
+  },
+  {
+   "key": "KS-095",
+   "state": "KS",
+   "start": 2083311,
+   "count": 4988,
+   "file": "shards/KS-095.json.br"
+  },
+  {
+   "key": "KS-097",
+   "state": "KS",
+   "start": 2088299,
+   "count": 2886,
+   "file": "shards/KS-097.json.br"
+  },
+  {
+   "key": "KS-099",
+   "state": "KS",
+   "start": 2091185,
+   "count": 6854,
+   "file": "shards/KS-099.json.br"
+  },
+  {
+   "key": "KS-101",
+   "state": "KS",
+   "start": 2098039,
+   "count": 3242,
+   "file": "shards/KS-101.json.br"
+  },
+  {
+   "key": "KS-103",
+   "state": "KS",
+   "start": 2101281,
+   "count": 1833,
+   "file": "shards/KS-103.json.br"
+  },
+  {
+   "key": "KS-105",
+   "state": "KS",
+   "start": 2103114,
+   "count": 80,
+   "file": "shards/KS-105.json.br"
+  },
+  {
+   "key": "KS-107",
+   "state": "KS",
+   "start": 2103194,
+   "count": 8040,
+   "file": "shards/KS-107.json.br"
+  },
+  {
+   "key": "KS-109",
+   "state": "KS",
+   "start": 2111234,
+   "count": 1937,
+   "file": "shards/KS-109.json.br"
+  },
+  {
+   "key": "KS-111",
+   "state": "KS",
+   "start": 2113171,
+   "count": 1202,
+   "file": "shards/KS-111.json.br"
+  },
+  {
+   "key": "KS-113",
+   "state": "KS",
+   "start": 2114373,
+   "count": 6121,
+   "file": "shards/KS-113.json.br"
+  },
+  {
+   "key": "KS-115",
+   "state": "KS",
+   "start": 2120494,
+   "count": 4770,
+   "file": "shards/KS-115.json.br"
+  },
+  {
+   "key": "KS-117",
+   "state": "KS",
+   "start": 2125264,
+   "count": 78,
+   "file": "shards/KS-117.json.br"
+  },
+  {
+   "key": "KS-119",
+   "state": "KS",
+   "start": 2125342,
+   "count": 2605,
+   "file": "shards/KS-119.json.br"
+  },
+  {
+   "key": "KS-121",
+   "state": "KS",
+   "start": 2127947,
+   "count": 17246,
+   "file": "shards/KS-121.json.br"
+  },
+  {
+   "key": "KS-123",
+   "state": "KS",
+   "start": 2145193,
+   "count": 38,
+   "file": "shards/KS-123.json.br"
+  },
+  {
+   "key": "KS-125",
+   "state": "KS",
+   "start": 2145231,
+   "count": 22451,
+   "file": "shards/KS-125.json.br"
+  },
+  {
+   "key": "KS-127",
+   "state": "KS",
+   "start": 2167682,
+   "count": 1030,
+   "file": "shards/KS-127.json.br"
+  },
+  {
+   "key": "KS-129",
+   "state": "KS",
+   "start": 2168712,
+   "count": 4399,
+   "file": "shards/KS-129.json.br"
+  },
+  {
+   "key": "KS-131",
+   "state": "KS",
+   "start": 2173111,
+   "count": 366,
+   "file": "shards/KS-131.json.br"
+  },
+  {
+   "key": "KS-133",
+   "state": "KS",
+   "start": 2173477,
+   "count": 15453,
+   "file": "shards/KS-133.json.br"
+  },
+  {
+   "key": "KS-135",
+   "state": "KS",
+   "start": 2188930,
+   "count": 8077,
+   "file": "shards/KS-135.json.br"
+  },
+  {
+   "key": "KS-137",
+   "state": "KS",
+   "start": 2197007,
+   "count": 1482,
+   "file": "shards/KS-137.json.br"
+  },
+  {
+   "key": "KS-139",
+   "state": "KS",
+   "start": 2198489,
+   "count": 149,
+   "file": "shards/KS-139.json.br"
+  },
+  {
+   "key": "KS-141",
+   "state": "KS",
+   "start": 2198638,
+   "count": 678,
+   "file": "shards/KS-141.json.br"
+  },
+  {
+   "key": "KS-143",
+   "state": "KS",
+   "start": 2199316,
+   "count": 49,
+   "file": "shards/KS-143.json.br"
+  },
+  {
+   "key": "KS-145",
+   "state": "KS",
+   "start": 2199365,
+   "count": 3842,
+   "file": "shards/KS-145.json.br"
+  },
+  {
+   "key": "KS-147",
+   "state": "KS",
+   "start": 2203207,
+   "count": 2030,
+   "file": "shards/KS-147.json.br"
+  },
+  {
+   "key": "KS-149",
+   "state": "KS",
+   "start": 2205237,
+   "count": 146,
+   "file": "shards/KS-149.json.br"
+  },
+  {
+   "key": "KS-151",
+   "state": "KS",
+   "start": 2205383,
+   "count": 5321,
+   "file": "shards/KS-151.json.br"
+  },
+  {
+   "key": "KS-153",
+   "state": "KS",
+   "start": 2210704,
+   "count": 1867,
+   "file": "shards/KS-153.json.br"
+  },
+  {
+   "key": "KS-155",
+   "state": "KS",
+   "start": 2212571,
+   "count": 4545,
+   "file": "shards/KS-155.json.br"
+  },
+  {
+   "key": "KS-157",
+   "state": "KS",
+   "start": 2217116,
+   "count": 24,
+   "file": "shards/KS-157.json.br"
+  },
+  {
+   "key": "KS-159",
+   "state": "KS",
+   "start": 2217140,
+   "count": 10610,
+   "file": "shards/KS-159.json.br"
+  },
+  {
+   "key": "KS-161",
+   "state": "KS",
+   "start": 2227750,
+   "count": 206,
+   "file": "shards/KS-161.json.br"
+  },
+  {
+   "key": "KS-163",
+   "state": "KS",
+   "start": 2227956,
+   "count": 10168,
+   "file": "shards/KS-163.json.br"
+  },
+  {
+   "key": "KS-165",
+   "state": "KS",
+   "start": 2238124,
+   "count": 3544,
+   "file": "shards/KS-165.json.br"
+  },
+  {
+   "key": "KS-167",
+   "state": "KS",
+   "start": 2241668,
+   "count": 13767,
+   "file": "shards/KS-167.json.br"
+  },
+  {
+   "key": "KS-169",
+   "state": "KS",
+   "start": 2255435,
+   "count": 1588,
+   "file": "shards/KS-169.json.br"
+  },
+  {
+   "key": "KS-171",
+   "state": "KS",
+   "start": 2257023,
+   "count": 1731,
+   "file": "shards/KS-171.json.br"
+  },
+  {
+   "key": "KS-173",
+   "state": "KS",
+   "start": 2258754,
+   "count": 4516,
+   "file": "shards/KS-173.json.br"
+  },
+  {
+   "key": "KS-175",
+   "state": "KS",
+   "start": 2263270,
+   "count": 3998,
+   "file": "shards/KS-175.json.br"
+  },
+  {
+   "key": "KS-177",
+   "state": "KS",
+   "start": 2267268,
+   "count": 31,
+   "file": "shards/KS-177.json.br"
+  },
+  {
+   "key": "KS-179",
+   "state": "KS",
+   "start": 2267299,
+   "count": 2184,
+   "file": "shards/KS-179.json.br"
+  },
+  {
+   "key": "KS-181",
+   "state": "KS",
+   "start": 2269483,
+   "count": 753,
+   "file": "shards/KS-181.json.br"
+  },
+  {
+   "key": "KS-183",
+   "state": "KS",
+   "start": 2270236,
+   "count": 42,
+   "file": "shards/KS-183.json.br"
+  },
+  {
+   "key": "KS-185",
+   "state": "KS",
+   "start": 2270278,
+   "count": 11492,
+   "file": "shards/KS-185.json.br"
+  },
+  {
+   "key": "KS-187",
+   "state": "KS",
+   "start": 2281770,
+   "count": 1988,
+   "file": "shards/KS-187.json.br"
+  },
+  {
+   "key": "KS-189",
+   "state": "KS",
+   "start": 2283758,
+   "count": 4818,
+   "file": "shards/KS-189.json.br"
+  },
+  {
+   "key": "KS-191",
+   "state": "KS",
+   "start": 2288576,
+   "count": 6985,
+   "file": "shards/KS-191.json.br"
+  },
+  {
+   "key": "KS-193",
+   "state": "KS",
+   "start": 2295561,
+   "count": 1384,
+   "file": "shards/KS-193.json.br"
+  },
+  {
+   "key": "KS-195",
+   "state": "KS",
+   "start": 2296945,
+   "count": 5065,
+   "file": "shards/KS-195.json.br"
+  },
+  {
+   "key": "KS-197",
+   "state": "KS",
+   "start": 2302010,
+   "count": 640,
+   "file": "shards/KS-197.json.br"
+  },
+  {
+   "key": "KS-199",
+   "state": "KS",
+   "start": 2302650,
+   "count": 558,
+   "file": "shards/KS-199.json.br"
+  },
+  {
+   "key": "KS-201",
+   "state": "KS",
+   "start": 2303208,
+   "count": 84,
+   "file": "shards/KS-201.json.br"
+  },
+  {
+   "key": "KS-203",
+   "state": "KS",
+   "start": 2303292,
+   "count": 464,
+   "file": "shards/KS-203.json.br"
+  },
+  {
+   "key": "KS-205",
+   "state": "KS",
+   "start": 2303756,
+   "count": 12774,
+   "file": "shards/KS-205.json.br"
+  },
+  {
+   "key": "KS-207",
+   "state": "KS",
+   "start": 2316530,
+   "count": 15809,
+   "file": "shards/KS-207.json.br"
+  },
+  {
+   "key": "KS-209",
+   "state": "KS",
+   "start": 2332339,
+   "count": 141,
+   "file": "shards/KS-209.json.br"
+  },
+  {
+   "key": "KS-none",
+   "state": "KS",
+   "start": 2332480,
+   "count": 41612,
+   "file": "shards/KS-none.json.br"
   }
  ],
- "countyCount": 332
+ "countyCount": 437
 }
