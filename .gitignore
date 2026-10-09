@@ -1,0 +1,12 @@
+data/raw/
+*.csv
+*.parquet
+*.geojson
+*.jsonl
+__pycache__/
+# app build outputs (added by app agent)
+node_modules/
+app/dist/
+app/renderer/renderer.bundle.js
+release/
+.DS_Store
