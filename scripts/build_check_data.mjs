@@ -23,6 +23,7 @@ for (const [f, bytes] of Object.entries(expect)) {
   if (fs.statSync(p).size !== bytes) fail(`${f} is ${fs.statSync(p).size} bytes, expected ${bytes}`);
 }
 if (!fs.existsSync(path.join(DIR, 'counties.json'))) fail('missing counties.json');
+if (!fs.existsSync(path.join(DIR, 'states.json'))) fail('missing states.json - run "node scripts/build_states.mjs"');
 
 let start = 0;
 for (const s of meta.states) {

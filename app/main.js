@@ -27,6 +27,7 @@ const DATA_DIR = app.isPackaged
 
 // Optional startup arguments (used for deep links and automated verification):
 //   --select-api=<API>    search for and select a well after load
+//   --view=<lon>,<lat>,<zoom>  start at this map view
 //   --pick=<n>            when that API matches several wells, open the n-th (1-based)
 //   --log-renderer        mirror renderer console output to stdout
 const argOf = (name) => {
@@ -102,6 +103,8 @@ function createWindow() {
   const q = new URLSearchParams();
   const sel = argOf('select-api');
   if (sel) q.set('select', sel);
+  const view = argOf('view');
+  if (view) q.set('view', view);
   const pick = argOf('pick');
   if (pick) q.set('pick', pick);
   win.loadURL(`${SCHEME}://local/index.html${q.toString() ? `?${q}` : ''}`);

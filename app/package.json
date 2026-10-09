@@ -8,7 +8,7 @@
   "private": true,
   "main": "main.js",
   "scripts": {
-    "data": "node --max-old-space-size=8192 ../scripts/build_data.mjs",
+    "data": "node --max-old-space-size=8192 ../scripts/build_data.mjs && node ../scripts/build_states.mjs",
     "check-data": "node ../scripts/build_check_data.mjs",
     "bundle": "esbuild src/renderer.js --bundle --minify --format=iife --target=chrome130 --outfile=renderer/renderer.bundle.js",
     "start": "npm run bundle && electron .",

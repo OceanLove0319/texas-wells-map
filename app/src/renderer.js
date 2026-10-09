@@ -5,7 +5,7 @@
  * the machine is the user clicking a document link, which the main process opens in the default browser.
  */
 import { Deck, MapView, WebMercatorViewport } from '@deck.gl/core';
-import { ScatterplotLayer, GeoJsonLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, GeoJsonLayer, TextLayer } from '@deck.gl/layers';
 import { DataFilterExtension } from '@deck.gl/extensions';
 
 const DATA = 'app://local/data/';
@@ -24,6 +24,7 @@ const state = {
   visibleStatuses: [],
   colorBy: {}, // stateId -> 'type' | 'status'
   counties: null,
+  states: null, // US state outlines (bold boundary layer) + label points
   countyNames: new Map(),
   selected: -1,
   zoom: 5,
@@ -44,15 +45,16 @@ async function fetchBin(p, Type) {
 }
 
 async function loadAll() {
-  const [meta, points, types, status, apis, counties] = await Promise.all([
+  const [meta, points, types, status, apis, counties, states] = await Promise.all([
     fetchJson('meta.json'),
     fetchBin('points.bin', Float32Array),
     fetchBin('types.bin', Uint8Array),
     fetchBin('status.bin', Uint8Array),
     fetchBin('apis.bin', Uint32Array),
     fetchJson('counties.json'),
+    fetchJson('states.json').catch(() => ({ type: 'FeatureCollection', features: [] })),
   ]);
-  Object.assign(state, { meta, points, types, status, apis, counties });
+  Object.assign(state, { meta, points, types, status, apis, counties, states });
   state.visibleTypes = meta.types.map(() => true);
   state.visibleStatuses = meta.statuses.map(() => true);
   for (const s of meta.states) { state.visibleStates[s.id] = true; state.colorBy[s.id] = 'type'; }
@@ -171,6 +173,38 @@ function buildLayers() {
       updateTriggers: { getFilterValue: filter, getFillColor: colors },
     }),
   ];
+  // State boundaries on top of counties and wells: thicker and darker than county lines.
+  layers.push(new GeoJsonLayer({
+    id: 'state-boundaries',
+    data: state.states,
+    stroked: true,
+    filled: false,
+    getLineColor: [38, 50, 68, 235],
+    lineWidthUnits: 'pixels',
+    getLineWidth: 2.75,
+    lineJointRounded: true,
+    lineCapRounded: true,
+    pickable: false,
+  }));
+  if (state.zoom < 7) {
+    layers.push(new TextLayer({
+      id: 'state-labels',
+      data: state.states.features,
+      getPosition: (f) => f.properties.label,
+      getText: (f) => f.properties.name.toUpperCase(),
+      getSize: 13,
+      getColor: [38, 50, 68, 150],
+      fontSettings: { sdf: true },
+      outlineWidth: 4,
+      outlineColor: [255, 255, 255, 190],
+      fontFamily: '-apple-system, "Segoe UI", Roboto, Arial, sans-serif',
+      fontWeight: 600,
+      characterSet: 'auto',
+      getTextAnchor: 'middle',
+      getAlignmentBaseline: 'center',
+      pickable: false,
+    }));
+  }
   if (selected >= 0 && Number.isFinite(points[selected * 2])) {
     layers.push(new ScatterplotLayer({
       id: 'selected',
@@ -202,6 +236,8 @@ function fitView() {
 
 function initDeck() {
   const initialViewState = fitView();
+  const v = (new URLSearchParams(location.search).get('view') || '').split(',').map(Number);
+  if (v.length === 3 && v.every(Number.isFinite)) Object.assign(initialViewState, { longitude: v[0], latitude: v[1], zoom: v[2] });
   state.zoom = initialViewState.zoom;
   state.deck = new Deck({
     canvas: 'map',
@@ -211,7 +247,7 @@ function initDeck() {
     layers: buildLayers(),
     getCursor: ({ isHovering, isDragging }) => (isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab'),
     onViewStateChange: ({ viewState }) => {
-      const changed = radiusScaleFor(viewState.zoom) !== radiusScaleFor(state.zoom);
+      const changed = radiusScaleFor(viewState.zoom) !== radiusScaleFor(state.zoom) || (viewState.zoom < 7) !== (state.zoom < 7);
       state.zoom = viewState.zoom;
       if (changed) render();
       return viewState;
