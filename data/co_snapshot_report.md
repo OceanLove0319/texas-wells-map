@@ -1,7 +1,7 @@
 # Snapshot report - Colorado Energy & Carbon Management Commission (ECMC) well data (Colorado)
 
 Report generated: 2026-10-12 14:24 UTC  
-Data date shown in the app: **2026-10-11** (from ../../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/co/pull_log.jsonl (co_wells.csv, zip_entry_date))  
+Data date shown in the app: **2026-10-11** (from data/raw/co/pull_log.jsonl (co_wells.csv, zip_entry_date))  
 
 Pull log:
 

@@ -1,7 +1,7 @@
 # Snapshot report - Montana Board of Oil and Gas Conservation (DNRC BOGC) well data (Montana)
 
 Report generated: 2026-10-12 14:24 UTC  
-Data date shown in the app: **2026-10-12** (from ../../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/mt/pull_log.jsonl (mt_wells.csv))  
+Data date shown in the app: **2026-10-12** (from data/raw/mt/pull_log.jsonl (mt_wells.csv))  
 
 Pull log:
 

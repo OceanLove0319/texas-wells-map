@@ -1,7 +1,7 @@
 # Snapshot report - North Dakota Industrial Commission, Oil and Gas Division (NDIC DMR) well data (North Dakota)
 
 Report generated: 2026-10-12 14:24 UTC  
-Data date shown in the app: **2026-10-12** (from ../../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/nd/pull_log.jsonl (nd_wells.csv))  
+Data date shown in the app: **2026-10-12** (from data/raw/nd/pull_log.jsonl (nd_wells.csv))  
 
 Pull log:
 

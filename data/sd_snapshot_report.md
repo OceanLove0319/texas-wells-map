@@ -1,7 +1,7 @@
 # Snapshot report - South Dakota DANR Oil & Gas Program (data: SD Geological Survey) well data (South Dakota)
 
 Report generated: 2026-10-12 14:24 UTC  
-Data date shown in the app: **2026-10-01** (from ../../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/sd/pull_log.jsonl (sd_wells.csv, export_date))  
+Data date shown in the app: **2026-10-01** (from data/raw/sd/pull_log.jsonl (sd_wells.csv, export_date))  
 
 Pull log:
 

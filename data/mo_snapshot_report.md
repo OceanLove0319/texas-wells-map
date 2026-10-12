@@ -1,7 +1,7 @@
 # Snapshot report - Missouri DNR, Missouri Geological Survey (data last updated 2021) well data (Missouri)
 
 Report generated: 2026-10-12 14:20 UTC  
-Data date shown in the app: **2021-08-30** (from ../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/mo/pull_log.jsonl (mo_wells.csv, metadata_pubdate))  
+Data date shown in the app: **2021-08-30** (from data/raw/mo/pull_log.jsonl (mo_wells.csv, metadata_pubdate))  
 
 Pull log:
 

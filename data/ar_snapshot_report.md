@@ -1,7 +1,7 @@
 # Snapshot report - Arkansas Oil and Gas Commission (AOGC), via Arkansas GIS Office well data (Arkansas)
 
 Report generated: 2026-10-12 14:20 UTC  
-Data date shown in the app: **2026-07-21** (from ../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/ar/pull_log.jsonl (ar_wells.csv, item_modified))  
+Data date shown in the app: **2026-07-21** (from data/raw/ar/pull_log.jsonl (ar_wells.csv, item_modified))  
 
 Pull log:
 

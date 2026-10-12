@@ -1,7 +1,7 @@
 # Snapshot report - State Oil and Gas Board of Alabama (OGB, Geological Survey of Alabama) well data (Alabama)
 
 Report generated: 2026-10-12 14:29 UTC  
-Data date shown in the app: **2026-10-12** (from ../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/al/pull_log.jsonl (al_wells.csv))  
+Data date shown in the app: **2026-10-12** (from data/raw/al/pull_log.jsonl (al_wells.csv))  
 
 Pull log:
 

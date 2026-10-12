@@ -1,7 +1,7 @@
 # Snapshot report - New Mexico Oil Conservation Division (EMNRD OCD) well data (New Mexico)
 
 Report generated: 2026-10-12 14:24 UTC  
-Data date shown in the app: **2026-10-12** (from ../../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/nm/pull_log.jsonl (nm_wells.csv))  
+Data date shown in the app: **2026-10-12** (from data/raw/nm/pull_log.jsonl (nm_wells.csv))  
 
 Pull log:
 

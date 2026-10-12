@@ -1,7 +1,7 @@
 # Snapshot report - BIA Osage Agency, via Osage Minerals Council ArcGIS Online layer "Osage BIA Wells" (data last edited 2021) well data (Osage County, OK (BIA))
 
 Report generated: 2026-10-12 14:29 UTC  
-Data date shown in the app: **2021-01-25** (from ../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/ok_osage/pull_log.jsonl (osage_bia_wells.csv, data_last_edit))  
+Data date shown in the app: **2021-01-25** (from data/raw/ok_osage/pull_log.jsonl (osage_bia_wells.csv, data_last_edit))  
 
 Pull log:
 

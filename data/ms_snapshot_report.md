@@ -1,7 +1,7 @@
 # Snapshot report - Mississippi State Oil and Gas Board (MSOGB) well data (Mississippi)
 
 Report generated: 2026-10-12 14:23 UTC  
-Data date shown in the app: **2026-10-09** (from ../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/ms/pull_log.jsonl (ms_wells.csv, file_date))  
+Data date shown in the app: **2026-10-09** (from data/raw/ms/pull_log.jsonl (ms_wells.csv, file_date))  
 
 Pull log:
 

@@ -80,18 +80,21 @@ via `shell.openExternal`; the app itself never downloads it.
 
 ## Download
 
-Get the installer from the [Releases](../../releases) page:
+Get the installer from the [Releases](../../releases) page. **v2.0.0** is the first national build
+(36 state and federal offshore sources plus the USGS orphan-well overlay, 4,988,314 records); v1.x were
+Texas / Oklahoma / Kansas only. The data ships inside the installer, so the downloads are large.
 
-| File | For |
-|---|---|
-| `USWellsMap-<version>-mac-arm64.dmg` | Mac with Apple silicon (M1 to M5) |
-| `USWellsMap-<version>-mac-x64.dmg` | Mac with Intel processor |
-| `USWellsMap-<version>-win-x64-setup.exe` | Windows installer |
-| `USWellsMap-<version>-win-x64-portable.exe` | Windows, runs without installing |
-| `USWellsMap-source.zip` | Full source code |
-| `SHA256SUMS.txt` | Checksums for every file above |
+| File | For | Size |
+|---|---|---|
+| `USWellsMap-2.0.0-mac-arm64.dmg` | Mac with Apple silicon (M1 to M5) | about 345 MB (545 MB installed) |
+| `USWellsMap-2.0.0-mac-x64.dmg` | Mac with Intel processor | about 345 MB |
+| `USWellsMap-2.0.0-win-x64-setup.exe` | Windows installer | about 350 MB |
+| `USWellsMap-2.0.0-win-x64-portable.exe` | Windows, runs without installing | about 350 MB |
+| `USWellsMap-source.zip` | Full source code including the built data assets | about 310 MB |
+| `SHA256SUMS.txt` | Checksums for every file above | |
 
-(Releases before 2.0 were named `TexasWellsMap-...`.)
+(Releases 1.0.0 and 1.1.0 keep their `TexasWellsMap-...` names; the repository name is unchanged.)
+The app needs about 1 GB of RAM while running.
 
 ## Opening the app (unsigned builds)
 

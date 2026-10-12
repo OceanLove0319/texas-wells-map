@@ -1,7 +1,7 @@
 # Snapshot report - Nebraska Oil and Gas Conservation Commission (NOGCC) well data (Nebraska)
 
 Report generated: 2026-10-12 14:24 UTC  
-Data date shown in the app: **2026-06-04** (from ../../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/ne/pull_log.jsonl (ne_wells.csv, zip_entry_date))  
+Data date shown in the app: **2026-06-04** (from data/raw/ne/pull_log.jsonl (ne_wells.csv, zip_entry_date))  
 
 Pull log:
 

@@ -1,7 +1,7 @@
 # Snapshot report - Louisiana Office of Conservation (SONRIS) well data (Louisiana)
 
 Report generated: 2026-10-12 14:33 UTC  
-Data date shown in the app: **2026-10-10** (from ../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/la/pull_log.jsonl (la_wells.csv, gis_upd_date))  
+Data date shown in the app: **2026-10-10** (from data/raw/la/pull_log.jsonl (la_wells.csv, gis_upd_date))  
 
 Pull log:
 

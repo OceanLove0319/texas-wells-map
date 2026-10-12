@@ -1,7 +1,7 @@
 # Snapshot report - Wyoming Oil and Gas Conservation Commission (WOGCC) well data (Wyoming)
 
 Report generated: 2026-10-12 14:24 UTC  
-Data date shown in the app: **2026-10-12** (from ../../../../../../../../Users/ocean/.claude/projects/tx-wells-map/data/raw/wy/pull_log.jsonl (wy_wells.csv))  
+Data date shown in the app: **2026-10-12** (from data/raw/wy/pull_log.jsonl (wy_wells.csv))  
 
 Pull log:
 
