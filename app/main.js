@@ -132,13 +132,34 @@ function createWindow() {
   // --perf: animate pan/zoom for about 5 s and print frame times and process memory (verification only).
   if (process.argv.includes('--perf')) {
     win.webContents.once('did-finish-load', () => setTimeout(async () => {
+      console.log(`[perf] gpu features ${JSON.stringify(app.getGPUFeatureStatus())}`);
+      try { const gi = await app.getGPUInfo('basic'); console.log(`[perf] gpu info ${JSON.stringify(gi).slice(0, 600)}`); } catch (e) { console.log(`[perf] gpu info unavailable: ${e.message}`); }
+      console.log(`[perf] webgl ${await win.webContents.executeJavaScript("(() => { const c = document.createElement('canvas'); const gl = c.getContext('webgl2'); const d = gl.getExtension('WEBGL_debug_renderer_info'); return d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) + ' / ' + gl.getParameter(d.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.RENDERER); })()")}`);
       const r = await win.webContents.executeJavaScript('window.__twm && window.__twm.perf()');
       const r2 = await win.webContents.executeJavaScript('window.__twm.redrawRate(-97, 38, 3.8)');
       const r3 = await win.webContents.executeJavaScript('window.__twm.redrawRate(-99, 31.5, 6.2)');
       const r4 = await win.webContents.executeJavaScript('window.__twm.redrawRate(-98.5, 32, 10)');
       console.log(`[perf] redraw national ${JSON.stringify(r2)} regional ${JSON.stringify(r3)} local ${JSON.stringify(r4)}`);
+      if (process.argv.includes('--perf-experiments')) {
+        for (const [name, fn] of [['wells only', "(id) => id === 'wells'"], ['wells+counties', "(id) => id === 'wells' || id === 'counties'"], ['all but approx', "(id) => id !== 'wells-approx'"], ['all but overlay', "(id) => !id.startsWith('overlay')"], ['basemap only', "(id) => !id.startsWith('wells') && !id.startsWith('overlay')"]]) {
+          await win.webContents.executeJavaScript(`window.__twm.setLayerFilter(${fn})`);
+          const rr = await win.webContents.executeJavaScript('window.__twm.redrawRate(-97, 38, 3.8)');
+          console.log(`[perf] ${name}: ${JSON.stringify(rr)}`);
+        }
+        await win.webContents.executeJavaScript('window.__twm.setLayerFilter(null)');
+      }
       const mem = app.getAppMetrics().map((m) => `${m.type}${m.name ? `(${m.name})` : ''}=${Math.round((m.memory.workingSetSize || 0) / 1024)}MB`).join(' ');
       console.log(`[perf] ${JSON.stringify(r)} memory: ${mem}`);
+    }, 12000));
+  }
+
+  // --pick-test: probe picking over a grid of window pixels and report what the map returns (verification only).
+  if (process.argv.includes('--pick-test')) {
+    win.webContents.once('did-finish-load', () => setTimeout(async () => {
+      const out = [];
+      for (let x = 500; x <= 1300; x += 100) for (let y = 200; y <= 800; y += 150) out.push(await win.webContents.executeJavaScript(`window.__twm.pickAt(${x}, ${y})`));
+      const hits = out.filter((o) => o.index >= 0);
+      console.log(`[picktest] probes=${out.length} hits=${hits.length} maxOffsetPx=${Math.max(0, ...hits.map((h) => Math.max(Math.abs(h.dx), Math.abs(h.dy))))} sample=${JSON.stringify(hits.slice(0, 4))}`);
     }, 12000));
   }
 

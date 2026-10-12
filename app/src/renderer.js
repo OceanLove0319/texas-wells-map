@@ -6,7 +6,7 @@
  * default browser.
  */
 import { Deck, MapView, WebMercatorViewport } from '@deck.gl/core';
-import { ScatterplotLayer, GeoJsonLayer, TextLayer, IconLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, GeoJsonLayer, TextLayer, IconLayer, PointCloudLayer } from '@deck.gl/layers';
 import { DataFilterExtension } from '@deck.gl/extensions';
 import { canonicalApi, countyCodeOf, apiOfKey, fmtApi as fmtApiFor, fmtCanon, parseQuery, digitsOf, normId } from './api.mjs';
 
@@ -79,6 +79,9 @@ async function loadAll() {
     const p = f.properties || {};
     if (p.state && p.code && p.name) state.countyNames.set(`${p.state}-${p.code}`, titleCase(String(p.name)));
   }
+  const ai = [];
+  for (let i = 0; i < locs.length; i++) if (locs[i] === 2) ai.push(i);
+  state.approxIdx = Int32Array.from(ai); // global indices of approximate (PLSS) wells, in order
   state.triangleIcon = await makeTriangleIcon();
   rebuildColors();
   rebuildFilter();
@@ -177,6 +180,9 @@ function radiusScaleFor(zoom) {
   return 4;
 }
 
+/** Well-layer decimation stride for a zoom level (see wellData). */
+function strideFor(zoom) { return zoom < 4.75 ? 4 : zoom < 6.25 ? 2 : 1; }
+
 function overlaySizeFor(zoom) {
   if (zoom < 4.5) return 3.5;
   if (zoom < 6) return 5;
@@ -202,12 +208,43 @@ function wellData() {
         getFilterValue: { value: filter.subarray(s.start, s.start + s.wellCount), size: 1 },
       } };
     }
-    wellDataCache = { points, colors, filter, overlay, data: { length: n, attributes: {
+    // Approximate (PLSS) wells are a small subset: compact tables so the ring layer does not re-process every well.
+    const idx = state.approxIdx;
+    const ap = new Float32Array(idx.length * 2), ac = new Uint8Array(idx.length * 4), af = new Float32Array(idx.length);
+    for (let k = 0; k < idx.length; k++) {
+      const i = idx[k];
+      ap[k * 2] = points[i * 2]; ap[k * 2 + 1] = points[i * 2 + 1];
+      ac[k * 4] = colors[i * 4]; ac[k * 4 + 1] = colors[i * 4 + 1]; ac[k * 4 + 2] = colors[i * 4 + 2]; ac[k * 4 + 3] = colors[i * 4 + 3];
+      af[k] = filter[i];
+    }
+    // Level of detail: at national / regional zoom every well is on screen and overdrawn many times, so the
+    // GPU draws every 4th (stride 4) or 2nd (stride 2) well there; zoomed in, every well is drawn.
+    const lod = {};
+    for (const stride of [2, 4]) {
+      const m = Math.ceil(n / stride);
+      const lp = new Float32Array(m * 2), lc = new Uint8Array(m * 4), lf = new Float32Array(m);
+      for (let k = 0, i = 0; k < m; k++, i += stride) {
+        lp[k * 2] = points[i * 2]; lp[k * 2 + 1] = points[i * 2 + 1];
+        lc[k * 4] = colors[i * 4]; lc[k * 4 + 1] = colors[i * 4 + 1]; lc[k * 4 + 2] = colors[i * 4 + 2]; lc[k * 4 + 3] = colors[i * 4 + 3];
+        lf[k] = filter[i];
+      }
+      lod[stride] = { length: m, attributes: {
+        getPosition: { value: lp, size: 2 },
+        getColor: { value: lc, size: 4, normalized: true },
+        getFilterValue: { value: lf, size: 1 },
+      } };
+    }
+    lod[1] = { length: n, attributes: {
       getPosition: { value: points, size: 2 },
-      getFillColor: { value: colors, size: 4, normalized: true },
-      getLineColor: { value: colors, size: 4, normalized: true },
+      getColor: { value: colors, size: 4, normalized: true },
       getFilterValue: { value: filter, size: 1 },
-    } } };
+    } };
+    wellDataCache = { points, colors, filter, overlay, lod,
+      approx: { length: idx.length, attributes: {
+        getPosition: { value: ap, size: 2 },
+        getLineColor: { value: ac, size: 4, normalized: true },
+        getFilterValue: { value: af, size: 1 },
+      } } };
   }
   return wellDataCache;
 }
@@ -244,23 +281,35 @@ function buildLayers() {
       }));
     }
   }
-  layers.push(...['wells', 'wells-approx'].map((id) => new ScatterplotLayer({
-    id,
-    data: wd.data,
+  // Exact locations: one GPU vertex per well (PointCloudLayer draws round points), about 4x cheaper than
+  // instanced circles at national zoom where every well is on screen.
+  const stride = strideFor(state.zoom);
+  layers.push(new PointCloudLayer({
+    id: `wells-${stride}`,
+    data: wd.lod[stride],
+    sizeUnits: 'pixels',
+    pointSize: Math.max(1.6, 2 * radiusScaleFor(state.zoom)),
+    material: false,
+    pickable: true,
+    extensions: [new DataFilterExtension({ filterSize: 1 })],
+    filterRange: [0.5, 1.5],
+  }));
+  // Approximate (PLSS) locations: hollow rings in the type color, from the compact subset.
+  layers.push(new ScatterplotLayer({
+    id: 'wells-approx',
+    data: wd.approx,
     radiusUnits: 'pixels',
-    getRadius: id === 'wells' ? 1 : 1.6,
+    getRadius: 1.6,
     radiusScale: radiusScaleFor(state.zoom),
-    radiusMinPixels: id === 'wells' ? 0.8 : 2.5,
-    // Approximate (PLSS) locations are hollow rings in the type color; exact locations are filled dots.
-    stroked: id !== 'wells',
-    filled: id === 'wells',
+    radiusMinPixels: 2.5,
+    stroked: true,
+    filled: false,
     lineWidthUnits: 'pixels',
     getLineWidth: 1.2,
     pickable: true,
     extensions: [new DataFilterExtension({ filterSize: 1 })],
-    filterRange: id === 'wells' ? [0.5, 1.5] : [1.5, 2.5],
-    updateTriggers: { getFilterValue: filter, getFillColor: colors, getLineColor: colors },
-  })));
+    filterRange: [1.5, 2.5],
+  }));
   // Overlay sources (USGS orphan wells): one contiguous index range each, drawn as hollow orange triangles.
   for (const s of overlays()) {
     layers.push(new IconLayer({
@@ -323,6 +372,7 @@ function buildLayers() {
       getPosition: (i) => [points[i * 2], points[i * 2 + 1]],
       getFillColor: (i) => [colors[i * 4], colors[i * 4 + 1], colors[i * 4 + 2], 255],
       getLineColor: [17, 17, 17, 255],
+      getLineColor: [17, 17, 17, 255],
       radiusUnits: 'pixels',
       getRadius: 7,
       stroked: true,
@@ -334,7 +384,7 @@ function buildLayers() {
   return layers;
 }
 
-function render() { state.deck.setProps({ layers: buildLayers() }); }
+function render() { const ls = buildLayers(); state.deck.setProps({ layers: state.layerFilter ? ls.filter((l) => state.layerFilter(l.id)) : ls }); }
 
 const viewportOfMap = () => { const el = $('map-wrap'); return new WebMercatorViewport({ width: el.clientWidth || 800, height: el.clientHeight || 600 }); };
 
@@ -361,7 +411,7 @@ function initDeck() {
     layers: buildLayers(),
     getCursor: ({ isHovering, isDragging }) => (isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab'),
     onViewStateChange: ({ viewState }) => {
-      const bands = (z) => `${radiusScaleFor(z)}|${overlaySizeFor(z)}|${z < 7}|${z < 6}|${z < 5}|${z < 4.5}`;
+      const bands = (z) => `${radiusScaleFor(z)}|${overlaySizeFor(z)}|${strideFor(z)}|${z < 7}|${z < 6}|${z < 5}|${z < 4.5}`;
       const changed = bands(viewState.zoom) !== bands(state.zoom);
       state.zoom = viewState.zoom;
       if (changed) render();
@@ -389,7 +439,8 @@ function initDeck() {
 /** Global well index of a picked object, or -1. Overlay layers index from their source's start. */
 function pickedIndex(info) {
   if (!info.layer || info.index < 0) return -1;
-  if (info.layer.id.startsWith('wells')) return info.index;
+  if (info.layer.id === 'wells-approx') return state.approxIdx[info.index];
+  if (info.layer.id.startsWith('wells-')) return info.index * Number(info.layer.id.slice(6));
   if (info.layer.id.startsWith('overlay-')) { const s = stateMeta(info.layer.id.slice(8)); return s ? s.start + info.index : -1; }
   return -1;
 }
@@ -930,6 +981,17 @@ window.__twm = {
     return { x: r.left + x, y: r.top + y, index: state.selected };
   },
   status: () => ({ selected: state.selected, zoom: state.zoom, panelOpen: !$('panel').hidden }),
+  setLayerFilter: (fn) => { state.layerFilter = fn; render(); },
+  /** Pick at a window pixel and report the global well index with a projection check (verification only). */
+  pickAt: (x, y) => {
+    const r = $('map').getBoundingClientRect();
+    const info = state.deck.pickObject({ x: x - r.left, y: y - r.top, radius: 4 });
+    const i = info ? pickedIndex(info) : -1;
+    if (i < 0) return { x, y, layer: info && info.layer ? info.layer.id : null, index: -1 };
+    const vp = state.deck.getViewports()[0];
+    const [px, py] = vp.project([state.points[i * 2], state.points[i * 2 + 1]]);
+    return { x, y, layer: info.layer.id, index: i, state: stateIdOf(i), api: apiFromKey(i), dx: Math.round(px + r.left - x), dy: Math.round(py + r.top - y), zoom: state.zoom };
+  },
   /** Forced redraws at a fixed view for ~2.5 s: the per-frame GPU cost of drawing every well (verification only). */
   redrawRate: (lon, lat, zoom) => new Promise((resolve) => {
     state.zoom = zoom;
