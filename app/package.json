@@ -1,18 +1,19 @@
 {
-  "name": "texas-wells-map",
-  "productName": "Texas and Oklahoma Wells Map",
-  "version": "1.1.0",
-  "description": "Offline map of every Texas and Oklahoma oil & gas well (RRC + OCC snapshots)",
+  "name": "us-wells-map",
+  "productName": "US Wells Map",
+  "version": "2.0.0",
+  "description": "Offline map of US oil and gas wells from 36 state, federal offshore and USGS sources (one-time regulator snapshots)",
   "author": "Ocean",
   "license": "UNLICENSED",
   "private": true,
   "main": "main.js",
   "scripts": {
-    "data": "node --max-old-space-size=8192 ../scripts/build_data.mjs && node ../scripts/build_states.mjs",
+    "data": "node --max-old-space-size=12288 --expose-gc ../scripts/build_data.mjs && node ../scripts/build_states.mjs",
     "check-data": "node ../scripts/build_check_data.mjs",
     "bundle": "esbuild src/renderer.js --bundle --minify --format=iife --target=chrome130 --outfile=renderer/renderer.bundle.js",
     "start": "npm run bundle && electron .",
     "dist:mac": "npm run check-data && npm run bundle && electron-builder --mac dmg --arm64 --x64 --publish never",
+    "dist:mac-arm64": "npm run check-data && npm run bundle && electron-builder --mac dmg --arm64 --publish never",
     "dist:win": "npm run check-data && npm run bundle && electron-builder --win nsis portable --x64 --publish never",
     "dist:win-from-mac": "npm run check-data && npm run bundle && electron-builder --win nsis portable --x64 --publish never -c.win.signAndEditExecutable=false"
   },
@@ -30,9 +31,9 @@
     "esbuild@0.28.2": true
   },
   "build": {
-    "appId": "com.oceanlove.texaswellsmap",
-    "productName": "Texas and Oklahoma Wells Map",
-    "artifactName": "TexasWellsMap-${version}-${os}-${arch}.${ext}",
+    "appId": "com.oceanlove.uswellsmap",
+    "productName": "US Wells Map",
+    "artifactName": "USWellsMap-${version}-${os}-${arch}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -66,7 +67,7 @@
       "hardenedRuntime": false
     },
     "dmg": {
-      "title": "TX-OK Wells Map ${version}"
+      "title": "US Wells Map ${version}"
     },
     "win": {
       "target": [
@@ -78,10 +79,10 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "artifactName": "TexasWellsMap-${version}-win-${arch}-setup.${ext}"
+      "artifactName": "USWellsMap-${version}-win-${arch}-setup.${ext}"
     },
     "portable": {
-      "artifactName": "TexasWellsMap-${version}-win-${arch}-portable.${ext}"
+      "artifactName": "USWellsMap-${version}-win-${arch}-portable.${ext}"
     }
   }
 }

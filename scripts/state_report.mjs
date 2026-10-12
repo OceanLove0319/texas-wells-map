@@ -16,7 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { STATES, ROOT, snapshotFromPullLog } from './states.config.mjs';
-import { canonicalApi } from '../app/src/api.mjs';
+import { canonicalApi, canonicalApiWithPrefix, prefixesOf } from '../app/src/api.mjs';
 import { stateOutlines, inState } from './lib/geo.mjs';
 
 const id = (process.argv[2] || '').toUpperCase();
@@ -43,7 +43,14 @@ for await (const rec of parser) {
   const ai = S.apiField ? header.indexOf(S.apiField) : header.findIndex((n) => /^api(_number|_no|num)?$/i.test(n));
   const raw = String(rec[ai] ?? '').trim();
   apiLens.set(raw.length, (apiLens.get(raw.length) || 0) + 1);
-  const c = canonicalApi(S, raw);
+  // Overlays (USGS) carry many states' APIs: the state column picks the prefix; the API column is an API only for apiTypeValue rows.
+  let c;
+  if (S.kind === 'overlay') {
+    const isApi = !S.apiTypeField || String(rec[header.indexOf(S.apiTypeField)] ?? '').trim() === S.apiTypeValue;
+    const st = S.stateIds && S.stateIds[String(rec[header.indexOf(S.stateField)] ?? '').trim()];
+    const pfx = st && STATES.find((x) => x.id === st)?.apiPrefix;
+    c = isApi ? canonicalApiWithPrefix(pfx, raw) : '';
+  } else c = canonicalApi(S, raw);
   if (c) canonCount.set(c, (canonCount.get(c) || 0) + 1); else noCanon++;
   const first = (cands) => { for (const n of cands) { const v = parseFloat(rec[header.indexOf(n)]); if (Number.isFinite(v) && v !== 0) return v; } return NaN; };
   const x = first(S.lon), y = first(S.lat);
@@ -98,7 +105,7 @@ L.push('\n## API\n');
 L.push('| raw API length | wells |'); L.push('|---|---|');
 for (const [k, v] of [...apiLens.entries()].sort((a, b) => a[0] - b[0])) L.push(`| ${k} | ${fmt(v)} |`);
 const dup = [...canonCount.values()].filter((v) => v > 1).length;
-L.push(`\nWells with a full API (10 digits starting ${S.apiPrefix}): ${fmt(rows - noCanon)}; distinct: ${fmt(canonCount.size)}; APIs on more than one row: ${fmt(dup)}; without a full API (not searchable by API): ${fmt(noCanon)}`);
+L.push(`\nWells with a full API (10 digits starting ${S.kind === 'overlay' ? 'with the state code' : prefixesOf(S).join('/')}): ${fmt(rows - noCanon)}; distinct: ${fmt(canonCount.size)}; APIs on more than one row: ${fmt(dup)}; without a full API (not searchable by API): ${fmt(noCanon)}`);
 
 const catTable = (title, field, list) => {
   L.push(`\n## ${title} (${field})\n`);

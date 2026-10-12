@@ -5,30 +5,33 @@
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wells Map</title>
+  <title>US Wells Map</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header id="topbar">
-    <div class="brand" id="brand">Wells Map</div>
+    <div class="brand" id="brand">US Wells Map</div>
     <form id="search" autocomplete="off">
-      <input id="search-input" type="search" placeholder="Search API number" aria-label="Search API number">
+      <input id="search-input" type="search" placeholder="Search API number or well id" aria-label="Search API number or well id">
       <button type="submit">Find</button>
       <span id="search-msg" role="status"></span>
     </form>
+    <button id="home" type="button" class="ghost" title="Back to the national view">US view</button>
     <div id="snapshot">...</div>
   </header>
 
   <main id="layout">
     <aside id="legend">
       <div class="legend-head">
-        <h2>Wells</h2>
+        <h2>Sources</h2>
         <div class="legend-actions">
-          <button id="types-all" type="button">All</button>
-          <button id="types-none" type="button">None</button>
+          <button id="types-all" type="button" title="Show every source">All</button>
+          <button id="types-none" type="button" title="Hide every source">None</button>
         </div>
       </div>
-      <div id="type-list"></div>
+      <div id="source-list"></div>
+      <div id="overlay-list"></div>
+      <div id="legend-cats"></div>
       <div id="legend-total"></div>
     </aside>
 

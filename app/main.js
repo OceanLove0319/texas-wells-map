@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Wells Map - Electron main process.
+ * US Wells Map - Electron main process.
  *
  * Offline by design:
  *   - UI and data are served from a private "app://" scheme backed by local files.
@@ -18,7 +18,7 @@ const zlib = require('node:zlib');
 const SCHEME = 'app';
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json', '.bin': 'application/octet-stream', '.png': 'image/png', '.svg': 'image/svg+xml',
+  '.json': 'application/json', '.br': 'application/json', '.bin': 'application/octet-stream', '.png': 'image/png', '.svg': 'image/svg+xml',
 };
 const UI_DIR = path.join(__dirname, 'renderer');
 const DATA_DIR = app.isPackaged
@@ -32,6 +32,8 @@ const DATA_DIR = app.isPackaged
 //   --log-renderer        mirror renderer console output to stdout
 //   --screenshot=<file.png> [--screenshot-delay=<ms>] [--quit-after-screenshot]
 //                         save a PNG of the window after the delay (local file only; for verification)
+//   --click-after=<ms>    after the delay, send a real mouse click (sendInputEvent) at the pixel of the
+//                         currently selected well, exercising the map's picking path (for verification)
 const argOf = (name) => {
   const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
   return hit ? hit.slice(name.length + 3) : null;
@@ -82,7 +84,7 @@ function createWindow() {
     height: 900,
     minWidth: 900,
     minHeight: 600,
-    title: 'Wells Map',
+    title: 'US Wells Map',
     backgroundColor: '#f4f5f7',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -110,6 +112,35 @@ function createWindow() {
   const pick = argOf('pick');
   if (pick) q.set('pick', pick);
   win.loadURL(`${SCHEME}://local/index.html${q.toString() ? `?${q}` : ''}`);
+
+  const clickAfter = Number(argOf('click-after'));
+  if (clickAfter) {
+    win.webContents.once('did-finish-load', () => setTimeout(async () => {
+      const xy = await win.webContents.executeJavaScript('window.__twm && window.__twm.selectedScreenXY()');
+      if (!xy) { console.log('[click] nothing selected'); return; }
+      const x = Math.round(xy.x), y = Math.round(xy.y);
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      win.webContents.sendInputEvent({ type: 'mouseMove', x, y });
+      await wait(150);
+      win.webContents.sendInputEvent({ type: 'mouseDown', x, y, button: 'left', clickCount: 1 });
+      await wait(80);
+      win.webContents.sendInputEvent({ type: 'mouseUp', x, y, button: 'left', clickCount: 1 });
+      console.log(`[click] sent left click at ${x},${y}`);
+    }, clickAfter));
+  }
+
+  // --perf: animate pan/zoom for about 5 s and print frame times and process memory (verification only).
+  if (process.argv.includes('--perf')) {
+    win.webContents.once('did-finish-load', () => setTimeout(async () => {
+      const r = await win.webContents.executeJavaScript('window.__twm && window.__twm.perf()');
+      const r2 = await win.webContents.executeJavaScript('window.__twm.redrawRate(-97, 38, 3.8)');
+      const r3 = await win.webContents.executeJavaScript('window.__twm.redrawRate(-99, 31.5, 6.2)');
+      const r4 = await win.webContents.executeJavaScript('window.__twm.redrawRate(-98.5, 32, 10)');
+      console.log(`[perf] redraw national ${JSON.stringify(r2)} regional ${JSON.stringify(r3)} local ${JSON.stringify(r4)}`);
+      const mem = app.getAppMetrics().map((m) => `${m.type}${m.name ? `(${m.name})` : ''}=${Math.round((m.memory.workingSetSize || 0) / 1024)}MB`).join(' ');
+      console.log(`[perf] ${JSON.stringify(r)} memory: ${mem}`);
+    }, 12000));
+  }
 
   const shot = argOf('screenshot');
   if (shot) {
