@@ -1,0 +1,33 @@
+{
+ "source": "https://gis.dnrc.mt.gov/arcgis/rest/services/BOG/DataMiner/FeatureServer/11 drawingInfo.renderer (uniqueValueInfos)",
+ "fetched_utc": "2026-10-12T14:05:58Z",
+ "fields": {
+  "MapSymbol": {
+   "ACBM": "P&A Coal Bed Methane",
+   "ADH": "P&A Dry Hole",
+   "AEOR": "P&A Injection, EOR",
+   "AGAS": "P&A Gas",
+   "AGST": "P&A Gas Storage",
+   "AILW": "P&A Injection, Indian Lands",
+   "AMON": "P&A Monitor/Observation",
+   "AOIL": "P&A Oil",
+   "ASWD": "P&A Injection, Disposal",
+   "AWS": "P&A Water Source",
+   "CBM": "Coal Bed Methane",
+   "DG": "Domestic Gas",
+   "DIP": "DIP",
+   "EOR": "Active Injection, EOR",
+   "GAS": "Producing Gas",
+   "GST": "Completed Gas Storage",
+   "ILW": "Completed Injection, Indian Lands",
+   "LOC": "Spudded/Permit to Drill",
+   "MON": "Completed Monitor/Observation",
+   "NONE": "Expired, Not Released Oil",
+   "OIL": "Producing Oil",
+   "ST": "Stratigraphic Test",
+   "SWD": "Injection, Disposal",
+   "WS": "Water Source",
+   "WW": "Domestic Water"
+  }
+ }
+}

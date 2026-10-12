@@ -1,41 +1,69 @@
 /**
- * states.config.mjs - the ONE place that describes each state. Adding a state = one pull script that
- * writes data/raw/<st>/ + one entry in STATES below (see docs/ADDING_A_STATE.md).
+ * states.config.mjs - loads every source description from scripts/states/<id>.config.mjs and exports
+ * them as STATES, plus the shared well categories. Adding a source = one pull script that writes
+ * data/raw/<st>/ + one fragment file that `export default`s one entry (see docs/ADDING_A_STATE.md).
  *
- * Nothing here lists a state's fields: every column of the base file and of every layer CSV is kept
+ * Nothing here lists a source's fields: every column of the base file and of every layer CSV is kept
  * and shown. An entry only says where the files are and which columns play which role.
  *
- * Entry fields
- *   id, name, agency, short    'KS', 'Kansas', 'Kansas Geological Survey (KGS)', 'KGS' (short shows in the header)
- *   apiPrefix                  2-digit API state code ('42' TX, '35' OK, '15' KS)
+ * Entry fields (all fragments)
+ *   id, name, agency, short    'KS', 'Kansas', 'Kansas Geological Survey (KGS)', 'KGS'
+ *   kind                       omitted = a state (or pseudo-state such as Federal Offshore); 'overlay' = a national
+ *                              overlay with its own toggle and marker, not in the state list (USGS orphan wells)
+ *   sortKey                    optional; the source list is sorted by sortKey || name (overlays last)
+ *   apiPrefix                  2-digit API state code ('42' TX, '35' OK); null when the source has no API numbers
+ *   apiPrefixes                optional list when one source carries several state codes (BOEM: 60, 61, 55, 56, 01, 17, 42, 04, 50)
  *   apiForm                    'full' = the API column includes the state code; 'county8' = 8 digits without it (TX)
- *   raw, base                  folder (relative to the repo) and base file (one map point per row, CSV with header)
  *   apiField                   optional; default = first column named API / api / api_number / api_no / apinum
+ *   apiKey                     optional 'string12': boreholes are keyed by the 12-digit API string (BOEM); search
+ *                              still uses the 10-digit form and filters 12-digit queries on the full string
+ *   apiTypeField/apiTypeValue  optional; the API column is only an API when apiTypeField === apiTypeValue (USGS)
+ *   stateField, stateIds       optional; for a multi-state source: the column holding the state name and a map
+ *                              name -> app state id (USGS). Wells are sharded per state and matched to that state.
+ *   stateIdField               optional; the regulator's own well id (file number, permit, serial) for sources
+ *                              without API numbers (VA FiNo, IN igs_id, KY KGS_Recno, ...). Searchable in the app.
+ *   raw, base                  folder (relative to the repo) and base file (one map point per row, CSV with header)
  *   typeField, statusField     columns used for the legend (statusField may be null)
- *   codes                      optional JSON { fields: { <field>: { <code>: <description> } } } for code labels
+ *   typeOf                     optional (g) => string deriving the legend type from the row instead of typeField
+ *                              (Illinois: TYPE_CLASS + " - Plugged" so plugged wells are colored plugged)
+ *   codes                      optional JSON { fields: { <field>: { <code>: <description> } } } for code labels,
+ *                              committed under data/<st>_codes.json
  *   lon, lat                   candidate coordinate columns, first non-null non-zero wins
  *   datum                      datum of those coordinates (shown in the snapshot report)
- *   counties                   { file, code, name } county outlines inside `raw` (Census TIGERweb is fine)
+ *   counties                   { code, name } = use the national county basemap (data/raw/basemap/us_counties.geojson)
+ *                              for this state's county names; null = no counties (offshore, overlays)
+ *   countyFromApi              false when API digits 3-5 are not a county FIPS code (Indiana ids)
+ *   countyField                optional column that carries the county name for the panel subtitle
+ *   areaField                  optional (offshore): column shown as "Area" in place of the county
+ *   regionField                optional: column for a sub-filter inside the source (BOEM REGION_CODE)
+ *   referenceLayers            optional [{ file, name, label }] GeoJSON outlines in `raw`, shown as a faint reference
  *   layerNames, baseName       display names for layer CSVs (file -> name) and for the base file
+ *   layerApiField              optional { <layer file>: <API column> } when sniffing misses it
+ *   panelFirst                 optional list of field names shown first in the details panel
+ *   marker                     optional (overlay): { shape: 'triangle', stroke: [r,g,b,a], radiusPx }
+ *   defaultColorBy             optional 'status' to start that source colored by status
  *   snapshot                   { log, name, field } pull_log.jsonl line whose `field` (or finished_utc) is the data date,
  *                              or a function returning { date, source }
  *   sourceCount                optional JSON { count } from the regulator (row-count reconciliation in the report)
  *   categoryOverrides          optional { <raw type code (upper case)>: <category id> } when the text rules below miss
+ *   statusCategoryOverrides    optional; when present, statuses are also mapped to the shared categories (colors by
+ *                              category shade); otherwise statuses get a distinct palette
  *   plss                       optional; how to read meridian / township / range / section / quarter calls so wells
  *                              without coordinates can get an approximate location (see scripts/lib/plss.mjs)
  *   repairCoords               true = try to repair out-of-range coordinates (missing decimal point) when the fix is
  *                              unambiguous and lands inside the state
+ *   note / notes               free text carried into meta.json and the README table
  */
-import path from 'node:path';
 import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { ROOT } from './states/_shared.mjs';
 
-export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const r = (...p) => path.join(ROOT, ...p);
+export { ROOT, layerNamesFromSummary, snapshotFromReport, snapshotFromPullLog } from './states/_shared.mjs';
 
 /**
- * Shared well categories. Every state's type values map to one of these, so "oil" is the same color
- * family in every state. Within a category, a state's individual types get shades of the base color.
+ * Shared well categories. Every source's type values map to one of these, so "oil" is the same color
+ * family in every state. Within a category, a source's individual types get shades of the base color.
  * `rules` are tried in order against "<raw code> <description>"; the first match wins.
  */
 export const CATEGORIES = [
@@ -55,102 +83,23 @@ export const CATEGORY_RULES = [
   ['gas', /\bgas\b|\bcbm\b/i],
 ];
 
-// ---- helpers for PLSS columns ----
-const int = (v) => { const n = parseInt(String(v ?? '').trim(), 10); return Number.isFinite(n) && n > 0 ? n : null; };
-/** "26N" / "026N" / "26 N" -> { n: 26, dir: 'N' } */
-const tr = (v) => { const m = String(v ?? '').trim().toUpperCase().match(/^0*(\d+)\s*([NSEW])$/); return m ? { n: Number(m[1]), dir: m[2] } : null; };
-
-export const STATES = [
-  {
-    id: 'TX', name: 'Texas', agency: 'Railroad Commission of Texas (RRC)', short: 'RRC',
-    apiPrefix: '42', apiForm: 'county8',
-    raw: r('data', 'raw'), base: 'wells.csv',
-    typeField: 'GIS_SYMBOL_DESCRIPTION', statusField: null,
-    lon: ['lon_4326', 'GIS_LONG83', 'GIS_LONG27'], lat: ['lat_4326', 'GIS_LAT83', 'GIS_LAT27'], datum: 'WGS84',
-    counties: { file: 'counties.geojson', code: 'FIPS', name: 'COUNTY_NAME' },
-    layerNames: () => layerNamesFromSummary(r('data', 'layers_summary.md')),
-    baseName: 'Well Locations',
-    snapshot: () => snapshotFromReport(r('data', 'snapshot_report.md')),
-    repairCoords: true,
-  },
-  {
-    id: 'OK', name: 'Oklahoma', agency: 'Oklahoma Corporation Commission (OCC)', short: 'OCC',
-    apiPrefix: '35', apiForm: 'full',
-    raw: r('data', 'raw', 'ok'), base: 'rbdms-wells.csv',
-    typeField: 'WELLTYPE', statusField: 'WELLSTATUS', codes: r('data', 'ok_codes.json'),
-    lon: ['SH_LON'], lat: ['SH_LAT'], datum: 'NAD83 (per OCC)',
-    counties: { file: 'ok_counties.geojson', code: 'COUNTY', name: 'NAME' },
-    layerNames: () => ({ 'orphan_funds_wells.csv': 'Orphan Fund', 'comp_wells.csv': 'Completion Report' }),
-    baseName: 'Well',
-    snapshot: { log: 'pull_log.jsonl', name: 'rbdms-wells.csv' },
-    categoryOverrides: { TM: 'injection', STFD: 'other', DUC: 'other', SCO: 'other', '2EPA': 'injection', ND: 'other', NT: 'other' },
-    plss: {
-      // CadNSDI meridian codes: 17 = Indian Meridian, 11 = Cimarron Meridian (Panhandle).
-      meridians: { IM: '17', CM: '11' },
-      meridian: (g) => String(g('PM') ?? '').trim().toUpperCase(),
-      township: (g) => tr(g('TOWNSHIP')),
-      range: (g) => tr(g('RANGE')),
-      section: (g) => int(g('SECTION')),
-      // QTR1 is the largest call (always filled when any is), QTR4 the smallest.
-      quarters: (g) => ['QTR1', 'QTR2', 'QTR3', 'QTR4'].map((f) => g(f)),
-    },
-    repairCoords: true,
-  },
-  {
-    id: 'KS', name: 'Kansas', agency: 'Kansas Geological Survey (KGS)', short: 'KGS',
-    apiPrefix: '15', apiForm: 'full',
-    raw: r('data', 'raw', 'ks'), base: 'ks_wells.txt',
-    typeField: 'STATUS', statusField: 'STATUS2',
-    lon: ['LONGITUDE'], lat: ['LATITUDE'], datum: 'NAD27 (per KGS)',
-    counties: { file: 'ks_counties.geojson', code: 'COUNTY', name: 'NAME' },
-    layerNames: () => ({}),
-    baseName: 'Well',
-    // The bulk file is rebuilt by KGS periodically; the date inside the zip is the data date.
-    snapshot: { log: 'pull_log.jsonl', name: 'ks_wells.txt', field: 'zip_entry_date' },
-    sourceCount: r('data', 'raw', 'ks', 'source_count.json'),
-    plss: {
-      meridians: { '6TH': '06' },
-      meridian: () => '6TH', // all of Kansas is surveyed from the Sixth Principal Meridian
-      township: (g) => { const n = int(g('TOWNSHIP')); const d = String(g('TWN_DIR') ?? '').trim().toUpperCase(); return n && /^[NS]$/.test(d) ? { n, dir: d } : null; },
-      range: (g) => { const n = int(g('RANGE')); const d = String(g('RANGE_DIR') ?? '').trim().toUpperCase(); return n && /^[EW]$/.test(d) ? { n, dir: d } : null; },
-      section: (g) => int(g('SECTION')),
-      // SPOT is written smallest call first ("NE NW SE" = NE of NW of SE); reverse to largest first.
-      quarters: (g) => String(g('SPOT') ?? '').trim().split(/\s+/).filter(Boolean).reverse(),
-    },
-    repairCoords: true,
-  },
-];
-
-// ---- snapshot helpers (used by entries above) ----
-export function layerNamesFromSummary(p) {
-  const names = {};
-  if (!fs.existsSync(p)) return names;
-  for (const line of fs.readFileSync(p, 'utf8').split('\n')) {
-    const m = line.match(/^\|\s*(\d+)\s*\|\s*([^|]+?)\s*\|.*data\/raw\/([\w.-]+\.csv)/);
-    if (m) names[m[3]] = m[2];
-  }
-  return names;
+/** Load every scripts/states/<name>.config.mjs (files starting with "_" are helpers, not fragments). */
+const DIR = path.join(ROOT, 'scripts', 'states');
+const files = fs.readdirSync(DIR).filter((f) => f.endsWith('.config.mjs') && !f.startsWith('_')).sort();
+const loaded = [];
+for (const f of files) {
+  const mod = await import(pathToFileURL(path.join(DIR, f)).href);
+  const S = mod.default;
+  if (!S || !S.id) throw new Error(`scripts/states/${f}: no default export with an id`);
+  S.fragment = `scripts/states/${f}`;
+  loaded.push(S);
 }
+const ids = new Set();
+for (const S of loaded) { if (ids.has(S.id)) throw new Error(`duplicate source id ${S.id}`); ids.add(S.id); }
 
-export function snapshotFromReport(rep) {
-  if (fs.existsSync(rep)) {
-    const txt = fs.readFileSync(rep, 'utf8');
-    const m = txt.match(/Pull finish times[^\n]*?(\d{4}-\d{2}-\d{2})/) || txt.match(/(\d{4}-\d{2}-\d{2})/);
-    if (m) return { date: m[1], source: path.relative(ROOT, rep) };
-  }
-  return { date: 'unknown', source: 'none' };
-}
-
-/** Latest pull_log.jsonl line for `name`; the date is rec[field] when given, else finished_utc. */
-export function snapshotFromPullLog(S) {
-  const spec = S.snapshot;
-  if (typeof spec === 'function') return spec();
-  const p = path.join(S.raw, spec.log);
-  if (!fs.existsSync(p)) return { date: 'unknown', source: 'none' };
-  const rows = fs.readFileSync(p, 'utf8').split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } })
-    .filter((x) => x && x.finished_utc && (!spec.name || x.name === spec.name));
-  const dates = rows.map((x) => String((spec.field && x[spec.field]) || x.finished_utc)).sort();
-  return dates.length
-    ? { date: dates[dates.length - 1].slice(0, 10), source: `${path.relative(ROOT, p)} (${spec.name}${spec.field ? `, ${spec.field}` : ''})` }
-    : { date: 'unknown', source: 'none' };
-}
+/** States and pseudo-states sorted by sortKey || name; overlays last. */
+export const STATES = loaded.sort((a, b) => {
+  const ka = a.kind === 'overlay' ? 1 : 0, kb = b.kind === 'overlay' ? 1 : 0;
+  if (ka !== kb) return ka - kb;
+  return (a.sortKey || a.name).localeCompare(b.sortKey || b.name);
+});

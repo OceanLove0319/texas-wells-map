@@ -1,0 +1,45 @@
+{
+ "source": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Utilities/FeatureServer/5: welltypedescription / wellstatusdescription columns",
+ "written_utc": "2026-10-12T14:14:48Z",
+ "fields": {
+  "welltype": {
+   "BIW": "Brine Injection Well",
+   "BSW": "Brine Supply Well",
+   "CBM": "Coal Bed Methane",
+   "CBMS": "Coal Bed Methane Service Well",
+   "EOR": "Enhanced Oil Recovery",
+   "EXP": "Expired Permit",
+   "GAS": "Natural Gas - Dry",
+   "GI": "Gas Injector",
+   "GS": "Gas Storage",
+   "ISC": "Need Code",
+   "OIL": "Oil - Production",
+   "SEX": "Seismic-Exploratory Well",
+   "SW": "Service Well",
+   "SWD": "Salt Water Disposal",
+   "SWI": "Salt Water Injection",
+   "UN": "Unknown",
+   "WDW": "Waste Disposal Well",
+   "WS": "Water Supply"
+  },
+  "wellstatus": {
+   "A": "Active",
+   "AOW": "Abandoned/Orphaned Well",
+   "C": "Completed",
+   "DA": "Dry And Abandoned",
+   "DW": "Domestic Well - Gas",
+   "EX": "Expired Permit",
+   "IN": "Inactive - Not TA",
+   "PA": "Plugged and Abandoned",
+   "PR": "Producing",
+   "PW": "Permitted Well",
+   "PWI": "Injection Permit Issued",
+   "RW": "Released - Water Well",
+   "SI": "Shut_In",
+   "SP": "Spudded",
+   "TA": "Temporarily Abandoned",
+   "UN": "Unknown",
+   "ex": "Expired Permit"
+  }
+ }
+}

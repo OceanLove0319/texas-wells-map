@@ -1,0 +1,33 @@
+{
+ "source": "BOEM borehole query page drop-downs + BOEM_BSEE REST layer descriptions, 2026-10-12",
+ "fields": {
+  "WELL_TYPE_CODE": {
+   "C": "Core Test",
+   "D": "Development",
+   "E": "Exploratory",
+   "N": "Non-Operation",
+   "O": "Other",
+   "R": "Relief",
+   "S": "Strat Test"
+  },
+  "BOREHOLE_STAT_CD": {
+   "APD": "Application for Permit to Drill",
+   "AST": "Approved Sidetrack",
+   "CNL": "Cancelled",
+   "COM": "Completed",
+   "CT": "Core Test Well",
+   "DRL": "Drilling Active",
+   "DSI": "Drilling Suspended",
+   "PA": "Permanently Abandoned",
+   "ST": "Sidetracked",
+   "TA": "Temporarily Abandoned",
+   "VCW": "Volume Chamber Well"
+  },
+  "REGION_CODE": {
+   "Y": "Alaska",
+   "A": "Atlantic",
+   "G": "Gulf of America",
+   "P": "Pacific"
+  }
+ }
+}

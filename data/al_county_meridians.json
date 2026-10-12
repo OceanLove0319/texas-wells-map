@@ -1,0 +1,409 @@
+{
+ "source": "derived: OGB wells with coordinates located in BLM CadNSDI AL sections by SecNum/Township/Range; meridian = CadNSDI PLSSID characters 3-4 (16 Huntsville, 25 St. Stephens)",
+ "written_utc": "2026-10-12T14:21:13Z",
+ "wells_located": 16645,
+ "wells_with_coordinates_not_located": 40,
+ "meridians_in_grid": [
+  "16",
+  "25",
+  "29"
+ ],
+ "counties": {
+  "AUTAUGA": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "25": 1
+   }
+  },
+  "BALDWIN": {
+   "meridian": "25",
+   "located_wells": 368,
+   "counts": {
+    "25": 368
+   }
+  },
+  "BARBOUR": {
+   "meridian": null,
+   "located_wells": 5,
+   "counts": {
+    "25": 5
+   }
+  },
+  "BIBB": {
+   "meridian": null,
+   "located_wells": 223,
+   "counts": {
+    "16": 186,
+    "25": 37
+   }
+  },
+  "BLOUNT": {
+   "meridian": "16",
+   "located_wells": 21,
+   "counts": {
+    "16": 21
+   }
+  },
+  "BULLOCK": {
+   "meridian": "25",
+   "located_wells": 17,
+   "counts": {
+    "25": 17
+   }
+  },
+  "BUTLER": {
+   "meridian": null,
+   "located_wells": 8,
+   "counts": {
+    "25": 8
+   }
+  },
+  "CALHOUN": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "16": 1
+   }
+  },
+  "CHAMBERS": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "25": 1
+   }
+  },
+  "CHEROKEE": {
+   "meridian": null,
+   "located_wells": 0,
+   "counts": {}
+  },
+  "CHILTON": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "25": 2
+   }
+  },
+  "CHOCTAW": {
+   "meridian": "25",
+   "located_wells": 708,
+   "counts": {
+    "25": 708
+   }
+  },
+  "CLARKE": {
+   "meridian": "25",
+   "located_wells": 474,
+   "counts": {
+    "25": 474
+   }
+  },
+  "COFFEE": {
+   "meridian": null,
+   "located_wells": 4,
+   "counts": {
+    "25": 4
+   }
+  },
+  "COLBERT": {
+   "meridian": null,
+   "located_wells": 8,
+   "counts": {
+    "16": 8
+   }
+  },
+  "CONECUH": {
+   "meridian": "25",
+   "located_wells": 418,
+   "counts": {
+    "25": 418
+   }
+  },
+  "COVINGTON": {
+   "meridian": "25",
+   "located_wells": 97,
+   "counts": {
+    "25": 97
+   }
+  },
+  "CRENSHAW": {
+   "meridian": null,
+   "located_wells": 3,
+   "counts": {
+    "25": 3
+   }
+  },
+  "CULLMAN": {
+   "meridian": "16",
+   "located_wells": 17,
+   "counts": {
+    "16": 17
+   }
+  },
+  "DALLAS": {
+   "meridian": null,
+   "located_wells": 4,
+   "counts": {
+    "25": 4
+   }
+  },
+  "ESCAMBIA": {
+   "meridian": "25",
+   "located_wells": 915,
+   "counts": {
+    "25": 915
+   }
+  },
+  "ETOWAH": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "16": 2
+   }
+  },
+  "FAYETTE": {
+   "meridian": "16",
+   "located_wells": 845,
+   "counts": {
+    "16": 845
+   }
+  },
+  "FRANKLIN": {
+   "meridian": "16",
+   "located_wells": 64,
+   "counts": {
+    "16": 64
+   }
+  },
+  "GENEVA": {
+   "meridian": "25",
+   "located_wells": 12,
+   "counts": {
+    "25": 12
+   }
+  },
+  "GREENE": {
+   "meridian": null,
+   "located_wells": 47,
+   "counts": {
+    "16": 10,
+    "25": 37
+   }
+  },
+  "HALE": {
+   "meridian": "25",
+   "located_wells": 251,
+   "counts": {
+    "25": 251
+   }
+  },
+  "HENRY": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "25": 2
+   }
+  },
+  "HOUSTON": {
+   "meridian": null,
+   "located_wells": 3,
+   "counts": {
+    "25": 2,
+    "29": 1
+   }
+  },
+  "JACKSON": {
+   "meridian": null,
+   "located_wells": 3,
+   "counts": {
+    "16": 3
+   }
+  },
+  "JEFFERSON": {
+   "meridian": "16",
+   "located_wells": 1570,
+   "counts": {
+    "16": 1570
+   }
+  },
+  "LAMAR": {
+   "meridian": "16",
+   "located_wells": 1210,
+   "counts": {
+    "16": 1210
+   }
+  },
+  "LAUDERDALE": {
+   "meridian": null,
+   "located_wells": 9,
+   "counts": {
+    "16": 9
+   }
+  },
+  "LAWRENCE": {
+   "meridian": "16",
+   "located_wells": 53,
+   "counts": {
+    "16": 53
+   }
+  },
+  "LEE": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "25": 2
+   }
+  },
+  "LIMESTONE": {
+   "meridian": null,
+   "located_wells": 6,
+   "counts": {
+    "16": 6
+   }
+  },
+  "LOWNDES": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "25": 1
+   }
+  },
+  "MADISON": {
+   "meridian": "16",
+   "located_wells": 28,
+   "counts": {
+    "16": 28
+   }
+  },
+  "MARENGO": {
+   "meridian": "25",
+   "located_wells": 15,
+   "counts": {
+    "25": 15
+   }
+  },
+  "MARION": {
+   "meridian": "16",
+   "located_wells": 255,
+   "counts": {
+    "16": 255
+   }
+  },
+  "MARSHALL": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "16": 2
+   }
+  },
+  "MOBILE": {
+   "meridian": "25",
+   "located_wells": 1025,
+   "counts": {
+    "25": 1025
+   }
+  },
+  "MONROE": {
+   "meridian": "25",
+   "located_wells": 400,
+   "counts": {
+    "25": 400
+   }
+  },
+  "MONTGOMERY": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "25": 2
+   }
+  },
+  "MORGAN": {
+   "meridian": null,
+   "located_wells": 7,
+   "counts": {
+    "16": 7
+   }
+  },
+  "PICKENS": {
+   "meridian": "16",
+   "located_wells": 451,
+   "counts": {
+    "16": 449,
+    "25": 2
+   }
+  },
+  "PIKE": {
+   "meridian": "25",
+   "located_wells": 10,
+   "counts": {
+    "25": 10
+   }
+  },
+  "SHELBY": {
+   "meridian": "16",
+   "located_wells": 687,
+   "counts": {
+    "16": 678,
+    "25": 9
+   }
+  },
+  "ST. CLAIR": {
+   "meridian": "16",
+   "located_wells": 42,
+   "counts": {
+    "16": 42
+   }
+  },
+  "SUMTER": {
+   "meridian": "25",
+   "located_wells": 13,
+   "counts": {
+    "25": 13
+   }
+  },
+  "TALLADEGA": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "16": 2
+   }
+  },
+  "TUSCALOOSA": {
+   "meridian": "16",
+   "located_wells": 5733,
+   "counts": {
+    "16": 5468,
+    "25": 265
+   }
+  },
+  "WALKER": {
+   "meridian": "16",
+   "located_wells": 371,
+   "counts": {
+    "16": 371
+   }
+  },
+  "WASHINGTON": {
+   "meridian": "25",
+   "located_wells": 144,
+   "counts": {
+    "25": 144
+   }
+  },
+  "WILCOX": {
+   "meridian": "25",
+   "located_wells": 33,
+   "counts": {
+    "25": 33
+   }
+  },
+  "WINSTON": {
+   "meridian": "16",
+   "located_wells": 50,
+   "counts": {
+    "16": 50
+   }
+  }
+ }
+}

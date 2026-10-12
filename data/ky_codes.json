@@ -1,0 +1,80 @@
+{
+ "source": "ogwells.htm (inside kyog_dd.zip, KGS documentation V14); Plug_Afdvt label derived from its field description",
+ "fields": {
+  "Org_WClass": {
+   "DEV": "Development well",
+   "DPT": "Deeper pool test",
+   "DPTD": "Deeper pool test resulting in development of existing producing formation",
+   "EXT": "Extension (outpost) well",
+   "MSC": "Miscellaneous well",
+   "NFW": "New field wildcat",
+   "NPW": "New pool wildcat",
+   "SPT": "Shallower pool test",
+   "SRV": "Service well, EPA Class II injection",
+   "STR": "Stratigraphic test with records released to the public",
+   "UNC": "Unclassified",
+   "WSW": "Water supply well (note, should be SRV with an Org_Result of WS)"
+  },
+  "Org_Result": {
+   "AB": "Well known to be abandoned but with no plugging information on file",
+   "AI": "Air injection",
+   "CBM": "Coalbed methane gas producer",
+   "COI": "Carbon dioxide injection",
+   "CP": "Cathodic protection",
+   "D&A": "Dry & abandoned",
+   "DG": "Domestic gas",
+   "ERI": "Enhanced recovery injection (Class II)",
+   "FF": "Fire flood",
+   "GAS": "Gas producer",
+   "GI": "Gas injection",
+   "GS": "Gas storage",
+   "IA": "Improperly abandoned",
+   "LOC": "Location (new permit issued or insufficient data)",
+   "N2I": "Nitrogen injection",
+   "O&G": "Combined oil & gas producer",
+   "OB": "Observation",
+   "OIL": "Oil producer",
+   "SI": "Steam injection",
+   "SRI": "Secondary recovery injection (Class II)",
+   "SWD": "Salt water disposal",
+   "TA": "Temporarily abandoned",
+   "TAI": "Thermal & air injection",
+   "TP": "Termination pending",
+   "TRI": "Tertiary recovery injection (Class II)",
+   "TRM": "Terminated (permit expired or cancelled)",
+   "UN": "Unknown (as classified by KY DOGC)",
+   "WD": "Water disposal",
+   "WI": "Water injection",
+   "WS": "Water supply",
+   "WW": "Water well"
+  },
+  "IOF_IP": {
+   "BOPD": "barrels of oil per day",
+   "BOPH": "barrels of oil per hour",
+   "DISP": "the deepest pay reported is a disposal zone",
+   "INJECT": "the deepest pay reported is an injection zone",
+   "MCFGPD": "thousand cubic feet of natural gas per day",
+   "MMCF": "million cubic feet of natural gas per day",
+   "SUPPLY": "the deepest pay reported is a water-supply zone"
+  },
+  "bore_type": {
+   "V": "Conventional vertical well bore (not intentionally deviated)",
+   "D": "A deviated well bore (intentionally deviated, but does not reach horizontal)",
+   "H": "A horizontal well bore potentially including multiple laterals and pinnate deviations from those laterals"
+  },
+  "PlotSymbol": {
+   "D&A": "Dry and abandoned wells (Abnd = -1 by default)",
+   "GAS": "Wells completed as gas wells (including abandoned producers)",
+   "LOC": "Newly permitted locations or historic wells for which completion data are not available in the KGS database",
+   "MSC": "Miscellaneous well types, including cathodic protection, observation, water supply wells, and others",
+   "O&G": "Wells completed as combined oil and gas producers (including abandoned producers)",
+   "OIL": "Wells completed as oil (including abandoned producers)",
+   "SRV": "Secondary recovery input, water injection, and other miscellaneous well types associated with secondary or enhanced oil recovery (EPA Class II wells)",
+   "STR": "Stratigraphic tests released to the public (Abnd = -1 by default)",
+   "TRM": "Locations for which a permit was issued but the permit was cancelled by the operator or allowed to expire. Wells with this designation are included to enable tracking the status of permits."
+  },
+  "Plug_Afdvt": {
+   "PA": "Plugging affidavit on file"
+  }
+ }
+}

@@ -1,9 +1,9 @@
 # Builds the Mac and Windows installers on a version tag (v*) and attaches them,
 # plus a source zip and SHA256SUMS.txt, to a GitHub Release.
 #
-# Data: CI never contacts the Railroad Commission. It packages the compact, pre-built
+# Data: CI never contacts any regulator. It packages the compact, pre-built
 # app assets committed under app/assets/data/ (produced locally by scripts/build_data.mjs
-# from the RRC snapshot) and validates them with scripts/build_check_data.mjs.
+# from the one-time source snapshots) and validates them with scripts/build_check_data.mjs.
 name: release
 
 on:
@@ -68,7 +68,7 @@ jobs:
           merge-multiple: true
       - name: Source zip and checksums
         run: |
-          git archive --format=zip --prefix=texas-wells-map/ -o "out/TexasWellsMap-source.zip" HEAD
+          git archive --format=zip --prefix=us-wells-map/ -o "out/USWellsMap-source.zip" HEAD
           cd out
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
@@ -78,5 +78,5 @@ jobs:
         run: |
           gh release create "${GITHUB_REF_NAME}" out/* \
             --repo "${GITHUB_REPOSITORY}" \
-            --title "Texas Wells Map ${GITHUB_REF_NAME}" \
+            --title "US Wells Map ${GITHUB_REF_NAME}" \
             --notes "Unsigned builds. See README for Gatekeeper/SmartScreen steps and checksum verification. SHA256SUMS.txt covers every asset."

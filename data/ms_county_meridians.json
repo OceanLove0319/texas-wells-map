@@ -1,0 +1,574 @@
+{
+ "source": "derived: MSOGB wells with coordinates located in BLM CadNSDI MS sections by Sec/Twn/Rng; meridian = CadNSDI PLSSID characters 3-4",
+ "written_utc": "2026-10-12T14:23:31Z",
+ "wells_located": 25021,
+ "wells_with_coordinates_not_located": 527,
+ "meridians_in_grid": [
+  "05",
+  "09",
+  "10",
+  "16",
+  "18",
+  "25",
+  "32"
+ ],
+ "counties": {
+  "ADAMS": {
+   "meridian": "32",
+   "located_wells": 5250,
+   "counts": {
+    "18": 168,
+    "32": 5082
+   }
+  },
+  "ALCORN": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "09": 1
+   }
+  },
+  "AMITE": {
+   "meridian": "32",
+   "located_wells": 642,
+   "counts": {
+    "32": 642
+   }
+  },
+  "ATTALA": {
+   "meridian": "10",
+   "located_wells": 12,
+   "counts": {
+    "10": 12
+   }
+  },
+  "BOLIVAR": {
+   "meridian": null,
+   "located_wells": 3,
+   "counts": {
+    "10": 3
+   }
+  },
+  "CALHOUN": {
+   "meridian": null,
+   "located_wells": 13,
+   "counts": {
+    "09": 10,
+    "10": 3
+   }
+  },
+  "CHICKASAW": {
+   "meridian": "09",
+   "located_wells": 125,
+   "counts": {
+    "09": 125
+   }
+  },
+  "CHOCTAW": {
+   "meridian": null,
+   "located_wells": 6,
+   "counts": {
+    "10": 6
+   }
+  },
+  "CLAIBORNE": {
+   "meridian": null,
+   "located_wells": 28,
+   "counts": {
+    "18": 10,
+    "32": 18
+   }
+  },
+  "CLARKE": {
+   "meridian": "10",
+   "located_wells": 1084,
+   "counts": {
+    "10": 1008,
+    "25": 76
+   }
+  },
+  "CLAY": {
+   "meridian": "09",
+   "located_wells": 59,
+   "counts": {
+    "09": 55,
+    "10": 4
+   }
+  },
+  "COPIAH": {
+   "meridian": null,
+   "located_wells": 47,
+   "counts": {
+    "10": 5,
+    "32": 42
+   }
+  },
+  "COVINGTON": {
+   "meridian": "25",
+   "located_wells": 267,
+   "counts": {
+    "25": 267
+   }
+  },
+  "DE SOTO": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "09": 1
+   }
+  },
+  "FORREST": {
+   "meridian": "25",
+   "located_wells": 396,
+   "counts": {
+    "25": 396
+   }
+  },
+  "FRANKLIN": {
+   "meridian": "32",
+   "located_wells": 1336,
+   "counts": {
+    "32": 1336
+   }
+  },
+  "GEORGE": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "25": 2
+   }
+  },
+  "GREENE": {
+   "meridian": "25",
+   "located_wells": 194,
+   "counts": {
+    "25": 194
+   }
+  },
+  "GRENADA": {
+   "meridian": null,
+   "located_wells": 6,
+   "counts": {
+    "10": 6
+   }
+  },
+  "HANCOCK": {
+   "meridian": "25",
+   "located_wells": 147,
+   "counts": {
+    "25": 147
+   }
+  },
+  "HARRISON": {
+   "meridian": "25",
+   "located_wells": 27,
+   "counts": {
+    "25": 27
+   }
+  },
+  "HINDS": {
+   "meridian": "10",
+   "located_wells": 467,
+   "counts": {
+    "10": 450,
+    "32": 17
+   }
+  },
+  "HOLMES": {
+   "meridian": "10",
+   "located_wells": 45,
+   "counts": {
+    "10": 45
+   }
+  },
+  "HUMPHREYS": {
+   "meridian": "10",
+   "located_wells": 21,
+   "counts": {
+    "10": 21
+   }
+  },
+  "ISSAQUENA": {
+   "meridian": "10",
+   "located_wells": 30,
+   "counts": {
+    "10": 27,
+    "32": 3
+   }
+  },
+  "ITAWAMBA": {
+   "meridian": "09",
+   "located_wells": 81,
+   "counts": {
+    "09": 81
+   }
+  },
+  "JACKSON": {
+   "meridian": "25",
+   "located_wells": 41,
+   "counts": {
+    "25": 41
+   }
+  },
+  "JASPER": {
+   "meridian": null,
+   "located_wells": 1622,
+   "counts": {
+    "10": 1275,
+    "25": 347
+   }
+  },
+  "JEFFERSON": {
+   "meridian": "32",
+   "located_wells": 504,
+   "counts": {
+    "32": 504
+   }
+  },
+  "JEFFERSON DAVIS": {
+   "meridian": "25",
+   "located_wells": 1010,
+   "counts": {
+    "25": 1010
+   }
+  },
+  "JONES": {
+   "meridian": "25",
+   "located_wells": 1063,
+   "counts": {
+    "25": 1063
+   }
+  },
+  "KEMPER": {
+   "meridian": "10",
+   "located_wells": 14,
+   "counts": {
+    "10": 14
+   }
+  },
+  "LAFAYETTE": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "09": 2
+   }
+  },
+  "LAMAR": {
+   "meridian": "25",
+   "located_wells": 879,
+   "counts": {
+    "25": 879
+   }
+  },
+  "LAUDERDALE": {
+   "meridian": "10",
+   "located_wells": 13,
+   "counts": {
+    "10": 13
+   }
+  },
+  "LAWRENCE": {
+   "meridian": null,
+   "located_wells": 83,
+   "counts": {
+    "25": 43,
+    "32": 40
+   }
+  },
+  "LEAKE": {
+   "meridian": null,
+   "located_wells": 6,
+   "counts": {
+    "10": 6
+   }
+  },
+  "LEE": {
+   "meridian": "09",
+   "located_wells": 55,
+   "counts": {
+    "09": 55
+   }
+  },
+  "LEFLORE": {
+   "meridian": null,
+   "located_wells": 5,
+   "counts": {
+    "10": 5
+   }
+  },
+  "LINCOLN": {
+   "meridian": "32",
+   "located_wells": 750,
+   "counts": {
+    "32": 750
+   }
+  },
+  "LOWNDES": {
+   "meridian": "16",
+   "located_wells": 128,
+   "counts": {
+    "10": 4,
+    "16": 124
+   }
+  },
+  "MADISON": {
+   "meridian": "10",
+   "located_wells": 238,
+   "counts": {
+    "10": 238
+   }
+  },
+  "MARION": {
+   "meridian": null,
+   "located_wells": 651,
+   "counts": {
+    "25": 377,
+    "32": 274
+   }
+  },
+  "MARSHALL": {
+   "meridian": null,
+   "located_wells": 3,
+   "counts": {
+    "09": 3
+   }
+  },
+  "MONROE": {
+   "meridian": null,
+   "located_wells": 629,
+   "counts": {
+    "09": 308,
+    "16": 321
+   }
+  },
+  "MONTGOMERY": {
+   "meridian": null,
+   "located_wells": 5,
+   "counts": {
+    "10": 5
+   }
+  },
+  "NESHOBA": {
+   "meridian": null,
+   "located_wells": 5,
+   "counts": {
+    "10": 5
+   }
+  },
+  "NEWTON": {
+   "meridian": null,
+   "located_wells": 7,
+   "counts": {
+    "10": 7
+   }
+  },
+  "NOXUBEE": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "10": 2
+   }
+  },
+  "OKTIBBEHA": {
+   "meridian": "10",
+   "located_wells": 20,
+   "counts": {
+    "10": 20
+   }
+  },
+  "PANOLA": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "09": 1
+   }
+  },
+  "PEARL RIVER": {
+   "meridian": "25",
+   "located_wells": 253,
+   "counts": {
+    "25": 253
+   }
+  },
+  "PERRY": {
+   "meridian": "25",
+   "located_wells": 151,
+   "counts": {
+    "25": 151
+   }
+  },
+  "PIKE": {
+   "meridian": "32",
+   "located_wells": 680,
+   "counts": {
+    "32": 680
+   }
+  },
+  "PONTOTOC": {
+   "meridian": "09",
+   "located_wells": 25,
+   "counts": {
+    "09": 25
+   }
+  },
+  "QUITMAN": {
+   "meridian": null,
+   "located_wells": 1,
+   "counts": {
+    "09": 1
+   }
+  },
+  "RANKIN": {
+   "meridian": "10",
+   "located_wells": 399,
+   "counts": {
+    "10": 399
+   }
+  },
+  "SCOTT": {
+   "meridian": "10",
+   "located_wells": 154,
+   "counts": {
+    "10": 154
+   }
+  },
+  "SHARKEY": {
+   "meridian": "10",
+   "located_wells": 41,
+   "counts": {
+    "10": 41
+   }
+  },
+  "SIMPSON": {
+   "meridian": null,
+   "located_wells": 330,
+   "counts": {
+    "10": 215,
+    "25": 115
+   }
+  },
+  "SMITH": {
+   "meridian": null,
+   "located_wells": 580,
+   "counts": {
+    "10": 380,
+    "25": 200
+   }
+  },
+  "STONE": {
+   "meridian": "25",
+   "located_wells": 51,
+   "counts": {
+    "25": 51
+   }
+  },
+  "SUNFLOWER": {
+   "meridian": null,
+   "located_wells": 3,
+   "counts": {
+    "10": 3
+   }
+  },
+  "TALLAHATCHIE": {
+   "meridian": null,
+   "located_wells": 8,
+   "counts": {
+    "10": 8
+   }
+  },
+  "TATE": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "09": 2
+   }
+  },
+  "TIPPAH": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "09": 2
+   }
+  },
+  "TISHOMINGO": {
+   "meridian": null,
+   "located_wells": 7,
+   "counts": {
+    "09": 7
+   }
+  },
+  "UNION": {
+   "meridian": null,
+   "located_wells": 2,
+   "counts": {
+    "09": 2
+   }
+  },
+  "WALTHALL": {
+   "meridian": "32",
+   "located_wells": 416,
+   "counts": {
+    "32": 416
+   }
+  },
+  "WARREN": {
+   "meridian": "32",
+   "located_wells": 130,
+   "counts": {
+    "10": 10,
+    "32": 120
+   }
+  },
+  "WASHINGTON": {
+   "meridian": "10",
+   "located_wells": 21,
+   "counts": {
+    "10": 21
+   }
+  },
+  "WAYNE": {
+   "meridian": "25",
+   "located_wells": 1548,
+   "counts": {
+    "25": 1548
+   }
+  },
+  "WEBSTER": {
+   "meridian": null,
+   "located_wells": 7,
+   "counts": {
+    "10": 7
+   }
+  },
+  "WILKINSON": {
+   "meridian": "32",
+   "located_wells": 1263,
+   "counts": {
+    "18": 36,
+    "32": 1227
+   }
+  },
+  "WINSTON": {
+   "meridian": null,
+   "located_wells": 3,
+   "counts": {
+    "10": 3
+   }
+  },
+  "YALOBUSHA": {
+   "meridian": null,
+   "located_wells": 5,
+   "counts": {
+    "09": 4,
+    "10": 1
+   }
+  },
+  "YAZOO": {
+   "meridian": "10",
+   "located_wells": 913,
+   "counts": {
+    "10": 913
+   }
+  }
+ }
+}
